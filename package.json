@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "android": "cap run android",
-    "android-recreate": "cap sync && capacitor-assets generate --android"
+    "add-android-platform": "cap add android && cap sync && capacitor-assets generate --android",
+    "refresh-assets": "cap sync && capacitor-assets generate --android"
   },
   "dependencies": {
     "@capacitor/android": "^5.0.5",
