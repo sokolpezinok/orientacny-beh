@@ -1,7 +1,8 @@
 # Orientačný beh
-Aplikácia na zjednodušenie prístupu prihlasovania na preteky
 
-## Installation
+Aplikácia na zjednodušenia prihlasovania na preteky zo stránky https://members.eob.cz/.
+
+## Inštalácia
 
 ```
 git clone https://github.com/sokolpezinok/orientacny-beh && cd orientacny-beh
@@ -15,3 +16,30 @@ npm run build
 # add android platform
 npm run add-android-platform
 ```
+
+## Vývoj
+
+* Web
+```
+npm run dev
+```
+
+Otvor `localhost:3000` vo svojom prehliadači. Zmeny v kóde sa automaticky prejavia na webe.
+
+* Android
+
+```
+npm run build
+```
+
+Pripoj svoj android do počítača, povoľ `allow debugging` a spusť nasledovný príkaz. [Viac informácií](https://stackoverflow.com/a/71426608/14900791)
+
+```
+npm run android
+```
+
+## Licencia
+
+Aplikácia `Orientačný beh` je pod licenciou **GNU General Public License v3.0**.
+
+43
