@@ -14,6 +14,10 @@ body {
   width: 100vw;
 }
 
+.alert-wrapper {
+  width: 100% !important;
+}
+
 /**
  * Styles for the Icon UI component.
  *

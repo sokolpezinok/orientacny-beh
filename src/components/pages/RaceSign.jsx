@@ -1,6 +1,7 @@
 import {
   IonBackButton,
   IonButtons,
+  IonLabel,
   IonItem,
   IonPage,
   IonHeader,
@@ -12,17 +13,18 @@ import {
   IonSelect,
   IonSelectOption,
   IonToggle,
-  useIonAlert,
   IonRefresher,
   IonRefresherContent,
-} from '@ionic/react';
+} from "@ionic/react";
 
-import { useParams } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
-import { Spinner, FatalError } from '../ui/Media';
-import Form from '../ui/Form';
-import { Button, ButtonsWrapper } from '../ui/Buttons';
-import Store from '@/store';
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Spinner, FatalError } from "../ui/Media";
+import Form from "../ui/Form";
+import { Button, ButtonsWrapper } from "../ui/Buttons";
+import Store from "@/store";
+import { fetchPrivateApi, privateApi } from "@/api";
+import { AlertModal, ErrorModal } from "@/modals";
 
 const RaceSign = ({}) => {
   const { race_id } = useParams();
@@ -47,72 +49,65 @@ const RaceSign = ({}) => {
 export default RaceSign;
 
 const RaceSignContent = ({}) => {
-  const club = Store.useState(s => s.club);
-  const token = Store.useState(s => s.token);
-
-  const [presentAlert] = useIonAlert();
-  const emitAlert = text =>
-    presentAlert({
-      message: text,
-      buttons: ['OK'],
-    });
-
-  const [data, setData] = useState(null);
+  const [content, setContent] = useState(null);
   const [error, setError] = useState(null);
+
+  const [currentUserIndex, setCurrentUserIndex] = useState(0); // myself
 
   const { race_id } = useParams();
 
-  const updateData = useCallback(() => {
-    if (club === null || token === null) return;
-    fetch(club + 'api/race.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'detail', race_id, token }) })
-      .then(data => data.json())
-      .then(data => (data.status === 'ok' ? setData(data.data) : setError(data.message)))
-      .catch(error => setError(error.message));
-  }, [race_id, club, token]);
+  const updateContent = async () => {
+    const { token } = Store.getRawState();
+
+    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    if (data === undefined) return;
+
+    data.relations = await fetchPrivateApi(privateApi.race, { action: "relations", race_id, token }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    if (data.relations === undefined) return;
+
+    setContent(data);
+  };
 
   useEffect(() => {
-    updateData();
-  }, [club, token, updateData]);
+    updateContent();
+  }, []);
 
-  const handleRefresh = event => {
-    updateData();
+  const handleRefresh = (event) => {
+    updateContent();
     event.detail.complete();
   };
 
-  const handleSubmit = els => {
+  const handleSubmit = async (els) => {
+    const { token } = Store.getRawState();
+
     const wanted_inputs = {
       category: els.category.value,
-      transport: els.transport.checked,
-      accommodation: els.accommodation.checked,
+      transport: els.transport.value.length > 0,
+      accommodation: els.accommodation.value.length > 0,
       note: els.note.value,
       note_internal: els.note_internal.value,
     };
 
-    if (wanted_inputs.category === '') return emitAlert('Nezabudni zadať kategóriu.');
+    if (wanted_inputs.user_id === "") return AlertModal("Nezabudni vybrať koho prihlasuješ.");
+    if (wanted_inputs.category === "") return AlertModal("Nezabudni zadať kategóriu.");
 
-    fetch(club + 'api/race.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ action: 'signin', race_id, token, ...wanted_inputs }),
-    })
-      .then(data => data.json())
-      .then(data => (data.status === 'ok' ? emitAlert('Hotovo!').then(updateData) : emitAlert(data.message)))
-      .catch(error => emitAlert(error.message));
+    await fetchPrivateApi(privateApi.race, { action: "signin", race_id, user_id: currentUser.user_id, token, ...wanted_inputs });
+
+    AlertModal("Úspešne ste sa prihlásili!");
+    updateContent();
   };
 
-  const handleSignout = () => {
-    fetch(club + 'api/race.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ action: 'signout', race_id, token }),
-    })
-      .then(data => data.json())
-      .then(data => (data.status === 'ok' ? emitAlert('Hotovo').then(updateData) : emitAlert(data.message)))
-      .catch(error => emitAlert(error.message));
+  const handleSignout = async () => {
+    const { token } = Store.getRawState();
+
+    await fetchPrivateApi(privateApi.race, { action: "signout", race_id, user_id: currentUser.user_id, token });
+
+    AlertModal("Boli ste odhlásený.");
+    updateContent();
   };
 
-  if (data === null && error === null) return <Spinner />;
-  if (data === null)
+  if (content === null && error === null) return <Spinner />;
+  if (content === null)
     return (
       <>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
@@ -122,48 +117,68 @@ const RaceSignContent = ({}) => {
       </>
     );
 
+  const currentUser = content.relations[currentUserIndex];
+
   return (
     <>
       <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
         <IonRefresherContent />
       </IonRefresher>
-      <div className="w-full md:w-1/3">
+      <div className="w-full md:w-1/2">
         <Form onSubmit={handleSubmit}>
-          {/* <Image src={favicon} className="m-auto mb-4 w-24" alt="Orienteering Logo" /> */}
           <IonList>
             <IonItem>
-              <IonSelect label="Kategória *" labelPlacement="floating" name="category" value={data.myself.category}>
-                {data.categories.map(child => (
-                  <IonSelectOption key={child} value={child}>
-                    {child}
+              <IonLabel className="ion-text-wrap">
+                <h1 className="mt-0 !font-bold">{content.name}</h1>
+                {content.note.length === 0 ? null : <p className="!mt-4">{content.note}</p>}
+              </IonLabel>
+            </IonItem>
+            <IonItem>
+              <IonSelect label="Pretekár/-ka *" labelPlacement="floating" name="user_id" value={currentUserIndex} onIonChange={(event) => setCurrentUserIndex(event.target.value)}>
+                {content.relations.map((child, index) => (
+                  <IonSelectOption key={child.user_id} value={index}>
+                    {`${child.name} ${child.surname} (${child.chip_number})`}
                   </IonSelectOption>
                 ))}
               </IonSelect>
             </IonItem>
             <IonItem>
+              {content.categories.length === 0 ? (
+                <IonInput label="Kategória *" labelPlacement="floating" name="category" value={currentUser.category} />
+              ) : (
+                <IonSelect label="Kategória *" labelPlacement="floating" name="category" value={currentUser.category}>
+                  {content.categories.map((child) => (
+                    <IonSelectOption key={child} value={child}>
+                      {child}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              )}
+            </IonItem>
+            <IonItem>
               {/* transport can be: 0 => not avaible; 1 = up to user; 2 = commanded */}
-              <IonToggle labelPlacement="start" name="transport" checked={data.transport == 1 ? data.myself.transport : data.transport} disabled={data.transport != 1}>
+              <IonToggle labelPlacement="start" name="transport" checked={content.transport == 1 ? currentUser.transport : content.transport} disabled={content.transport != 1}>
                 Chcem využiť spoločnú dopravu
               </IonToggle>
             </IonItem>
             <IonItem>
               {/* accommodation can be: 0 => not avaible; 1 = up to user; 2 = commanded */}
-              <IonToggle labelPlacement="start" name="accommodation" checked={data.accommodation == 1 ? data.myself.accommodation : data.accommodation} disabled={data.accommodation != 1}>
+              <IonToggle labelPlacement="start" name="accommodation" checked={content.accommodation == 1 ? currentUser.accommodation : content.accommodation} disabled={content.accommodation != 1}>
                 Chcem využiť spoločné ubytovanie
               </IonToggle>
             </IonItem>
             <IonItem>
-              <IonInput label="Poznámka (do prihlášky)" labelPlacement="floating" name="note" placeholder="..." value={data.myself.note} />
+              <IonInput label="Poznámka (do prihlášky)" labelPlacement="floating" name="note" placeholder="..." value={currentUser.note} />
             </IonItem>
             <IonItem>
-              <IonInput label="Poznámka (interná)" labelPlacement="floating" name="note_internal" placeholder="..." value={data.myself.note_internal}></IonInput>
+              <IonInput label="Poznámka (interná)" labelPlacement="floating" name="note_internal" placeholder="..." value={currentUser.note_internal}></IonInput>
             </IonItem>
             <IonItem>
               <ButtonsWrapper>
                 <Button primary={true} type="submit">
-                  {data.am_i_signed ? 'Zmeniť' : 'Prihlásiť sa'}
+                  {currentUser.is_signed_in ? "Zmeniť" : "Prihlásiť sa"}
                 </Button>
-                <Button disabled={!data.am_i_signed} type="button" onClick={handleSignout}>
+                <Button disabled={!currentUser.is_signed_in} type="button" onClick={handleSignout}>
                   Odhlásiť sa
                 </Button>
               </ButtonsWrapper>

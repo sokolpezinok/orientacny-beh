@@ -17,16 +17,18 @@ import {
   IonRefresherContent,
   IonAccordionGroup,
   IonAccordion,
-} from '@ionic/react';
-import { useParams } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
-import { Spinner, FatalError } from '../ui/Media';
-import BoolIcon from '../ui/BoolIcon';
-import HumanDate from '../ui/HumanDate';
+} from "@ionic/react";
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Spinner, FatalError } from "../ui/Media";
+import { ErrorModal } from "../../modals";
+import BoolIcon from "../ui/BoolIcon";
+import HumanDate from "../ui/HumanDate";
 
-import { busOutline, homeOutline, chevronForwardOutline } from 'ionicons/icons';
+import { busOutline, homeOutline, chevronForwardOutline } from "ionicons/icons";
 
-import Store from '@/store';
+import Store from "@/store";
+import { fetchPrivateApi, privateApi } from "@/api";
 
 const RaceDetail = ({}) => {
   return (
@@ -48,46 +50,37 @@ const RaceDetail = ({}) => {
 export default RaceDetail;
 
 const RaceDetailContent = ({}) => {
-  const club = Store.useState(s => s.club);
-  const token = Store.useState(s => s.token);
-
-  const [data, setData] = useState(null);
+  const [content, setContent] = useState(null);
   const [error, setError] = useState(null);
 
   const { race_id } = useParams();
 
-  const updateData = useCallback(() => {
-    if (club === null || token === null) return;
-    fetch(club + 'api/race.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({ action: 'detail', race_id: race_id, token }),
-    })
-      .then(data => data.json())
-      .then(data => (data.status === 'ok' ? setData(data.data) : setError(data.message)))
-      .catch(error => setError(error.message));
-  }, [race_id, club, token]);
+  const updateContent = async () => {
+    const { token } = Store.getRawState();
+
+    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    if (data === undefined) return;
+
+    setContent(data);
+  };
 
   useEffect(() => {
-    updateData();
-  }, [club, token, updateData]);
+    updateContent();
+  }, []);
 
-  const handleRefresh = event => {
-    updateData();
+  const handleRefresh = (event) => {
+    updateContent();
     event.detail.complete();
   };
 
-  if (data === null && error === null) return <Spinner />;
-  if (data === null)
+  if (content === null && error === null) return <Spinner />;
+  if (content === null)
     return (
       <>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent />
         </IonRefresher>
-        <FatalError text="Nepodarilo sa načítať preteky." error={error} />
+        <FatalError text="Nepodarilo sa načítať detail." error={error} />
       </>
     );
 
@@ -99,8 +92,8 @@ const RaceDetailContent = ({}) => {
       <IonList>
         <IonItem>
           <IonLabel className="ion-text-wrap">
-            <h1 className="mt-0 !font-bold">{data.name}</h1>
-            <p className="!mt-4">{data.note}</p>
+            <h1 className="mt-0 !font-bold">{content.name}</h1>
+            {content.note.length === 0 ? null : <p className="!mt-4">{content.note}</p>}
           </IonLabel>
         </IonItem>
         <IonItem routerLink={`/tabs/races/${race_id}/sign`}>
@@ -117,7 +110,7 @@ const RaceDetailContent = ({}) => {
                     Dátum
                   </IonCol>
                   <IonCol className="text-right">
-                    <HumanDate date={data.dates[0]} />
+                    <HumanDate date={content.dates[0]} />
                   </IonCol>
                 </IonRow>
                 <IonRow>
@@ -125,47 +118,47 @@ const RaceDetailContent = ({}) => {
                     Prihlásiť sa do
                   </IonCol>
                   <IonCol className="text-right">
-                    <HumanDate date={data.entries[0]} />
+                    <HumanDate date={content.entries[0]} />
                   </IonCol>
                 </IonRow>
                 <IonRow>
                   <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
                     Miesto
                   </IonCol>
-                  <IonCol className="text-right">{data.place}</IonCol>
+                  <IonCol className="text-right">{content.place}</IonCol>
                 </IonRow>
                 <IonRow>
                   <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
                     Druh
                   </IonCol>
-                  <IonCol className="text-right">{data.type}</IonCol>
+                  <IonCol className="text-right">{content.type}</IonCol>
                 </IonRow>
                 <IonRow>
                   <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
                     Šport
                   </IonCol>
-                  <IonCol className="text-right">{data.sport}</IonCol>
+                  <IonCol className="text-right">{content.sport}</IonCol>
                 </IonRow>
                 <IonRow>
                   <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
                     Klub
                   </IonCol>
-                  <IonCol className="text-right">{data.club}</IonCol>
+                  <IonCol className="text-right">{content.club}</IonCol>
                 </IonRow>
                 <IonRow>
                   <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
-                    Preprava
+                    Možnosť prepravy
                   </IonCol>
                   <IonCol className="text-right">
-                    <BoolIcon bool={data.transport} />
+                    <BoolIcon bool={content.transport} />
                   </IonCol>
                 </IonRow>
                 <IonRow>
                   <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
-                    Ubytovanie
+                    Možnosť ubytovania
                   </IonCol>
                   <IonCol className="text-right">
-                    <BoolIcon bool={data.accommodation} />
+                    <BoolIcon bool={content.accommodation} />
                   </IonCol>
                 </IonRow>
               </IonGrid>
@@ -175,26 +168,24 @@ const RaceDetailContent = ({}) => {
             <IonItem slot="header">Prihlásení</IonItem>
             <div slot="content">
               <IonGrid className="mx-4 py-4">
-                <IonRow>
-                  <IonCol className="text-gray-500 dark:text-gray-400">Meno</IonCol>
-                  <IonCol className="text-gray-500 dark:text-gray-400">Priezvisko</IonCol>
-                  <IonCol className="text-gray-500 dark:text-gray-400" size="auto">
-                    Kategória
-                  </IonCol>
-                  <IonCol className="text-gray-500 dark:text-gray-400" size="auto">
+                <IonRow className="sticky text-gray-500 dark:text-gray-400">
+                  <IonCol>Meno</IonCol>
+                  <IonCol>Priezvisko</IonCol>
+                  <IonCol>Kategória</IonCol>
+                  <IonCol size="auto">
                     <IonIcon icon={busOutline} />
                   </IonCol>
-                  <IonCol className="text-gray-500 dark:text-gray-400" size="auto">
+                  <IonCol size="auto">
                     <IonIcon icon={homeOutline} />
                   </IonCol>
                 </IonRow>
-                {data.everyone.map(child => (
-                  <IonRow key={child.surname}>
+                {content.everyone.map((child, index) => (
+                  <IonRow key={index}>
                     <IonCol>{child.name}</IonCol>
                     <IonCol>{child.surname}</IonCol>
-                    <IonCol size="auto">{child.category}</IonCol>
-                    {/* <IonCol>{child.note}</IonCol>
-              <IonCol>{child.note_internal}</IonCol> */}
+                    <IonCol>{child.category}</IonCol>
+                    {/* <IonCol>{child.note}</IonCol> */}
+                    {/* <IonCol>{child.note_internal}</IonCol> */}
                     <IonCol size="auto">
                       <BoolIcon bool={child.transport} />
                     </IonCol>

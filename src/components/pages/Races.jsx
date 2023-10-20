@@ -1,10 +1,11 @@
-import { IonCard, IonIcon, IonPage, IonHeader, IonToolbar, IonTitle, IonLabel, IonContent, IonRefresher, IonRefresherContent } from '@ionic/react';
-import { location, calendar } from 'ionicons/icons';
-import HumanDate from '../ui/HumanDate';
-import { Spinner, FatalError } from '../ui/Media';
-import { useCallback, useEffect, useState } from 'react';
+import { IonCard, IonIcon, IonPage, IonHeader, IonToolbar, IonTitle, IonLabel, IonContent, IonRefresher, IonRefresherContent } from "@ionic/react";
+import { location, calendar } from "ionicons/icons";
+import HumanDate from "../ui/HumanDate";
+import { Spinner, FatalError, SadFace } from "../ui/Media";
+import { useEffect, useState } from "react";
 
-import Store from '@/store';
+import Store from "@/store";
+import { fetchPrivateApi, privateApi } from "@/api";
 
 const Races = ({}) => {
   return (
@@ -23,56 +24,61 @@ const Races = ({}) => {
 export default Races;
 
 const RacesContent = ({}) => {
-  const club = Store.useState(s => s.club);
+  const club = Store.useState((s) => s.club);
 
-  const [data, setData] = useState(null);
+  const [content, setContent] = useState(null);
   const [error, setError] = useState(null);
 
-  const updateData = useCallback(() => {
-    if (club === null) return;
-    fetch(club + 'api/race.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({ action: 'list' }),
-    })
-      .then(data => data.json())
-      .then(data => (data.status === 'ok' ? setData(data.data) : setError(data.message)))
-      .catch(error => setError(error.message));
-  }, [club]);
+  const updateContent = async () => {
+    const data = await fetchPrivateApi(privateApi.race, { action: "list" }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    if (data === undefined) return;
+
+    setContent(data);
+  };
 
   useEffect(() => {
-    updateData();
-  }, [club, updateData]);
+    updateContent();
+  }, [club]);
 
-  const handleRefresh = event => {
-    updateData();
+  const handleRefresh = (event) => {
+    updateContent();
     event.detail.complete();
   };
 
-  if (data === null && error === null) return <Spinner />;
-  if (data === null)
+  const RefresherContent = () => {
     return (
-      <>
-        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent />
-        </IonRefresher>
-        <FatalError text="Nepodarilo sa načítať preteky." error={error} />
-      </>
-    );
-
-  return (
-    <>
       <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
         <IonRefresherContent />
       </IonRefresher>
-      {data.map(child => (
+    );
+  };
+
+  if (content === null && error === null) return <Spinner />;
+  if (content === null) {
+    return (
+      <>
+        <RefresherContent />
+        <FatalError text="Nepodarilo sa načítať preteky." error={error} />
+      </>
+    );
+  }
+  if (content.length === 0) {
+    return (
+      <>
+        <RefresherContent />
+        <SadFace text="V najbližšej dobe nie sú naplánované preteky." subtext="Zabehaj si sám :)" />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <RefresherContent />
+      {content.map((child) => (
         <IonCard key={child.race_id} routerLink={`/tabs/races/${child.race_id}`} className="rounded-md p-4 shadow-md">
           <IonLabel>
             <h1 className="text-gray text-xl !font-bold text-gray-700 dark:text-gray-200">
-              <span className={child.is_cancelled ? 'line-through' : null}>{child.name}</span>
+              <span className={child.is_cancelled ? "line-through" : null}>{child.name}</span>
             </h1>
             <p>
               <IonIcon icon={calendar} className="align-text-top" color="primary" />

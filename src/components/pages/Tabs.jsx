@@ -1,34 +1,28 @@
-import { Redirect, Route } from 'react-router-dom';
-import { IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/react';
-import { cog, flash } from 'ionicons/icons';
-import Store, { syncStore } from '@/store';
-import { useEffect, useState } from 'react';
+import { Redirect, Route } from "react-router-dom";
+import { IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from "@ionic/react";
+import { cog, flash } from "ionicons/icons";
+import Store, { syncStore } from "@/store";
+import { Register, Subscribe } from "@/notify";
+import { useEffect, useState } from "react";
 
-import Home from './Races';
-import RaceDetail from './RaceDetail';
-import RaceSign from './RaceSign';
-import Settings from './Settings';
-import Profile from './Profile';
-import About from './About';
-import { Spinner } from '../ui/Media';
+import Home from "./Races";
+import RaceDetail from "./RaceDetail";
+import RaceSign from "./RaceSign";
+import Settings from "./Settings";
+import Profile from "./Profile";
+import About from "./About";
+import { Spinner } from "../ui/Media";
 
 const Tabs = () => {
-  const token = Store.useState(s => s.token);
-  const club = Store.useState(s => s.club);
-
-  const [signed, setSigned] = useState(null);
+  const is_loading = Store.useState((s) => s._is_loading);
+  const is_logged_in = Store.useState((s) => s.is_logged_in);
 
   useEffect(() => {
     syncStore();
   }, []);
 
-  useEffect(() => {
-    if (token === undefined || club === undefined) return;
-    setSigned(token !== null && club !== null);
-  }, [token, club]);
-
-  if (signed === null) return <Spinner />;
-  if (signed === false) return <Redirect to="/welcome" />;
+  if (is_loading) return <Spinner />;
+  if (!is_logged_in) return <Redirect to="/welcome" />;
 
   return (
     <IonTabs>
@@ -36,7 +30,6 @@ const Tabs = () => {
         <Route path="/tabs/races" render={() => <Home />} exact={true} />
         <Route path="/tabs/races/:race_id" render={() => <RaceDetail />} exact={true} />
         <Route path="/tabs/races/:race_id/sign" render={() => <RaceSign />} exact={true} />
-        {/* <Route path="/tabs/lists" render={() => <Lists />} exact={true} /> */}
         <Route path="/tabs/settings" render={() => <Settings />} exact={true} />
         <Route path="/tabs/settings/profile" render={() => <Profile />} exact={true} />
         <Route path="/tabs/settings/about" render={() => <About />} exact={true} />

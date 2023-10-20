@@ -17,7 +17,7 @@ npm run build
 npm run add-android-platform
 ```
 
-## Vývoj
+## Debug
 
 * Web
 ```
@@ -38,8 +38,16 @@ Pripoj svoj android do počítača, povoľ `allow debugging` a spusť nasledovn�
 npm run android
 ```
 
+## Build
+
+* Android
+```
+npm run build
+npm run android-compile
+```
+
+V Android Studio zvoľ `Build`->`Generate Signed Bundle / APK`.
+
 ## Licencia
 
-Aplikácia `Orientačný beh` je pod licenciou **GNU General Public License v3.0**.
-
-43
+Aplikácia `Orientačný beh` je pod licenciou **MIT License**.

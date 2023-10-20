@@ -17,15 +17,16 @@ import {
   IonSelectOption,
   IonAccordion,
   IonAccordionGroup,
-  useIonAlert,
   IonToggle,
-} from '@ionic/react';
-import { useState, useEffect, useCallback } from 'react';
-import { FatalError, Spinner } from '../ui/Media';
-import Form from '../ui/Form';
-import Store from '@/store';
-import Countries from '../../store/countries';
-import { Button, ButtonsWrapper } from '../ui/Buttons';
+} from "@ionic/react";
+import { useState, useEffect } from "react";
+import { FatalError, Spinner } from "../ui/Media";
+import { ErrorModal, AlertModal } from "../../modals";
+import Form from "../ui/Form";
+import Store from "@/store";
+import Countries from "../../store/countries";
+import { Button, ButtonsWrapper } from "../ui/Buttons";
+import { fetchPrivateApi, privateApi } from "@/api";
 
 const Profile = ({}) => {
   return (
@@ -48,39 +49,31 @@ const Profile = ({}) => {
 export default Profile;
 
 const ProfileContent = ({}) => {
-  const club = Store.useState(s => s.club);
-  const token = Store.useState(s => s.token);
-
-  const [presentAlert] = useIonAlert();
-  const emitAlert = text =>
-    presentAlert({
-      message: text,
-      buttons: ['OK'],
-    });
-
-  const [data, setData] = useState(null);
+  const [content, setContent] = useState(null);
   const [error, setError] = useState(null);
 
-  const updateData = useCallback(() => {
-    if (club === null || token === null) return;
+  const updateContent = async () => {
+    const { token } = Store.getRawState();
 
-    fetch(club + 'api/user.php', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ action: 'view_user_data', token }) })
-      .then(data => data.json())
-      .then(data => (data.status === 'ok' ? setData(data.data) : setError(data.message)))
-      .catch(error => setError(error.message));
-  }, [club, token]);
+    const data = await fetchPrivateApi(privateApi.user, { action: "user_data", token }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    if (data === undefined) return;
+
+    setContent(data);
+  };
 
   useEffect(() => {
-    updateData();
-  }, [club, token, updateData]);
+    updateContent();
+  }, []);
 
-  const handleRefresh = event => {
-    updateData();
+  const handleRefresh = (event) => {
+    updateContent();
     event.detail.complete();
   };
 
-  const handleSubmit = els => {
-    if (club === null || token === null) return;
+  const handleSubmit = async (els) => {
+    const { token } = Store.getRawState();
+
+    console.log(els);
 
     const wanted_inputs = {
       name: els.name.value,
@@ -104,18 +97,13 @@ const ProfileContent = ({}) => {
       is_hidden: els.is_hidden.checked,
     };
 
-    fetch(club + 'api/user.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ action: 'update_user_data', token, ...wanted_inputs }),
-    })
-      .then(data => data.json())
-      .then(data => (data.status === 'ok' ? emitAlert('Hotovo!') : emitAlert('Chyba: ' + data.message)))
-      .catch(error => emitAlert('Chyba: ' + error.message));
+    await fetchPrivateApi(privateApi.user, { action: "update_user_data", token, ...wanted_inputs });
+
+    AlertModal("Vaše údaje boli úspešne aktualizované.");
   };
 
-  if (data === null && error === null) return <Spinner />;
-  if (data === null)
+  if (content === null && error === null) return <Spinner />;
+  if (content === null)
     return (
       <>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
@@ -139,26 +127,26 @@ const ProfileContent = ({}) => {
             <div slot="content">
               <IonGrid className="mx-4 py-4">
                 <IonRow>
-                  <IonInput label="Meno" labelPlacement="floating" name="name" value={data.name} placeholder="..." />
+                  <IonInput label="Meno" labelPlacement="floating" name="name" value={content.name} placeholder="..." />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Priezvisko" labelPlacement="floating" name="surname" value={data.surname} placeholder="..." />
+                  <IonInput label="Priezvisko" labelPlacement="floating" name="surname" value={content.surname} placeholder="..." />
                 </IonRow>
                 <IonRow>
-                  <IonSelect label="Pohlavie" labelPlacement="floating" name="gender" value={data.gender} placeholder="...">
+                  <IonSelect label="Pohlavie" labelPlacement="floating" name="gender" value={content.gender} placeholder="...">
                     <IonSelectOption value="H">Mužské</IonSelectOption>
                     <IonSelectOption value="D">Ženské</IonSelectOption>
-                    <IonSelectOption value="D">Nechcem povedať</IonSelectOption>
+                    {/* <IonSelectOption value="">Nechcem povedať</IonSelectOption> */}
                   </IonSelect>
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Narodenie" labelPlacement="floating" name="birth_date" value={data.birth_date} placeholder="..." type="date" />
+                  <IonInput label="Narodenie" labelPlacement="floating" name="birth_date" value={content.birth_date} placeholder="..." type="date" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Rodné číslo" labelPlacement="floating" name="birth_number" value={data.birth_number} placeholder="..." type="number" />
+                  <IonInput label="Rodné číslo" labelPlacement="floating" name="birth_number" value={content.birth_number} placeholder="..." type="number" />
                 </IonRow>
                 <IonRow>
-                  <IonSelect label="Národnosť" labelPlacement="floating" name="nationality" value={data.nationality} placeholder="...">
+                  <IonSelect label="Národnosť" labelPlacement="floating" name="nationality" value={content.nationality} placeholder="...">
                     {Countries.map(([code, name]) => (
                       <IonSelectOption key={code} value={code}>
                         {name}
@@ -176,25 +164,25 @@ const ProfileContent = ({}) => {
             <div slot="content">
               <IonGrid className="mx-4 py-4">
                 <IonRow>
-                  <IonInput label="Email" labelPlacement="floating" name="email" value={data.email} placeholder="..." />
+                  <IonInput label="Email" labelPlacement="floating" name="email" value={content.email} placeholder="..." />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Adresa" labelPlacement="floating" name="address" value={data.address} placeholder="..." />
+                  <IonInput label="Adresa" labelPlacement="floating" name="address" value={content.address} placeholder="..." />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Mesto" labelPlacement="floating" name="city" value={data.city} placeholder="..." />
+                  <IonInput label="Mesto" labelPlacement="floating" name="city" value={content.city} placeholder="..." />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="PŠC" labelPlacement="floating" name="postal_code" value={data.postal_code} placeholder="..." type="number" />
+                  <IonInput label="PŠC" labelPlacement="floating" name="postal_code" value={content.postal_code} placeholder="..." type="number" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Mobil" labelPlacement="floating" name="phone" value={data.phone} placeholder="..." type="tel" />
+                  <IonInput label="Mobil" labelPlacement="floating" name="phone" value={content.phone} placeholder="..." type="tel" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Mobil domov" labelPlacement="floating" name="phone_home" value={data.phone_home} placeholder="..." type="tel" />
+                  <IonInput label="Mobil domov" labelPlacement="floating" name="phone_home" value={content.phone_home} placeholder="..." type="tel" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Mobil pracovný" labelPlacement="floating" name="phone_work" value={data.phone_work} placeholder="..." type="tel" />
+                  <IonInput label="Mobil pracovný" labelPlacement="floating" name="phone_work" value={content.phone_work} placeholder="..." type="tel" />
                 </IonRow>
               </IonGrid>
             </div>
@@ -206,18 +194,18 @@ const ProfileContent = ({}) => {
             <div slot="content">
               <IonGrid className="mx-4 py-4">
                 <IonRow>
-                  <IonInput label="Registrácia" labelPlacement="floating" name="register_number" value={data.register_number} placeholder="..." type="number" />
+                  <IonInput label="Registrácia" labelPlacement="floating" name="register_number" value={content.register_number} placeholder="..." type="number" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Čip" labelPlacement="floating" name="chip_number" value={data.chip_number} placeholder="..." type="number" />
+                  <IonInput label="Čip" labelPlacement="floating" name="chip_number" value={content.chip_number} placeholder="..." type="number" />
                 </IonRow>
                 <IonRow>
-                  <IonToggle labelPlacement="start" name="is_hidden" checked={data.is_hidden}>
-                    Skryť
+                  <IonToggle labelPlacement="start" name="is_hidden" checked={content.is_hidden}>
+                    Vidí ma iba admin
                   </IonToggle>
                 </IonRow>
                 <IonRow>
-                  <IonSelect label="Licencia OB" labelPlacement="floating" name="licence_ob" value={data.licence_ob} placeholder="...">
+                  <IonSelect label="Licencia OB" labelPlacement="floating" name="licence_ob" value={content.licence_ob} placeholder="...">
                     <IonSelectOption value="-">Žiadna</IonSelectOption>
                     <IonSelectOption value="E">E</IonSelectOption>
                     <IonSelectOption value="A">A</IonSelectOption>
@@ -228,7 +216,7 @@ const ProfileContent = ({}) => {
                   </IonSelect>
                 </IonRow>
                 <IonRow>
-                  <IonSelect label="Licencia LOB" labelPlacement="floating" name="licence_lob" value={data.licence_lob} placeholder="...">
+                  <IonSelect label="Licencia LOB" labelPlacement="floating" name="licence_lob" value={content.licence_lob} placeholder="...">
                     <IonSelectOption value="-">Žiadna</IonSelectOption>
                     <IonSelectOption value="E">E</IonSelectOption>
                     <IonSelectOption value="A">A</IonSelectOption>
@@ -239,7 +227,7 @@ const ProfileContent = ({}) => {
                   </IonSelect>
                 </IonRow>
                 <IonRow>
-                  <IonSelect label="Licencia MTBO" labelPlacement="floating" name="licence_mtbo" value={data.licence_mtbo} placeholder="...">
+                  <IonSelect label="Licencia MTBO" labelPlacement="floating" name="licence_mtbo" value={content.licence_mtbo} placeholder="...">
                     <IonSelectOption value="-">Žiadna</IonSelectOption>
                     <IonSelectOption value="E">E</IonSelectOption>
                     <IonSelectOption value="A">A</IonSelectOption>

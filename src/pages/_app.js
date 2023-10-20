@@ -41,8 +41,8 @@ function MyApp({ Component, pageProps }) {
         <title>Preteky</title>
       </Head>
       <Component {...pageProps} />
-      <Script type="module" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.esm.js"></Script>
-      <Script nomodule="" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.js"></Script>
+      <Script type="module" src="./scripts/ionicons.esm.js"></Script>
+      <Script nomodule="" src="./scripts/ionicons.js"></Script>
     </div>
   );
 }

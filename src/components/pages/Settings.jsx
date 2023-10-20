@@ -1,6 +1,16 @@
-import { IonPage, IonHeader, IonItem, IonToolbar, IonTitle, IonContent, IonList, IonLabel } from '@ionic/react';
+import { IonPage, IonHeader, IonItem, IonToolbar, IonTitle, IonContent, IonList, IonLabel } from "@ionic/react";
+import Store, { syncStorage } from "@/store";
 
 const Settings = () => {
+  const handleLogout = async () => {
+    if (!confirm("Naozaj sa chceš odhlásiť?")) return;
+
+    Store.update((s) => {
+      s.is_logged_in = false;
+    });
+    await syncStorage();
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -13,7 +23,7 @@ const Settings = () => {
           <IonItem routerLink="/tabs/settings/profile">
             <IonLabel>Profil</IonLabel>
           </IonItem>
-          <IonItem routerLink="/logout">
+          <IonItem routerLink="#" onClick={handleLogout}>
             <IonLabel>Odhlásiť sa</IonLabel>
           </IonItem>
           <IonItem routerLink="/tabs/settings/about">
