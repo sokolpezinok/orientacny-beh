@@ -1,4 +1,4 @@
-import { IonCard, IonIcon, IonPage, IonHeader, IonToolbar, IonTitle, IonLabel, IonContent, IonRefresher, IonRefresherContent } from "@ionic/react";
+import { IonCard, IonItem, IonList, IonIcon, IonPage, IonHeader, IonToolbar, IonTitle, IonLabel, IonContent, IonRefresher, IonRefresherContent } from "@ionic/react";
 import { location, calendar } from "ionicons/icons";
 import HumanDate from "../ui/HumanDate";
 import { Spinner, FatalError, SadFace } from "../ui/Media";
@@ -66,7 +66,7 @@ const RacesContent = ({}) => {
     return (
       <>
         <RefresherContent />
-        <SadFace text="V najbližšej dobe nie sú naplánované preteky." subtext="Zabehaj si sám :)" />
+        <SadFace text="V najbližšej dobe nie sú naplánované preteky." subtext="Stále však môžeš behať sám/-a :)" />
       </>
     );
   }
@@ -74,25 +74,27 @@ const RacesContent = ({}) => {
   return (
     <>
       <RefresherContent />
-      {content.map((child) => (
-        <IonCard key={child.race_id} routerLink={`/tabs/races/${child.race_id}`} className="rounded-md p-4 shadow-md">
-          <IonLabel>
-            <h1 className="text-gray text-xl !font-bold text-gray-700 dark:text-gray-200">
-              <span className={child.is_cancelled ? "line-through" : null}>{child.name}</span>
-            </h1>
-            <p>
-              <IonIcon icon={calendar} className="align-text-top" color="primary" />
-              <span className="ml-2">
-                <HumanDate date={child.dates[0]} />
-              </span>
-            </p>
-            <p>
-              <IonIcon icon={location} className="align-text-top" color="primary" />
-              <span className="ml-2">{child.place}</span>
-            </p>
-          </IonLabel>
-        </IonCard>
-      ))}
+      <IonList>
+        {content.map((child) => (
+          <IonItem key={child.race_id} routerLink={`/tabs/races/${child.race_id}`} className="p-2">
+            <IonLabel>
+              <h1 className="text-gray text-xl !font-bold text-gray-700 dark:text-gray-200">
+                <span className={child.is_cancelled ? "line-through" : null}>{child.name}</span>
+              </h1>
+              <p>
+                <IonIcon icon={calendar} className="align-text-top" color="primary" />
+                <span className="ml-2">
+                  <HumanDate date={child.dates[0]} />
+                </span>
+              </p>
+              <p>
+                <IonIcon icon={location} className="align-text-top" color="primary" />
+                <span className="ml-2">{child.place}</span>
+              </p>
+            </IonLabel>
+          </IonItem>
+        ))}
+      </IonList>
     </>
   );
 

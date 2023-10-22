@@ -25,10 +25,12 @@ import { ErrorModal } from "../../modals";
 import BoolIcon from "../ui/BoolIcon";
 import HumanDate from "../ui/HumanDate";
 
+import Store from "../../store";
+
 import { busOutline, homeOutline, chevronForwardOutline } from "ionicons/icons";
 
-import Store from "@/store";
 import { fetchPrivateApi, privateApi } from "@/api";
+import classNames from "classnames";
 
 const RaceDetail = ({}) => {
   return (
@@ -58,7 +60,7 @@ const RaceDetailContent = ({}) => {
   const updateContent = async () => {
     const { token } = Store.getRawState();
 
-    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id, token }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
     if (data === undefined) return;
 
     setContent(data);
@@ -92,7 +94,7 @@ const RaceDetailContent = ({}) => {
       <IonList>
         <IonItem>
           <IonLabel className="ion-text-wrap">
-            <h1 className="mt-0 !font-bold">{content.name}</h1>
+            <h1 className={classNames("mt-0 !font-bold", content.is_cancelled ? "line-through" : null)}>{content.name}</h1>
             {content.note.length === 0 ? null : <p className="!mt-4">{content.note}</p>}
           </IonLabel>
         </IonItem>
@@ -150,7 +152,7 @@ const RaceDetailContent = ({}) => {
                     Možnosť prepravy
                   </IonCol>
                   <IonCol className="text-right">
-                    <BoolIcon bool={content.transport} />
+                    <BoolIcon value={content.transport} />
                   </IonCol>
                 </IonRow>
                 <IonRow>
@@ -158,16 +160,16 @@ const RaceDetailContent = ({}) => {
                     Možnosť ubytovania
                   </IonCol>
                   <IonCol className="text-right">
-                    <BoolIcon bool={content.accommodation} />
+                    <BoolIcon value={content.accommodation} />
                   </IonCol>
                 </IonRow>
               </IonGrid>
             </div>
           </IonAccordion>
           <IonAccordion>
-            <IonItem slot="header">Prihlásení</IonItem>
+            <IonItem slot="header">Prihlásení ({content.everyone.length})</IonItem>
             <div slot="content">
-              <IonGrid className="mx-4 py-4">
+              <IonGrid className="relative mx-4 py-4">
                 <IonRow className="sticky text-gray-500 dark:text-gray-400">
                   <IonCol>Meno</IonCol>
                   <IonCol>Priezvisko</IonCol>
@@ -187,10 +189,10 @@ const RaceDetailContent = ({}) => {
                     {/* <IonCol>{child.note}</IonCol> */}
                     {/* <IonCol>{child.note_internal}</IonCol> */}
                     <IonCol size="auto">
-                      <BoolIcon bool={child.transport} />
+                      <BoolIcon value={child.transport} />
                     </IonCol>
                     <IonCol size="auto">
-                      <BoolIcon bool={child.accommodation} />
+                      <BoolIcon value={child.accommodation} />
                     </IonCol>
                   </IonRow>
                 ))}

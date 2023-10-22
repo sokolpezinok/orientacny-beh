@@ -1,4 +1,21 @@
-import { IonPage, IonHeader, IonItem, IonToolbar, IonTitle, IonContent, IonSelect, IonSelectOption, IonLabel, IonInput, IonList, IonRefresher, IonRefresherContent } from "@ionic/react";
+import {
+  IonPage,
+  IonHeader,
+  IonItem,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonSelect,
+  IonSelectOption,
+  IonLabel,
+  IonInput,
+  IonList,
+  IonRefresher,
+  IonRefresherContent,
+  IonCheckbox,
+  IonAccordionGroup,
+  IonAccordion,
+} from "@ionic/react";
 import { Redirect } from "react-router-dom";
 import Store, { syncStorage } from "@/store";
 import { useEffect, useState } from "react";
@@ -7,6 +24,7 @@ import { fetchPublicApi, fetchApi, publicApi, privateApi } from "@/api";
 import Image from "next/image";
 import favicon from "@/public/favicon.png";
 
+import License from "../ui/License";
 import Form from "../ui/Form";
 import { Button, ButtonsWrapper } from "../ui/Buttons";
 import { FatalError } from "../ui/Media";
@@ -51,11 +69,13 @@ const WelcomeContent = ({}) => {
       username: els.username.value,
       password: els.password.value,
       club: clublist[els.club.value],
+      license: els.license.value.length > 0,
     };
 
     if (wanted_inputs.username === "") return ErrorModal("Nezabudni zadať meno.");
     if (wanted_inputs.password === "") return ErrorModal("Nezabudni zadať heslo.");
-    if (wanted_inputs.club === null) return ErrorModal("Nezabudni vybrať klub.");
+    if (wanted_inputs.club === undefined) return ErrorModal("Nezabudni vybrať klub.");
+    if (!wanted_inputs.license) return ErrorModal("Súhlas s licenčnými podmienkami je povinný.");
 
     const data = await fetchApi(wanted_inputs.club.url + privateApi.user, {
       action: "login",
@@ -120,6 +140,17 @@ const WelcomeContent = ({}) => {
                   ))}
                 </IonSelect>
               </IonItem>
+              <IonItem>
+                <IonCheckbox name="license">Súhlasím s licenčnými podmienkami</IonCheckbox>
+              </IonItem>
+              <IonAccordionGroup>
+                <IonAccordion>
+                  <IonItem slot="header">Licenčné podmienky</IonItem>
+                  <IonItem slot="content">
+                    <License />
+                  </IonItem>
+                </IonAccordion>
+              </IonAccordionGroup>
               <IonItem>
                 <ButtonsWrapper>
                   <Button primary={true} type="submit">
