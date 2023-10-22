@@ -43,7 +43,7 @@ npm run android
 * Android
 ```
 npm run build
-npm run android-compile
+npm run compile-android
 ```
 
 V Android Studio zvoľ `Build`->`Generate Signed Bundle / APK`.
