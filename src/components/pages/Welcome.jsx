@@ -29,6 +29,8 @@ import Form from "../ui/Form";
 import { Button, ButtonsWrapper } from "../ui/Buttons";
 import { FatalError } from "../ui/Media";
 import { ErrorModal, FatalModal } from "@/modals";
+import { register, subscribe, getToken } from "@/notify";
+import { apiSupport, isSupported } from "@/version";
 
 const Welcome = ({}) => {
   return (
@@ -49,15 +51,21 @@ export default Welcome;
 
 const WelcomeContent = ({}) => {
   const is_logged_in = Store.useState((s) => s.is_logged_in);
+  const has_accepted_terms = Store.useState((s) => s.has_accepted_terms);
 
-  const [clublist, setClublist] = useState([]);
+  const [content, setClublist] = useState([]);
   const [error, setError] = useState(null);
 
   const updateClublist = async () => {
-    const data = await fetchPublicApi(publicApi.clublist, {}, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    const data = await fetchPublicApi(publicApi.clublist, {}, false).catch((data) => (content ? ErrorModal(data.message) : setError(data.message)));
     if (data === undefined) return;
 
-    setClublist(data);
+    // sort A-Z
+    setClublist(data.sort((a, b) => {
+      const x = a.fullname.toLowerCase();
+      const y = b.fullname.toLowerCase();
+      return x < y ? -1 : x > y ? 1 : 0;
+    }));
   };
 
   useEffect(() => {
@@ -68,8 +76,8 @@ const WelcomeContent = ({}) => {
     const wanted_inputs = {
       username: els.username.value,
       password: els.password.value,
-      club: clublist[els.club.value],
-      license: els.license.value.length > 0,
+      club: content[els.club.value],
+      license: els.license?.value?.length > 0 || has_accepted_terms,
     };
 
     if (wanted_inputs.username === "") return ErrorModal("Nezabudni zadať meno.");
@@ -89,8 +97,12 @@ const WelcomeContent = ({}) => {
       s.token = data;
       s.club = wanted_inputs.club;
       s.is_logged_in = true;
+      s.has_accepted_terms = true;
     });
-    syncStorage().catch((error) => FatalModal(error));
+    await syncStorage().catch((error) => FatalModal(error));
+
+    // await register()?.catch((error) => FatalModal(error));
+    // await subscribe(wanted_inputs.club.shortcut)?.catch((error) => FatalModal(error));
   };
 
   const handleRefresh = (event) => {
@@ -119,7 +131,7 @@ const WelcomeContent = ({}) => {
         <div className="w-full md:w-1/2">
           <Form onSubmit={handleSubmit}>
             <IonList>
-              <Image src={favicon} className="m-auto mb-4 w-24 shadow-2xl" alt="Orienteering Logo" />
+              <Image src={favicon} className="m-auto my-6 w-24 shadow-[0_0_20px_10px_#0002] dark:shadow-[0_0_20px_10px_#fff2]" alt="Orienteering Logo" />
               <IonItem>
                 <IonLabel class="text-center">
                   <h1>Orientačný beh</h1>
@@ -133,24 +145,26 @@ const WelcomeContent = ({}) => {
               </IonItem>
               <IonItem>
                 <IonSelect name="club" label="Klub *" labelPlacement="floating">
-                  {clublist.map((child, index) => (
-                    <IonSelectOption key={child.short} value={index}>
-                      {child.name}
-                    </IonSelectOption>
+                  {content.map((child, index) => (
+                    <IonSelectOption disabled={!isSupported(child.api_version, apiSupport)} key={child.fullname} value={index}>{child.fullname}</IonSelectOption>
                   ))}
                 </IonSelect>
               </IonItem>
-              <IonItem>
-                <IonCheckbox name="license">Súhlasím s licenčnými podmienkami</IonCheckbox>
-              </IonItem>
-              <IonAccordionGroup>
-                <IonAccordion>
-                  <IonItem slot="header">Licenčné podmienky</IonItem>
-                  <IonItem slot="content">
-                    <License />
-                  </IonItem>
-                </IonAccordion>
-              </IonAccordionGroup>
+              {has_accepted_terms ? null : (
+                <>
+                <IonItem>
+                  <IonCheckbox name="license">Súhlasím s licenčnými podmienkami</IonCheckbox>
+                </IonItem>
+                <IonAccordionGroup>
+                  <IonAccordion>
+                    <IonItem slot="header">Licenčné podmienky</IonItem>
+                    <IonItem slot="content">
+                      <License />
+                    </IonItem>
+                  </IonAccordion>
+                </IonAccordionGroup>
+                </>
+              )}
               <IonItem>
                 <ButtonsWrapper>
                   <Button primary={true} type="submit">

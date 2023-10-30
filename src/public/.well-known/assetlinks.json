@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "sk.orienteering.app",
+      "sha256_cert_fingerprints": ["1B:84:B5:84:D1:A2:B3:D1:17:66:FC:39:28:A7:FF:41:C6:4D:FA:18:05:C0:EE:D8:CC:84:3B:D2:50:3E:70:52"]
+    }
+  }
+]

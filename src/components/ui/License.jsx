@@ -1,6 +1,6 @@
 import { IonLabel } from "@ionic/react";
 
-export default ({}) => {
+export default () => {
   return (
     <IonLabel className="ion-text-wrap">
       <h3 className="!mb-2">Copyright © 2023 KOB Sokol Pezinok</h3>

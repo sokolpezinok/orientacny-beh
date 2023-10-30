@@ -21,11 +21,12 @@ import {
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Spinner, FatalError } from "../ui/Media";
-import { ErrorModal } from "../../modals";
+import { ErrorModal } from "@/modals";
 import BoolIcon from "../ui/BoolIcon";
 import HumanDate from "../ui/HumanDate";
+import Link from "../ui/Link";
 
-import Store from "../../store";
+import Store from "@/store";
 
 import { busOutline, homeOutline, chevronForwardOutline } from "ionicons/icons";
 
@@ -60,7 +61,7 @@ const RaceDetailContent = ({}) => {
   const updateContent = async () => {
     const { token } = Store.getRawState();
 
-    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id, token }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id, token }, false).catch((data) => (content ? ErrorModal(data.message) : setError(data.message)));
     if (data === undefined) return;
 
     setContent(data);
@@ -95,7 +96,8 @@ const RaceDetailContent = ({}) => {
         <IonItem>
           <IonLabel className="ion-text-wrap">
             <h1 className={classNames("mt-0 !font-bold", content.is_cancelled ? "line-through" : null)}>{content.name}</h1>
-            {content.note.length === 0 ? null : <p className="!mt-4">{content.note}</p>}
+            {content.note.length > 0 ? <p className="!mt-4">{content.note}</p> : null}
+            {content.link.length > 0 ? <p className="!text-orange-600 !dark:text-orange-700"><Link href={content.link}>{content.link}</Link></p> : null}
           </IonLabel>
         </IonItem>
         <IonItem routerLink={`/tabs/races/${race_id}/sign`}>

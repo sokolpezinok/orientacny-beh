@@ -1,4 +1,4 @@
-import { IonCard, IonItem, IonList, IonIcon, IonPage, IonHeader, IonToolbar, IonTitle, IonLabel, IonContent, IonRefresher, IonRefresherContent } from "@ionic/react";
+import { IonItem, IonList, IonIcon, IonPage, IonHeader, IonToolbar, IonTitle, IonLabel, IonContent, IonRefresher, IonRefresherContent } from "@ionic/react";
 import { location, calendar } from "ionicons/icons";
 import HumanDate from "../ui/HumanDate";
 import { Spinner, FatalError, SadFace } from "../ui/Media";
@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import Store from "@/store";
 import { fetchPrivateApi, privateApi } from "@/api";
+import { ErrorModal } from "@/modals";
 
 const Races = ({}) => {
   return (
@@ -30,7 +31,7 @@ const RacesContent = ({}) => {
   const [error, setError] = useState(null);
 
   const updateContent = async () => {
-    const data = await fetchPrivateApi(privateApi.race, { action: "list" }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    const data = await fetchPrivateApi(privateApi.race, { action: "list" }, false).catch((data) => (content ? ErrorModal(data.message) : setError(data.message)));
     if (data === undefined) return;
 
     setContent(data);

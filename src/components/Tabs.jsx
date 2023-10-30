@@ -2,7 +2,6 @@ import { Redirect, Route } from "react-router-dom";
 import { IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from "@ionic/react";
 import { cog, flash } from "ionicons/icons";
 import Store, { syncStore } from "@/store";
-// import { Register, Subscribe } from "@/notify";
 import { useEffect } from "react";
 
 import Home from "./pages/Races";

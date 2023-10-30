@@ -21,10 +21,10 @@ import {
 } from "@ionic/react";
 import { useState, useEffect } from "react";
 import { FatalError, Spinner } from "../ui/Media";
-import { ErrorModal, AlertModal } from "../../modals";
+import { ErrorModal, AlertModal } from "@/modals";
 import Form from "../ui/Form";
 import Store from "@/store";
-import Countries from "../../store/countries";
+import Countries from "@/countries";
 import { Button, ButtonsWrapper } from "../ui/Buttons";
 import { fetchPrivateApi, privateApi } from "@/api";
 
@@ -55,7 +55,7 @@ const ProfileContent = ({}) => {
   const updateContent = async () => {
     const { token } = Store.getRawState();
 
-    const data = await fetchPrivateApi(privateApi.user, { action: "user_data", token }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    const data = await fetchPrivateApi(privateApi.user, { action: "user_data", token }, false).catch((data) => (content ? ErrorModal(data.message) : setError(data.message)));
     if (data === undefined) return;
 
     setContent(data);
@@ -72,8 +72,6 @@ const ProfileContent = ({}) => {
 
   const handleSubmit = async (els) => {
     const { token } = Store.getRawState();
-
-    console.log(els);
 
     const wanted_inputs = {
       name: els.name.value,

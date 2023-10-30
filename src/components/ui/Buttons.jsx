@@ -2,7 +2,7 @@ import classNames from "classnames";
 
 export const ButtonsWrapper = ({ children, className, ...options }) => {
   return (
-    <div className={classNames("flex w-full flex-col gap-y-4 py-4", className)} {...options}>
+    <div className={classNames("flex w-full lg:w-1/2 m-auto flex-col gap-y-4 py-4", className)} {...options}>
       {children}
     </div>
   );

@@ -59,10 +59,10 @@ const RaceSignContent = ({}) => {
   const updateContent = async () => {
     const { token } = Store.getRawState();
 
-    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id }, false).catch((data) => (content ? ErrorModal(data.content) : setError(data.message)));
     if (data === undefined) return;
 
-    data.relations = await fetchPrivateApi(privateApi.race, { action: "relations", race_id, token }, false).catch((data) => (content ? ErrorModal(data) : setError(data.message)));
+    data.relations = await fetchPrivateApi(privateApi.race, { action: "relations", race_id, token }, false).catch((data) => (content ? ErrorModal(data.content) : setError(data.message)));
     if (data.relations === undefined) return;
 
     setContent(data);
@@ -124,7 +124,7 @@ const RaceSignContent = ({}) => {
       <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
         <IonRefresherContent />
       </IonRefresher>
-      <div className="w-full md:w-1/2">
+      <div className="w-full">
         <Form onSubmit={handleSubmit}>
           <IonList>
             <IonItem>
@@ -175,7 +175,7 @@ const RaceSignContent = ({}) => {
             </IonItem>
             <IonItem>
               <ButtonsWrapper>
-                <Button primary={true} type="submit">
+                <Button type="submit" primary={true}>
                   {currentUser.is_signed_in ? "Zmeniť" : "Prihlásiť sa"}
                 </Button>
                 <Button disabled={!currentUser.is_signed_in} type="button" onClick={handleSignout}>

@@ -1,7 +1,9 @@
 import { IonBackButton, IonButtons, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol, IonAccordionGroup, IonAccordion } from "@ionic/react";
 import License from "../ui/License";
+import { appBuildName, collaborators } from "@/version";
+import Link from "../ui/Link";
 
-function About() {
+const About = () => {
   return (
     <>
       <IonPage>
@@ -18,7 +20,7 @@ function About() {
             <IonItem>
               <IonLabel className="ion-text-wrap">
                 <h1>Verzia</h1>
-                <p>v2.0-beta</p>
+                <p>{appBuildName}</p>
               </IonLabel>
             </IonItem>
             <IonAccordionGroup>
@@ -31,18 +33,14 @@ function About() {
                 </IonItem>
                 <div slot="content">
                   <IonGrid className="mx-4 py-4">
-                    <IonRow>
-                      <IonCol className="text-gray-500">Vývojár</IonCol>
-                      <IonCol className="text-right">Jurakin</IonCol>
-                    </IonRow>
-                    <IonRow>
-                      <IonCol className="text-gray-500">Design</IonCol>
-                      <IonCol className="text-right">OndrejH</IonCol>
-                    </IonRow>
-                    <IonRow>
-                      <IonCol className="text-gray-500">Vytvorené pre</IonCol>
-                      <IonCol className="text-right">KOB Sokol Pezinok</IonCol>
-                    </IonRow>
+                    {
+                      collaborators.map((item) => (
+                        <IonRow>
+                          <IonCol className="text-gray-500">{item.name}</IonCol>
+                          <IonCol className="text-right"><Link href={item.link}>{item.value}</Link></IonCol>
+                        </IonRow>
+                      ))
+                    }
                   </IonGrid>
                 </div>
               </IonAccordion>
@@ -66,5 +64,4 @@ function About() {
     </>
   );
 }
-
 export default About;

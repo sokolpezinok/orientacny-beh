@@ -35,29 +35,35 @@ import { Capacitor } from "@capacitor/core";
 //   return await PushNotifications.unregister();
 // };
 
-export const Register = async () => {
+export const register = async () => {
   if (!Capacitor.isNativePlatform()) return; // not implemented on web
 
   await PushNotifications.requestPermissions();
   await PushNotifications.register();
-  FCM.setAutoInit({enabled: true}).then(() => alert("Auto init enabled"));
+  await FCM.setAutoInit({enabled: true});
 }
 
-export const Unregister = async () => {
+export const unregister = async () => {
   if (!Capacitor.isNativePlatform()) return; // not implemented on web
 
   await PushNotifications.unregister();
-  FCM.setAutoInit({enabled: false}).then(() => alert("Auto init disabled"));
+  await FCM.setAutoInit({enabled: false});
 }
 
-export const Subscribe = (topic) => {
+export const subscribe = (topic) => {
   if (!Capacitor.isNativePlatform()) return; // not implemented on web
 
   return FCM.subscribeTo({topic});
 }
 
-export const Unsubscribe = (topic) => {
+export const unsubscribe = (topic) => {
   if (!Capacitor.isNativePlatform()) return; // not implemented on web
   
   return FCM.unsubscribeFrom({topic});
+}
+
+export const getToken = () => {
+  if (!Capacitor.isNativePlatform()) return; // not implemented on web
+
+  return FCM.getToken();
 }

@@ -1,5 +1,5 @@
-import Store from "../store";
-import { FatalModal } from "../modals";
+import Store from "@/store";
+import { FatalModal } from "@/modals";
 
 // automatically work with api and show errors
 
@@ -14,27 +14,31 @@ export const publicApi = { // https://members.eob.cz/<publicApiFile>
 }
 
 export const fetchApi = async (url, data={}, handleErrors=true) => {
-    const promise = fetch(url, {
+    const fetchWrap = () => fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
         body: JSON.stringify(data),
-    }).then(data => { // a non network error handling
-        if (data.ok) return data;
-        throw new Error(data.status);
-    }).then(data => data.json() // json parsing
-     ).then(data => { // api error handling
-        if (data.status === "ok") return data.data;
-        throw new Error(data.message);
-    })
-
-    if (handleErrors) promise.catch(error => {
-        FatalModal(error);
     });
 
-    return promise;
+    try {
+        const promise = await fetchWrap();
+        const result = await promise.json();
+
+        if (!promise.ok) {
+            throw new Error(result.message);
+        }
+
+        return result;
+    } catch (error) {
+        if (!handleErrors) {
+            throw new Error(error.message);
+        }
+
+        return FatalModal(error.message);
+    }
 }
 
 export const fetchPublicApi = async (urlpart, data={}, handleErrors=true) => {
