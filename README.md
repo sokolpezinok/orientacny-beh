@@ -4,10 +4,7 @@ Aplikácia na zjednodušenia prihlasovania na preteky zo stránky https://member
 
 ## Gallery
 
-![list](./images/1_list.png)
-![detail](./images/2_detail.png)
-![signin](./images/3_signin.png)
-![profile](./images/4_profile.png)
+<img src="./images/1_list.png" width="45%"></img> <img src="./images/2_detail.png" width="45%"></img> <img src="./images/3_signin.png" width="45%"></img> <img src="./images/4_profile.png" width="45%"></img> 
 
 ## Inštalácia
 
