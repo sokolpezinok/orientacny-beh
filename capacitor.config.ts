@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'sk.orienteering.app',
+  appId: 'orienteering.app',
   appName: 'Orientačný beh',
   webDir: 'out',
   server: {
