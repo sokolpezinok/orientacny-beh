@@ -23,22 +23,20 @@ export const fetchApi = async (url, data={}, handleErrors=true) => {
         body: JSON.stringify(data),
     });
 
-    try {
-        const promise = await fetchWrap();
-        const result = await promise.json();
-
-        if (!promise.ok) {
-            throw new Error(result.message);
+    return new Promise(async (resolve, reject) => {
+        const fetcher = await fetchWrap();
+        const result = await fetcher.json();
+    
+        if (!fetcher.ok) {
+            if (handleErrors) {
+                FatalModal(result.message);
+            }
+    
+            return reject(result.message);
         }
-
-        return result;
-    } catch (error) {
-        if (!handleErrors) {
-            throw new Error(error.message);
-        }
-
-        return FatalModal(error.message);
-    }
+    
+        return resolve(result);
+    });
 }
 
 export const fetchPublicApi = async (urlpart, data={}, handleErrors=true) => {

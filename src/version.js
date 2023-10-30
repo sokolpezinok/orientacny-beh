@@ -9,7 +9,7 @@
 //  - is not compatible with `apiVersion`:
 //      - `1.1`, `1`, `2`
 
-export const appBuildName = "v2.1-beta";
+export const appBuildName = "v2.1";
 export const appBuildVersion = 2.1;
 
 export const apiSupport = 2.1;

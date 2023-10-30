@@ -91,18 +91,20 @@ const RaceSignContent = ({}) => {
     if (wanted_inputs.user_id === "") return AlertModal("Nezabudni vybrať koho prihlasuješ.");
     if (wanted_inputs.category === "") return AlertModal("Nezabudni zadať kategóriu.");
 
-    await fetchPrivateApi(privateApi.race, { action: "signin", race_id, user_id: currentUser.user_id, token, ...wanted_inputs });
+    await fetchPrivateApi(privateApi.race, { action: "signin", race_id, user_id: currentUser.user_id, token, ...wanted_inputs }).then(
+      () => AlertModal("Úspešne ste sa prihlásili!")
+    );
 
-    AlertModal("Úspešne ste sa prihlásili!");
     updateContent();
   };
 
   const handleSignout = async () => {
     const { token } = Store.getRawState();
 
-    await fetchPrivateApi(privateApi.race, { action: "signout", race_id, user_id: currentUser.user_id, token });
+    await fetchPrivateApi(privateApi.race, { action: "signout", race_id, user_id: currentUser.user_id, token }).then(
+      () => AlertModal("Boli ste odhlásený.")
+    );
 
-    AlertModal("Boli ste odhlásený.");
     updateContent();
   };
 
