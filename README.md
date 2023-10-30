@@ -2,6 +2,13 @@
 
 Aplikácia na zjednodušenia prihlasovania na preteky zo stránky https://members.eob.cz/.
 
+## Gallery
+
+![list](./images/1_list.png)
+![detail](./images/2_detail.png)
+![signin](./images/3_signin.png)
+![profile](./images/4_profile.png)
+
 ## Inštalácia
 
 ```
