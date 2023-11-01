@@ -59,10 +59,10 @@ const RaceSignContent = ({}) => {
   const updateContent = async () => {
     const { token } = Store.getRawState();
 
-    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id }, false).catch((data) => (content ? ErrorModal(data.content) : setError(data.message)));
+    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id }, false).catch(response => content ? ErrorModal(response) : setError(response));
     if (data === undefined) return;
 
-    data.relations = await fetchPrivateApi(privateApi.race, { action: "relations", race_id, token }, false).catch((data) => (content ? ErrorModal(data.content) : setError(data.message)));
+    data.relations = await fetchPrivateApi(privateApi.race, { action: "relations", race_id, token }, false).catch(response => content ? ErrorModal(response) : setError(response));
     if (data.relations === undefined) return;
 
     setContent(data);

@@ -12,7 +12,7 @@ const Link = ({children, href}) => {
     }
   
     return (
-      <a onClick={openLink} href={href}>{<IonIcon className="align-text-top" icon={openOutline} />}{children}</a>
+      <a onClick={openLink} href={href}>{<IonIcon className="align-text-top mr-1" icon={openOutline} />}{children}</a>
     );
 }
 

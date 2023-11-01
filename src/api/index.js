@@ -24,18 +24,22 @@ export const fetchApi = async (url, data={}, handleErrors=true) => {
     });
 
     return new Promise(async (resolve, reject) => {
-        const fetcher = await fetchWrap();
-        const result = await fetcher.json();
-    
-        if (!fetcher.ok) {
-            if (handleErrors) {
-                FatalModal(result.message);
+        try {
+            const fetcher = await fetchWrap();
+            const result = await fetcher.json();
+        
+            if (!fetcher.ok) {
+                throw new Error(result.message);
             }
-    
-            return reject(result.message);
+        
+            return resolve(result);
+        } catch (error) {
+            if (handleErrors) {
+                FatalModal(error.message);
+            }
+
+            return reject(error.message);
         }
-    
-        return resolve(result);
     });
 }
 

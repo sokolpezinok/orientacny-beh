@@ -9,8 +9,8 @@
 //  - is not compatible with `apiVersion`:
 //      - `1.1`, `1`, `2`
 
-export const appBuildName = "v2.1";
-export const appBuildVersion = 2.1;
+export const appBuildName = "v2.11";
+export const appBuildVersion = 2.11;
 
 export const apiSupport = 2.1;
 
@@ -21,3 +21,6 @@ export const collaborators = [
     {name: "Dizajn", value: "Ondrej"},
     {name: "Vytvorené pre klub", value: "KOB Sokol Pezinok", link: "https://www.sokolpezinok.sk/"},
 ];
+
+export const appPackageName = "orienteering.app";
+export const appPublicDomain = "members.eob.cz";

@@ -57,7 +57,7 @@ const WelcomeContent = ({}) => {
   const [error, setError] = useState(null);
 
   const updateClublist = async () => {
-    const data = await fetchPublicApi(publicApi.clublist, {}, false).catch((data) => (content ? ErrorModal(data.message) : setError(data.message)));
+    const data = await fetchPublicApi(publicApi.clublist, {}, false).catch(response => content ? ErrorModal(response) : setError(response));
     if (data === undefined) return;
 
     // sort A-Z

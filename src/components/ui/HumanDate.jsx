@@ -2,17 +2,19 @@ const HumanDate = ({ date, format = "sk-SK" }) => {
   const target_date = new Date(date);
   const remaining_days = Math.ceil((target_date - Date.now()) / 86400000);
 
-  let output = target_date.toLocaleDateString(format);
+  let humanized = "";
   if (remaining_days === -1) {
-    output += " (včera)";
+    humanized = "včera";
   } else if (remaining_days === 0) {
-    output += " (dnes)";
+    humanized = "dnes";
   } else if (remaining_days === 1) {
-    output += " (zajtra)";
-  } else if (remaining_days < 7) {
-    output += ` (${target_date.toLocaleDateString(format, { weekday: "long" })})`;
+    humanized = "zajtra";
+  } else if (-7 < remaining_days && remaining_days < 7) {
+    humanized = (remaining_days < -1 ? "min. " : "") + target_date.toLocaleDateString(format, { weekday: "long" });
   }
+  
+  let formated_date = target_date.toLocaleDateString(format);
 
-  return output;
+  return humanized ? `${formated_date} (${humanized})` : formated_date;
 };
 export default HumanDate;

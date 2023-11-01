@@ -55,7 +55,7 @@ const ProfileContent = ({}) => {
   const updateContent = async () => {
     const { token } = Store.getRawState();
 
-    const data = await fetchPrivateApi(privateApi.user, { action: "user_data", token }, false).catch((data) => (content ? ErrorModal(data.message) : setError(data.message)));
+    const data = await fetchPrivateApi(privateApi.user, { action: "user_data", token }, false).catch(response => content ? ErrorModal(response) : setError(response));
     if (data === undefined) return;
 
     setContent(data);

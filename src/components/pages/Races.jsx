@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Store from "@/store";
 import { fetchPrivateApi, privateApi } from "@/api";
 import { ErrorModal } from "@/modals";
+import classNames from "classnames";
 
 const Races = ({}) => {
   return (
@@ -31,7 +32,7 @@ const RacesContent = ({}) => {
   const [error, setError] = useState(null);
 
   const updateContent = async () => {
-    const data = await fetchPrivateApi(privateApi.race, { action: "list" }, false).catch((data) => (content ? ErrorModal(data.message) : setError(data.message)));
+    const data = await fetchPrivateApi(privateApi.race, { action: "list" }, false).catch(response => content ? ErrorModal(response) : setError(response));
     if (data === undefined) return;
 
     setContent(data);
@@ -79,13 +80,14 @@ const RacesContent = ({}) => {
         {content.map((child) => (
           <IonItem key={child.race_id} routerLink={`/tabs/races/${child.race_id}`} className="p-2">
             <IonLabel>
-              <h1 className="text-gray text-xl !font-bold text-gray-700 dark:text-gray-200">
+              <h1 className={classNames("text-xl !font-bold text-gray-700 dark:text-gray-200")}>
                 <span className={child.is_cancelled ? "line-through" : null}>{child.name}</span>
               </h1>
+              {Math.min(...child.entries.map(a => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Bol prekročený prvý termín prihlášok!</p> : null}
               <p>
                 <IonIcon icon={calendar} className="align-text-top" color="primary" />
                 <span className="ml-2">
-                  <HumanDate date={child.dates[0]} />
+                  <HumanDate date={child.dates[0]} />{ child.dates.length > 1 ? (<><span> - </span><HumanDate date={child.dates[1]} /></>) : null}
                 </span>
               </p>
               <p>

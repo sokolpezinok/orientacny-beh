@@ -7,7 +7,7 @@
     "build": "next build",
     "compile-android": "cap sync && cap open android",
     "android": "cap run android",
-    "add-android-platform": "cap add android && cap sync && capacitor-assets generate --android",
+    "add-android-platform": "cap add android && cap sync && capacitor-assets generate --android && python3 ./manifest-insert.py && cp --verbose ./google-services.json ./android/google-services.json",
     "refresh-assets": "cap sync && capacitor-assets generate --android"
   },
   "dependencies": {
@@ -16,6 +16,7 @@
     "@capacitor/app": "^5.0.6",
     "@capacitor/core": "^5.0.5",
     "@capacitor/push-notifications": "^5.0.6",
+    "@capacitor/share": "^5.0.6",
     "@capacitor/status-bar": "^5.0.4",
     "@ionic/react": "^7.1.0",
     "@ionic/react-router": "^7.1.0",
