@@ -64,11 +64,12 @@ const RaceDetailContent = ({}) => {
     
     if (!shareSupport.value) return ErrorModal("Share is not avaible in browser.");
 
+
     await Share.share({
       title: content.name,
-      text: "Nové preteky! " + content.note,
-      url: `${Store.getRawState().club.url}race_info_show.php?id_zav=${race_id}`,
-      dialogTitle: "Nové preteky!",
+      text: `${content.name} ${content.note}`,
+      url: `${Store.getRawState().club.server_url}race_info_show.php?id_zav=${race_id}`,
+      dialogTitle: content.name,
     });
   };
 

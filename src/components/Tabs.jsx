@@ -13,6 +13,7 @@ import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import About from "./pages/About";
 import { Spinner } from "./ui/Media";
+import { FatalModal } from "@/modals";
 
 const DeepLinkListener = () => {
   const [slug, setSlug] = useState(null);
@@ -20,12 +21,10 @@ const DeepLinkListener = () => {
   useEffect(() => {
     App.addListener("appUrlOpen", (event) => {
       const path = new URL(event.url);
-      // const regex = "[^/]+/([^/]+)/?";
 
-      if (path.hostname !== appPublicDomain) return;
-      // if (path.pathname.match(regex) === null) return;
+      if (path.hostname !== appPublicDomain) return FatalModal("the path does not match hostname");
+      if (!path.startsWith(Store.getRawState().club.server_url)) return FatalModal("the path does not match club url");
 
-      // const file = path.pathname.match(regex)[1];
       const params = new URLSearchParams(path.search);
 
       const race_id = params.get("id_zav");
