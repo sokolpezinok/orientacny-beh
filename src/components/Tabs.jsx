@@ -1,10 +1,8 @@
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, Route, useHistory } from "react-router-dom";
 import { IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from "@ionic/react";
 import { cog, flash } from "ionicons/icons";
-import { appPublicDomain } from "@/version";
-import Store, { syncStore } from "@/store";
-import { useEffect, useState } from "react";
-import { App } from "@capacitor/app";
+
+import { Spinner } from "./ui/Media";
 
 import Home from "./pages/Races";
 import RaceDetail from "./pages/RaceDetail";
@@ -12,30 +10,33 @@ import RaceSign from "./pages/RaceSign";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import About from "./pages/About";
-import { Spinner } from "./ui/Media";
+
+import { useEffect } from "react";
+import Store, { syncStore } from "@/store";
+
+import { App } from "@capacitor/app";
 import { FatalModal } from "@/modals";
+import { appServerDomain } from "@/version";
 
 const DeepLinkListener = () => {
-  const [slug, setSlug] = useState(null);
+  const history = useHistory();
 
   useEffect(() => {
     App.addListener("appUrlOpen", (event) => {
       const path = new URL(event.url);
-
-      if (path.hostname !== appPublicDomain) return FatalModal("the path does not match hostname");
-      if (!path.startsWith(Store.getRawState().club.server_url)) return FatalModal("the path does not match club url");
-
+      
+      if (path.hostname !== appServerDomain) return FatalModal("Odkaz sa nezhoduje so serverom.");
+      if (!event.url.startsWith(Store.getRawState().club.server_url)) return FatalModal("Odkaz nie je z tvojho klubu.");
+      
       const params = new URLSearchParams(path.search);
-
-      const race_id = params.get("id_zav");
-
-      if (race_id !== null) {
-        setSlug(`/tabs/races/${race_id}`);
-      }
+      
+      const race_id = params.get("id_zav"); // anything that contain id_zav
+      
+      if (race_id === null) return;
+      
+      history.push(`/tabs/races/${race_id}`);
     });
   }, []);
-
-  return slug ? <Redirect to={slug} /> : null;
 };
 
 const Tabs = () => {
@@ -45,6 +46,7 @@ const Tabs = () => {
   useEffect(() => {
     syncStore();
   }, []);
+
 
   if (is_loading) return <Spinner />;
   if (!is_logged_in) return <Redirect to="/welcome" />;

@@ -9,8 +9,8 @@
 //  - is not compatible with `apiVersion`:
 //      - `1.1`, `1`, `2`
 
-export const appBuildName = "v2.11";
-export const appBuildVersion = 2.11;
+export const appBuildVersion = 2.12; 
+export const appBuildName = `v${appBuildVersion}`;
 
 export const apiSupport = 2.1;
 
@@ -18,9 +18,10 @@ export const isSupported = (version, support) => Math.floor(version) == Math.flo
 
 export const collaborators = [
     {name: "Vývojár", value: "Jurakin", link: "https://github.com/jurakin"},
-    {name: "Dizajn", value: "Ondrej"},
+    {name: "Dizajn", value: "Ondrej", link: "mailto:ondrej.honsch@gmail.com"},
     {name: "Vytvorené pre klub", value: "KOB Sokol Pezinok", link: "https://www.sokolpezinok.sk/"},
 ];
 
 export const appPackageName = "orienteering.app";
-export const appPublicDomain = "members.eob.cz";
+export const appServerDomain = "members.eob.cz";
+export const appServerProtocol = "https";

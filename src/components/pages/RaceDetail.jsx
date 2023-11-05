@@ -64,7 +64,6 @@ const RaceDetailContent = ({}) => {
     
     if (!shareSupport.value) return ErrorModal("Share is not avaible in browser.");
 
-
     await Share.share({
       title: content.name,
       text: `${content.name} ${content.note}`,
@@ -116,7 +115,7 @@ const RaceDetailContent = ({}) => {
             </div>
             {content.note.length > 0 ? <p className="!mt-4">{content.note}</p> : null}
             {content.link.length > 0 ? <p className="!text-orange-600 !dark:text-orange-700"><Link href={content.link}>{content.link}</Link></p> : null}
-            {Math.min(...content.entries.map(a => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Bol prekročený prvý termín prihlášok!</p> : null}
+            {Math.min(...content.entries.map(a => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Už sa cez appku nedá prihlásiť!</p> : null}
           </IonLabel>
         </IonItem>
         <IonItem routerLink={`/tabs/races/${race_id}/sign`} disabled={Math.min(...content.entries.map(a => new Date(a).getTime())) - Date.now() < 0}>

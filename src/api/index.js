@@ -1,5 +1,6 @@
 import Store from "@/store";
 import { FatalModal } from "@/modals";
+import { appServerProtocol, appServerDomain } from "@/version";
 
 // automatically work with api and show errors
 
@@ -44,17 +45,13 @@ export const fetchApi = async (url, data={}, handleErrors=true) => {
 }
 
 export const fetchPublicApi = async (urlpart, data={}, handleErrors=true) => {
-    if (urlpart === undefined) {
-        FatalModal("invalid urlpart");
-    };
+    if (urlpart === undefined) return FatalModal("invalid urlpart");
 
-    return fetchApi("https://members.eob.cz/" + urlpart, data, handleErrors)
+    return fetchApi(`${appServerProtocol}://${appServerDomain}/${urlpart}`, data, handleErrors);
 }
 
 export const fetchPrivateApi = async (urlpart, data={}, handleErrors=true) => {
-    if (urlpart === undefined) {
-        FatalModal("invalid urlpart");
-    };
+    if (urlpart === undefined) return FatalModal("invalid urlpart");
 
-    return fetchApi(Store.getRawState().club.url + urlpart, data, handleErrors)
+    return fetchApi(Store.getRawState().club.url + urlpart, data, handleErrors);
 }

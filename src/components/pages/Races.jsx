@@ -83,7 +83,7 @@ const RacesContent = ({}) => {
               <h1 className={classNames("text-xl !font-bold text-gray-700 dark:text-gray-200")}>
                 <span className={child.is_cancelled ? "line-through" : null}>{child.name}</span>
               </h1>
-              {Math.min(...child.entries.map(a => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Bol prekročený prvý termín prihlášok!</p> : null}
+              {Math.min(...child.entries.map(a => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Už sa cez appku nedá prihlásiť!</p> : null}
               <p>
                 <IonIcon icon={calendar} className="align-text-top" color="primary" />
                 <span className="ml-2">
