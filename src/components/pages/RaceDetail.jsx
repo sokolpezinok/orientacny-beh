@@ -18,21 +18,24 @@ import {
   IonAccordionGroup,
   IonAccordion,
 } from "@ionic/react";
-import { Share } from "@capacitor/share";
+
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Spinner, FatalError, SadFace } from "../ui/Media";
+
+import Store from "@/store";
+import { fetchPrivateApi, privateApi } from "@/api";
 import { ErrorModal } from "@/modals";
-import BoolIcon from "../ui/BoolIcon";
+
+import { Share } from "@capacitor/share";
+
+import { Spinner, FatalError, SadFace } from "../ui/Media";
 import HumanDate from "../ui/HumanDate";
 import Link from "../ui/Link";
 
-import Store from "@/store";
-
-import { busOutline, homeOutline, chevronForwardOutline, shareSocialOutline } from "ionicons/icons";
-
-import { fetchPrivateApi, privateApi } from "@/api";
 import classNames from "classnames";
+
+import { bus, home, chevronForwardOutline, shareSocial, calendar, logIn, location, checkmark, close } from "ionicons/icons";
+import { category, directionsRun, group } from "../ui/CustomIcons";
 
 const RaceDetail = ({}) => {
   return (
@@ -111,12 +114,24 @@ const RaceDetailContent = ({}) => {
           <IonLabel className="ion-text-wrap">
             <div className="flex w-full justify-between">
               <h1 className={classNames("mt-0 !font-bold", content.is_cancelled ? "line-through" : null)}>{content.name}</h1>
-              <IonIcon className="text-2xl cursor-pointer" onClick={handleShare} icon={shareSocialOutline} />
+              <IonIcon className="text-2xl cursor-pointer" onClick={handleShare} icon={shareSocial} />
             </div>
             {content.note.length > 0 ? <p className="!mt-4">{content.note}</p> : null}
             {content.link.length > 0 ? <p className="!text-orange-600 !dark:text-orange-700"><Link href={content.link}>{content.link}</Link></p> : null}
-            {Math.min(...content.entries.map(a => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Už sa cez appku nedá prihlásiť!</p> : null}
+            {Math.min(...content.entries.map(a => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Cez appku sa už nedá prihlásiť! Kontaktuj organizátorov.</p> : null}
           </IonLabel>
+        </IonItem>
+        <IonItem>
+          <Showcase>
+            <ShowcaseItem title="Dátum" icon={calendar}><RaceDatesHelper dates={content.dates.sort()} /></ShowcaseItem>
+            <ShowcaseItem title="Prihláška" icon={logIn}>do <HumanDate date={content.entries.sort()[0]} /></ShowcaseItem>
+            <ShowcaseItem title="Miesto" icon={location}>{content.place}</ShowcaseItem>
+            <ShowcaseItem title="Klub" src={group}>{content.club}</ShowcaseItem>
+            <ShowcaseItem title="Preprava" icon={bus}>{content.transport ? "Organizovaná" : "Vlastná"}</ShowcaseItem>
+            <ShowcaseItem title="Ubytovanie" icon={home}>{content.accommodation ? "Organizované" : "Vlastné"}</ShowcaseItem>
+            <ShowcaseItem title="Druh" src={category}>{content.type}</ShowcaseItem>
+            <ShowcaseItem title="Šport" src={directionsRun}>{content.sport}</ShowcaseItem>
+          </Showcase>
         </IonItem>
         <IonItem routerLink={`/tabs/races/${race_id}/sign`} disabled={Math.min(...content.entries.map(a => new Date(a).getTime())) - Date.now() < 0}>
           <IonLabel>Prihláška</IonLabel>
@@ -124,83 +139,16 @@ const RaceDetailContent = ({}) => {
         </IonItem>
         <IonAccordionGroup>
           <IonAccordion>
-            <IonItem slot="header">Detaily</IonItem>
-            <div slot="content">
-              <IonGrid className="mx-4 py-4">
-                <IonRow>
-                  <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
-                    Dátum
-                  </IonCol>
-                  <IonCol className="text-right">
-                    {content.dates.map(date => <HumanDate key={date} date={date} />).reduce((prev, curr) => [prev, "; ", curr])}
-                  </IonCol>
-                </IonRow>
-                <IonRow>
-                  <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
-                    Prihlásiť sa do
-                  </IonCol>
-                  <IonCol className="text-right">
-                    {content.entries.sort().map(entry => <HumanDate key={entry} date={entry} />).reduce((prev, curr) => [prev,"; ", curr])}
-                  </IonCol>
-                </IonRow>
-                <IonRow>
-                  <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
-                    Miesto
-                  </IonCol>
-                  <IonCol className="text-right">{content.place}</IonCol>
-                </IonRow>
-                <IonRow>
-                  <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
-                    Druh
-                  </IonCol>
-                  <IonCol className="text-right">{content.type}</IonCol>
-                </IonRow>
-                <IonRow>
-                  <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
-                    Šport
-                  </IonCol>
-                  <IonCol className="text-right">{content.sport}</IonCol>
-                </IonRow>
-                <IonRow>
-                  <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
-                    Klub
-                  </IonCol>
-                  <IonCol className="text-right">{content.club}</IonCol>
-                </IonRow>
-                <IonRow>
-                  <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
-                    Možnosť prepravy
-                  </IonCol>
-                  <IonCol className="text-right">
-                    <BoolIcon value={content.transport} />
-                  </IonCol>
-                </IonRow>
-                <IonRow>
-                  <IonCol size="auto" className="text-gray-500 dark:text-gray-400">
-                    Možnosť ubytovania
-                  </IonCol>
-                  <IonCol className="text-right">
-                    <BoolIcon value={content.accommodation} />
-                  </IonCol>
-                </IonRow>
-              </IonGrid>
-            </div>
-          </IonAccordion>
-          <IonAccordion>
             <IonItem slot="header">Prihlásení ({content.everyone.length})</IonItem>
-            <div slot="content">
+            <div slot="content" className="bg-orange-50 dark:bg-transparent">
               {content.everyone.length > 0 ? (
                 <IonGrid className="relative mx-4 py-4">
-                <IonRow className="sticky text-gray-500 dark:text-gray-400">
+                <IonRow className="sticky text-orange-600 dark:text-orange-700">
                   <IonCol>Meno</IonCol>
                   <IonCol>Priezvisko</IonCol>
                   <IonCol>Kategória</IonCol>
-                  <IonCol size="auto">
-                    <IonIcon icon={busOutline} />
-                  </IonCol>
-                  <IonCol size="auto">
-                    <IonIcon icon={homeOutline} />
-                  </IonCol>
+                  <IonCol size="auto"><IonIcon icon={bus} /></IonCol>
+                  <IonCol size="auto"><IonIcon icon={home} /></IonCol>
                 </IonRow>
                 {content.everyone.map((child, index) => (
                   <IonRow key={index}>
@@ -220,7 +168,7 @@ const RaceDetailContent = ({}) => {
               </IonGrid>
               ) : (
                 <div className="p-4">
-                  <SadFace text="Nikto sa zatiaľ neprihlásil." subtext="Môžeš byť prvý/-a :)" />
+                  <SadFace text="Zatiaľ sa nikto neprihlásil." subtext="Môžete byť prví :)" />
                 </div>
               )}
             </div>
@@ -229,4 +177,33 @@ const RaceDetailContent = ({}) => {
       </IonList>
     </>
   );
+};
+
+const RaceDatesHelper = ({dates}) => {
+  if (dates.length === 1) return <HumanDate date={dates[0]} />;
+  
+  // assume there are only two dates in a list
+  
+  return <>
+    <p>od <HumanDate date={dates[0]} /></p>
+    <p>do <HumanDate date={dates[1]} /></p>
+  </>
+}
+
+const Showcase = ({children}) => {
+  return <div className="grid gap-4 py-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 w-full">{children}</div>
+}
+
+const ShowcaseItem = ({children, title, icon, src}) => {
+  return <div className="px-4 py-2 bg-orange-50 dark:bg-orange-950/[.8] rounded-xl flex items-center gap-4">
+    <IonIcon src={src} icon={icon} className="text-3xl" color="primary"/>
+    <div>
+      <div className="flex items-center text-orange-600 dark:text-orange-700 text-xl">{title}</div>
+      <div>{children}</div>
+    </div>
+  </div>;
+}
+
+const BoolIcon = ({ value, ...props }) => {
+  return <IonIcon className={value ? "text-emerald-500" : "text-rose-500"} icon={value ? checkmark : close} {...props} />;
 };

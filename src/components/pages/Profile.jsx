@@ -122,7 +122,7 @@ const ProfileContent = ({}) => {
             <IonItem slot="header">
               <IonLabel>Všeobecné</IonLabel>
             </IonItem>
-            <div slot="content">
+            <div slot="content" className="bg-orange-50 dark:bg-transparent">
               <IonGrid className="mx-4 py-4">
                 <IonRow>
                   <IonInput label="Meno" labelPlacement="floating" name="name" value={content.name} placeholder="..." />
@@ -159,7 +159,7 @@ const ProfileContent = ({}) => {
             <IonItem slot="header">
               <IonLabel>Kontakty</IonLabel>
             </IonItem>
-            <div slot="content">
+            <div slot="content" className="bg-orange-50 dark:bg-transparent">
               <IonGrid className="mx-4 py-4">
                 <IonRow>
                   <IonInput label="Email" labelPlacement="floating" name="email" value={content.email} placeholder="..." />
@@ -189,7 +189,7 @@ const ProfileContent = ({}) => {
             <IonItem slot="header">
               <IonLabel>Informácie</IonLabel>
             </IonItem>
-            <div slot="content">
+            <div slot="content" className="bg-orange-50 dark:bg-transparent">
               <IonGrid className="mx-4 py-4">
                 <IonRow>
                   <IonInput label="Registrácia" labelPlacement="floating" name="register_number" value={content.register_number} placeholder="..." type="number" />

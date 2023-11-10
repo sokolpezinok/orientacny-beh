@@ -68,7 +68,7 @@ const RacesContent = ({}) => {
     return (
       <>
         <RefresherContent />
-        <SadFace text="V najbližšej dobe nie sú naplánované preteky." subtext="Stále však môžeš behať sám/-a :)" />
+        <SadFace text="V najbližšej dobe nie sú naplánované preteky." subtext="Môžeš si zabehať nesúťažne :)" />
       </>
     );
   }
@@ -83,7 +83,7 @@ const RacesContent = ({}) => {
               <h1 className={classNames("text-xl !font-bold text-gray-700 dark:text-gray-200")}>
                 <span className={child.is_cancelled ? "line-through" : null}>{child.name}</span>
               </h1>
-              {Math.min(...child.entries.map(a => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Už sa cez appku nedá prihlásiť!</p> : null}
+              {Math.min(...child.entries.map(a => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Cez appku sa už nedá prihlásiť! Kontaktuj organizátorov.</p> : null}
               <p>
                 <IonIcon icon={calendar} className="align-text-top" color="primary" />
                 <span className="ml-2">

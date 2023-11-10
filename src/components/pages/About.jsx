@@ -1,6 +1,6 @@
 import { IonBackButton, IonButtons, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol, IonAccordionGroup, IonAccordion } from "@ionic/react";
 import License from "../ui/License";
-import { appBuildName, collaborators } from "@/version";
+import { apiSupport, appBuildName, appServerDomain, collaborators } from "@/manifest";
 import Link from "../ui/Link";
 
 const About = () => {
@@ -28,15 +28,15 @@ const About = () => {
                 <IonItem slot="header">
                   <IonLabel className="ion-text-wrap">
                     <h1>Poďakovanie</h1>
-                    <p>Ďakujem všetkým, ktorý akýmkoľvek spôsobom prispeli na vývoj aplikácie Orientačného behu.</p>
+                    <p>Ďakujem všetkým, ktorí akýmkoľvek spôsobom prispeli na vývoj aplikácie Orientačného behu.</p>
                   </IonLabel>
                 </IonItem>
-                <div slot="content">
+                <div slot="content" className="bg-orange-50 dark:bg-transparent">
                   <IonGrid className="mx-4 py-4">
                     {
                       collaborators.map((item) => (
                         <IonRow>
-                          <IonCol className="text-gray-500">{item.name}</IonCol>
+                          <IonCol className="text-orange-600 dark:text-orange-700">{item.name}</IonCol>
                           <IonCol className="text-right"><Link href={item.link}>{item.value}</Link></IonCol>
                         </IonRow>
                       ))
@@ -53,9 +53,9 @@ const About = () => {
                     </p>
                   </IonLabel>
                 </IonItem>
-                <IonItem slot="content">
+                <div slot="content" className="bg-orange-50 dark:bg-transparent p-4">
                   <License />
-                </IonItem>
+                </div>
               </IonAccordion>
             </IonAccordionGroup>
           </IonList>

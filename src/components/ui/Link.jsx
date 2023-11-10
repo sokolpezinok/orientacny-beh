@@ -1,4 +1,4 @@
-import {IonIcon} from "@ionic/react";
+import { IonIcon } from "@ionic/react";
 import { openOutline } from "ionicons/icons";
 
 const Link = ({children, href}) => {

@@ -1,6 +1,6 @@
 import { Redirect, Route, useHistory } from "react-router-dom";
 import { IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from "@ionic/react";
-import { cog, flash } from "ionicons/icons";
+import { settings, trailSign } from "ionicons/icons";
 
 import { Spinner } from "./ui/Media";
 
@@ -16,7 +16,7 @@ import Store, { syncStore } from "@/store";
 
 import { App } from "@capacitor/app";
 import { FatalModal } from "@/modals";
-import { appServerDomain } from "@/version";
+import { appServerDomain } from "@/manifest";
 
 const DeepLinkListener = () => {
   const history = useHistory();
@@ -65,11 +65,11 @@ const Tabs = () => {
       </IonRouterOutlet>
       <IonTabBar slot="bottom" className="shadow-2xl shadow-black">
         <IonTabButton tab="races" href="/tabs/races">
-          <IonIcon icon={flash} />
+          <IonIcon icon={trailSign} />
           <IonLabel>Preteky</IonLabel>
         </IonTabButton>
         <IonTabButton tab="settings" href="/tabs/settings">
-          <IonIcon icon={cog} />
+          <IonIcon icon={settings} />
           <IonLabel>Nastavenia</IonLabel>
         </IonTabButton>
       </IonTabBar>

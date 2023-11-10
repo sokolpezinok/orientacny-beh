@@ -21,16 +21,13 @@ import Store, { syncStorage } from "@/store";
 import { useEffect, useState } from "react";
 import { fetchPublicApi, fetchApi, publicApi, privateApi } from "@/api";
 
-import Image from "next/image";
-import favicon from "@/public/favicon.png";
-
 import License from "../ui/License";
 import Form from "../ui/Form";
 import { Button, ButtonsWrapper } from "../ui/Buttons";
 import { FatalError } from "../ui/Media";
 import { ErrorModal, FatalModal } from "@/modals";
-import { register, subscribe, getToken } from "@/notify";
-import { apiSupport, isSupported } from "@/version";
+// import { register, subscribe, getToken } from "@/notify";
+import { apiSupport, isSupported } from "@/manifest";
 
 const Welcome = ({}) => {
   return (
@@ -118,7 +115,7 @@ const WelcomeContent = ({}) => {
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent />
         </IonRefresher>
-        <FatalError text="Nepodarilo sa načítať kluby." error={error} />
+        <FatalError text="Nepodarilo sa načítať zoznam klubov." error={error} />
       </>
     );
 
@@ -131,7 +128,7 @@ const WelcomeContent = ({}) => {
         <div className="w-full md:w-1/2">
           <Form onSubmit={handleSubmit}>
             <IonList>
-              <Image src={favicon} className="m-auto my-6 w-24 shadow-[0_0_20px_10px_#0002] dark:shadow-[0_0_20px_10px_#fff2]" alt="Orienteering Logo" />
+              <img src="/favicon.png" className="m-auto my-6 w-24 shadow-[0_0_20px_10px_#0002] dark:shadow-[0_0_20px_10px_#fff2]" alt="Orienteering Logo" />
               <IonItem>
                 <IonLabel class="text-center">
                   <h1>Orientačný beh</h1>
@@ -158,18 +155,16 @@ const WelcomeContent = ({}) => {
                 <IonAccordionGroup>
                   <IonAccordion>
                     <IonItem slot="header">Licenčné podmienky</IonItem>
-                    <IonItem slot="content">
+                    <div slot="content" className="bg-orange-50 dark:bg-transparent p-4">
                       <License />
-                    </IonItem>
+                    </div>
                   </IonAccordion>
                 </IonAccordionGroup>
                 </>
               )}
               <IonItem>
                 <ButtonsWrapper>
-                  <Button primary={true} type="submit">
-                    Prihlásiť sa
-                  </Button>
+                  <Button primary={true} type="submit">Prihlásiť sa</Button>
                 </ButtonsWrapper>
               </IonItem>
             </IonList>

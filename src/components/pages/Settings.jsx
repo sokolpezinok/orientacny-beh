@@ -2,8 +2,8 @@ import { IonPage, IonHeader, IonItem, IonToolbar, IonTitle, IonContent, IonList,
 import Store, { syncStorage } from "@/store";
 
 const Settings = () => {
-  const handleLogout = async () => {
-    if (!confirm("Naozaj sa chceš odhlásiť?")) return;
+  const handleLogout = async (event) => {
+    if (!confirm("Naozaj sa chceš odhlásiť?")) return event.preventDefault();
 
     Store.update((s) => {
       s.is_logged_in = false;

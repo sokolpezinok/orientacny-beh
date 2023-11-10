@@ -1,6 +1,4 @@
 import Head from 'next/head';
-import Script from 'next/script';
-// import { setupIonicReact } from "@ionic/react";
 
 import { Ubuntu } from 'next/font/google';
 
@@ -24,6 +22,8 @@ import '@ionic/react/css/display.css';
 import '../styles/global.css';
 import '../styles/variables.css';
 
+import { appName } from "@/manifest";
+
 import classNames from 'classnames';
 
 const ubuntu = Ubuntu({
@@ -38,11 +38,9 @@ function MyApp({ Component, pageProps }) {
     <div className={classNames(ubuntu.className, ubuntu.variable)}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"></meta>
-        <title>Preteky</title>
+        <title>{appName}</title>
       </Head>
       <Component {...pageProps} />
-      <Script type="module" src="./scripts/ionicons.esm.js"></Script>
-      <Script nomodule="" src="./scripts/ionicons.js"></Script>
     </div>
   );
 }

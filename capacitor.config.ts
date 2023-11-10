@@ -1,8 +1,10 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
+import { appPackageName, appName } from "./src/manifest";
+
 const config: CapacitorConfig = {
-  appId: 'orienteering.app',
-  appName: 'Orientačný beh',
+  appId: appPackageName,
+  appName: appName,
   webDir: 'out',
   server: {
     androidScheme: 'https'

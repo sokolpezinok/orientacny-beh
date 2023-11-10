@@ -1,6 +1,6 @@
 import Store from "@/store";
 import { FatalModal } from "@/modals";
-import { appServerProtocol, appServerDomain } from "@/version";
+import { appServerProtocol, appServerDomain } from "@/manifest";
 
 // automatically work with api and show errors
 
