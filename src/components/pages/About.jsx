@@ -28,7 +28,7 @@ const About = () => {
                 <IonItem slot="header">
                   <IonLabel className="ion-text-wrap">
                     <h1>Poďakovanie</h1>
-                    <p>Ďakujem všetkým, ktorí akýmkoľvek spôsobom prispeli na vývoj aplikácie Orientačného behu.</p>
+                    <p>Ďakujeme všetkým, ktorí akýmkoľvek spôsobom prispeli na vývoj aplikácie Orientačného behu.</p>
                   </IonLabel>
                 </IonItem>
                 <div slot="content" className="bg-orange-50 dark:bg-transparent">
@@ -36,8 +36,8 @@ const About = () => {
                     {
                       collaborators.map((item) => (
                         <IonRow>
-                          <IonCol className="text-orange-600 dark:text-orange-700">{item.name}</IonCol>
-                          <IonCol className="text-right"><Link href={item.link}>{item.value}</Link></IonCol>
+                          <IonCol>{item.name}</IonCol>
+                          <IonCol className="text-right text-orange-600 dark:text-orange-700"><Link href={item.link}>{item.value}</Link></IonCol>
                         </IonRow>
                       ))
                     }

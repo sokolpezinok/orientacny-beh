@@ -92,7 +92,7 @@ const RaceSignContent = ({}) => {
     if (wanted_inputs.category === "") return AlertModal("Nezabudni zadať kategóriu.");
 
     await fetchPrivateApi(privateApi.race, { action: "signin", race_id, user_id: currentUser.user_id, token, ...wanted_inputs }).then(
-      () => AlertModal("Úspešne ste sa prihlásili!")
+      () => AlertModal("Prihlásenie prebehlo úspešne.")
     );
 
     updateContent();
@@ -102,7 +102,7 @@ const RaceSignContent = ({}) => {
     const { token } = Store.getRawState();
 
     await fetchPrivateApi(privateApi.race, { action: "signout", race_id, user_id: currentUser.user_id, token }).then(
-      () => AlertModal("Boli ste odhlásený.")
+      () => AlertModal("Odhlásenie prebehlo úspešne.")
     );
 
     updateContent();

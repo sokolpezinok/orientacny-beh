@@ -168,7 +168,7 @@ const RaceDetailContent = ({}) => {
               </IonGrid>
               ) : (
                 <div className="p-4">
-                  <SadFace text="Zatiaľ sa nikto neprihlásil." subtext="Môžete byť prví :)" />
+                  <SadFace text="Zatiaľ sa nikto neprihlásil." subtext="Rozbehni to ty :)" />
                 </div>
               )}
             </div>

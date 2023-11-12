@@ -134,7 +134,6 @@ const ProfileContent = ({}) => {
                   <IonSelect label="Pohlavie" labelPlacement="floating" name="gender" value={content.gender} placeholder="...">
                     <IonSelectOption value="H">Mužské</IonSelectOption>
                     <IonSelectOption value="D">Ženské</IonSelectOption>
-                    {/* <IonSelectOption value="">Nechcem povedať</IonSelectOption> */}
                   </IonSelect>
                 </IonRow>
                 <IonRow>
@@ -151,6 +150,9 @@ const ProfileContent = ({}) => {
                       </IonSelectOption>
                     ))}
                   </IonSelect>
+                </IonRow>
+                <IonRow>
+                  <IonToggle labelPlacement="start" name="is_hidden" checked={content.is_hidden}>Skryté konto</IonToggle>
                 </IonRow>
               </IonGrid>
             </div>
@@ -186,22 +188,24 @@ const ProfileContent = ({}) => {
             </div>
           </IonAccordion>
           <IonAccordion>
-            <IonItem slot="header">
-              <IonLabel>Informácie</IonLabel>
-            </IonItem>
+            <IonItem slot="header">Čip</IonItem>
             <div slot="content" className="bg-orange-50 dark:bg-transparent">
               <IonGrid className="mx-4 py-4">
-                <IonRow>
-                  <IonInput label="Registrácia" labelPlacement="floating" name="register_number" value={content.register_number} placeholder="..." type="number" />
-                </IonRow>
                 <IonRow>
                   <IonInput label="Čip" labelPlacement="floating" name="chip_number" value={content.chip_number} placeholder="..." type="number" />
                 </IonRow>
                 <IonRow>
-                  <IonToggle labelPlacement="start" name="is_hidden" checked={content.is_hidden}>
-                    Vidí ma iba admin
-                  </IonToggle>
+                  <IonInput label="Registračné číslo" labelPlacement="floating" name="register_number" value={content.register_number} placeholder="..." type="number" />
                 </IonRow>
+              </IonGrid>
+            </div>
+          </IonAccordion>
+          <IonAccordion>
+            <IonItem slot="header">
+              <IonLabel>Licencie</IonLabel>
+            </IonItem>
+            <div slot="content" className="bg-orange-50 dark:bg-transparent">
+              <IonGrid className="mx-4 py-4">
                 <IonRow>
                   <IonSelect label="Licencia OB" labelPlacement="floating" name="licence_ob" value={content.licence_ob} placeholder="...">
                     <IonSelectOption value="-">Žiadna</IonSelectOption>
@@ -241,9 +245,7 @@ const ProfileContent = ({}) => {
         </IonAccordionGroup>
         <IonItem>
           <ButtonsWrapper>
-            <Button primary={true} type="submit">
-              Zmeniť
-            </Button>
+            <Button primary={true} type="submit">Zmeniť</Button>
           </ButtonsWrapper>
         </IonItem>
       </Form>
