@@ -15,7 +15,8 @@ body {
 }
 
 .alert-wrapper {
-  width: 100% !important;
+  --width: 100%;
+  --max-width: 768px;
 }
 
 /**
