@@ -91,7 +91,7 @@ const WelcomeContent = ({}) => {
     if (data === undefined) return;
 
     Store.update((s) => {
-      s.token = data;
+      s.token = data.token;
       s.club = wanted_inputs.club;
       s.is_logged_in = true;
       s.has_accepted_terms = true;

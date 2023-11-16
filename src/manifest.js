@@ -10,10 +10,10 @@
 //      - `1.1`, `1`, `2`
 
 const appName = "Orientačný beh";
-const appBuildVersion = 2.13; 
+const appBuildVersion = 2.14; 
 const appBuildName = `v${appBuildVersion}`;
 
-const apiSupport = 2.1;
+const apiSupport = 2.11;
 
 const isSupported = (version, support) => Math.floor(version) == Math.floor(support) && support <= version;
 

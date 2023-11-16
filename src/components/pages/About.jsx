@@ -1,6 +1,6 @@
 import { IonBackButton, IonButtons, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol, IonAccordionGroup, IonAccordion } from "@ionic/react";
 import License from "../ui/License";
-import { apiSupport, appBuildName, appServerDomain, collaborators } from "@/manifest";
+import { apiSupport, appBuildName, collaborators } from "@/manifest";
 import Link from "../ui/Link";
 
 const About = () => {
@@ -21,6 +21,12 @@ const About = () => {
               <IonLabel className="ion-text-wrap">
                 <h1>Verzia</h1>
                 <p>{appBuildName}</p>
+              </IonLabel>
+            </IonItem>
+            <IonItem>
+              <IonLabel className="ion-text-wrap">
+                <h1>Podpora API</h1>
+                <p>{apiSupport}</p>
               </IonLabel>
             </IonItem>
             <IonAccordionGroup>
