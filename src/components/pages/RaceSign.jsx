@@ -17,7 +17,7 @@ import {
   IonRefresherContent,
 } from "@ionic/react";
 
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Spinner, FatalError } from "../ui/Media";
 import Form from "../ui/Form";
@@ -52,24 +52,35 @@ const RaceSignContent = ({}) => {
   const [content, setContent] = useState(null);
   const [error, setError] = useState(null);
 
-  const [currentUserIndex, setCurrentUserIndex] = useState(0); // myself
+  // the user signed in the app is at index zero
+  const [currentUserIndex, setCurrentUserIndex] = useState(0);
 
-  const { race_id } = useParams();
+  const { race_id, user_id } = useParams();
+  const history = useHistory();
 
-  const updateContent = async () => {
+  const updateContent = async (is_first_call = false) => {
     const { token } = Store.getRawState();
 
-    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id }, false).catch(response => content ? ErrorModal(response) : setError(response));
+    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id }, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
     if (data === undefined) return;
 
-    data.relations = await fetchPrivateApi(privateApi.race, { action: "relations", race_id, token }, false).catch(response => content ? ErrorModal(response) : setError(response));
+    data.relations = await fetchPrivateApi(privateApi.race, { action: "relations", race_id, token }, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
     if (data.relations === undefined) return;
 
     setContent(data);
+
+    // update selected user on the first call
+    if (is_first_call && user_id !== undefined) {
+      const userIndex = data.relations.findIndex((value) => value.user_id == user_id);
+
+      if (userIndex !== -1) {
+        setCurrentUserIndex(userIndex);
+      }
+    }
   };
 
   useEffect(() => {
-    updateContent();
+    updateContent(true);
   }, []);
 
   const handleRefresh = (event) => {
@@ -91,9 +102,9 @@ const RaceSignContent = ({}) => {
     if (wanted_inputs.user_id === "") return AlertModal("Nezabudni vybrať koho prihlasuješ.");
     if (wanted_inputs.category === "") return AlertModal("Nezabudni zadať kategóriu.");
 
-    await fetchPrivateApi(privateApi.race, { action: "signin", race_id, user_id: currentUser.user_id, token, ...wanted_inputs }).then(
-      () => AlertModal("Prihlásenie prebehlo úspešne.")
-    );
+    await fetchPrivateApi(privateApi.race, { action: "signin", race_id, user_id: currentUser.user_id, token, ...wanted_inputs })
+      .then(() => AlertModal("Prihlásenie prebehlo úspešne."))
+      .then(() => history.push(`/tabs/races/${race_id}`));
 
     updateContent();
   };
@@ -101,9 +112,9 @@ const RaceSignContent = ({}) => {
   const handleSignout = async () => {
     const { token } = Store.getRawState();
 
-    await fetchPrivateApi(privateApi.race, { action: "signout", race_id, user_id: currentUser.user_id, token }).then(
-      () => AlertModal("Odhlásenie prebehlo úspešne.")
-    );
+    await fetchPrivateApi(privateApi.race, { action: "signout", race_id, user_id: currentUser.user_id, token })
+      .then(() => AlertModal("Odhlásenie prebehlo úspešne."))
+      .then(() => history.push(`/tabs/races/${race_id}`));
 
     updateContent();
   };

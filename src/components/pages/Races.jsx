@@ -32,7 +32,7 @@ const RacesContent = ({}) => {
   const [error, setError] = useState(null);
 
   const updateContent = async () => {
-    const data = await fetchPrivateApi(privateApi.race, { action: "list" }, false).catch(response => content ? ErrorModal(response) : setError(response));
+    const data = await fetchPrivateApi(privateApi.race, { action: "list" }, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
     if (data === undefined) return;
 
     setContent(data);
@@ -83,11 +83,17 @@ const RacesContent = ({}) => {
               <h1 className={classNames("text-xl !font-bold text-gray-700 dark:text-gray-200")}>
                 <span className={child.is_cancelled ? "line-through" : null}>{child.name}</span>
               </h1>
-              {Math.min(...child.entries.map(a => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Cez appku sa už nedá prihlásiť! Kontaktuj organizátorov.</p> : null}
+              {Math.min(...child.entries.map((a) => new Date(a).getTime())) - Date.now() < 0 ? <p className="!text-rose-500">Cez appku sa už nedá prihlásiť! Kontaktuj organizátorov.</p> : null}
               <p>
                 <IonIcon icon={calendar} className="align-text-top" color="primary" />
                 <span className="ml-2">
-                  <HumanDate date={child.dates[0]} />{ child.dates.length > 1 ? (<><span> - </span><HumanDate date={child.dates[1]} /></>) : null}
+                  <HumanDate date={child.dates[0]} />
+                  {child.dates.length > 1 ? (
+                    <>
+                      <span> - </span>
+                      <HumanDate date={child.dates[1]} />
+                    </>
+                  ) : null}
                 </span>
               </p>
               <p>

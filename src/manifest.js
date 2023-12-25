@@ -10,7 +10,7 @@
 //      - `1.1`, `1`, `2`
 
 const appName = "Orientačný beh";
-const appBuildVersion = 2.14; 
+const appBuildVersion = 2.15; 
 const appBuildName = `v${appBuildVersion}`;
 
 const apiSupport = 2.11;

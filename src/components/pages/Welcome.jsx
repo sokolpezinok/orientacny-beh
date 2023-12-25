@@ -26,7 +26,7 @@ import Form from "../ui/Form";
 import { Button, ButtonsWrapper } from "../ui/Buttons";
 import { FatalError } from "../ui/Media";
 import { ErrorModal, FatalModal } from "@/modals";
-// import { register, subscribe, getToken } from "@/notify";
+import { register, subscribe, getToken } from "@/notify";
 import { apiSupport, isSupported } from "@/manifest";
 
 const Welcome = ({}) => {
@@ -54,15 +54,17 @@ const WelcomeContent = ({}) => {
   const [error, setError] = useState(null);
 
   const updateClublist = async () => {
-    const data = await fetchPublicApi(publicApi.clublist, {}, false).catch(response => content ? ErrorModal(response) : setError(response));
+    const data = await fetchPublicApi(publicApi.clublist, {}, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
     if (data === undefined) return;
 
     // sort A-Z
-    setClublist(data.sort((a, b) => {
-      const x = a.fullname.toLowerCase();
-      const y = b.fullname.toLowerCase();
-      return x < y ? -1 : x > y ? 1 : 0;
-    }));
+    setClublist(
+      data.sort((a, b) => {
+        const x = a.fullname.toLowerCase();
+        const y = b.fullname.toLowerCase();
+        return x < y ? -1 : x > y ? 1 : 0;
+      })
+    );
   };
 
   useEffect(() => {
@@ -98,8 +100,10 @@ const WelcomeContent = ({}) => {
     });
     await syncStorage().catch((error) => FatalModal(error));
 
-    // await register()?.catch((error) => FatalModal(error));
-    // await subscribe(wanted_inputs.club.shortcut)?.catch((error) => FatalModal(error));
+    await register()?.catch((error) => FatalModal(error));
+    await subscribe(wanted_inputs.club.shortcut)?.catch((error) => FatalModal(error));
+
+    // alert("Subscribed: " + wanted_inputs.club.shortcut);
   };
 
   const handleRefresh = (event) => {
@@ -143,28 +147,32 @@ const WelcomeContent = ({}) => {
               <IonItem>
                 <IonSelect name="club" label="Klub *" labelPlacement="floating">
                   {content.map((child, index) => (
-                    <IonSelectOption disabled={!isSupported(child.api_version, apiSupport)} key={child.fullname} value={index}>{child.fullname}</IonSelectOption>
+                    <IonSelectOption disabled={!isSupported(child.api_version, apiSupport)} key={child.fullname} value={index}>
+                      {child.fullname}
+                    </IonSelectOption>
                   ))}
                 </IonSelect>
               </IonItem>
               {has_accepted_terms ? null : (
                 <>
-                <IonItem>
-                  <IonCheckbox name="license">Súhlasím s licenčnými podmienkami</IonCheckbox>
-                </IonItem>
-                <IonAccordionGroup>
-                  <IonAccordion>
-                    <IonItem slot="header">Licenčné podmienky</IonItem>
-                    <div slot="content" className="bg-orange-50 dark:bg-transparent p-4">
-                      <License />
-                    </div>
-                  </IonAccordion>
-                </IonAccordionGroup>
+                  <IonItem>
+                    <IonCheckbox name="license">Súhlasím s licenčnými podmienkami</IonCheckbox>
+                  </IonItem>
+                  <IonAccordionGroup>
+                    <IonAccordion>
+                      <IonItem slot="header">Licenčné podmienky</IonItem>
+                      <div slot="content" className="bg-orange-50 p-4 dark:bg-transparent">
+                        <License />
+                      </div>
+                    </IonAccordion>
+                  </IonAccordionGroup>
                 </>
               )}
               <IonItem>
                 <ButtonsWrapper>
-                  <Button primary={true} type="submit">Prihlásiť sa</Button>
+                  <Button primary={true} type="submit">
+                    Prihlásiť sa
+                  </Button>
                 </ButtonsWrapper>
               </IonItem>
             </IonList>

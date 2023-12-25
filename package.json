@@ -7,7 +7,7 @@
     "build": "next build",
     "compile-android": "cap sync && cap open android",
     "android": "cap run android",
-    "add-android-platform": "cap add android && cap sync && capacitor-assets generate --android && python3 ./manifest-insert.py && cp --verbose ./google-services.json ./android/google-services.json",
+    "add-android-platform": "cap add android && cap sync && capacitor-assets generate --android && python3 ./manifest-insert.py && cp --verbose ./google-services.json ./android/app/google-services.json",
     "refresh-assets": "cap sync && capacitor-assets generate --android"
   },
   "dependencies": {

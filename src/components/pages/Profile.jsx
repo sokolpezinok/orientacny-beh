@@ -55,7 +55,7 @@ const ProfileContent = ({}) => {
   const updateContent = async () => {
     const { token } = Store.getRawState();
 
-    const data = await fetchPrivateApi(privateApi.user, { action: "user_data", token }, false).catch(response => content ? ErrorModal(response) : setError(response));
+    const data = await fetchPrivateApi(privateApi.user, { action: "user_data", token }, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
     if (data === undefined) return;
 
     setContent(data);
@@ -116,6 +116,17 @@ const ProfileContent = ({}) => {
       <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
         <IonRefresherContent />
       </IonRefresher>
+      {/* <IonItem>
+        <IonLabel className="ion-text-wrap p-4">
+          <h1>Ahoj, {content.name}!</h1>
+          <ul className="mt-2 text-gray-500">
+            <li>Čip: {content.chip_number}</li>
+            <li>Email: {content.email}</li>
+            <li>Číslo: {content.registration_number}</li>
+            <li>ID: {content.user_id}</li>
+          </ul>
+        </IonLabel>
+      </IonItem> */}
       <Form onSubmit={handleSubmit}>
         <IonAccordionGroup>
           <IonAccordion>
@@ -152,7 +163,9 @@ const ProfileContent = ({}) => {
                   </IonSelect>
                 </IonRow>
                 <IonRow>
-                  <IonToggle labelPlacement="start" name="is_hidden" checked={content.is_hidden}>Skryté konto</IonToggle>
+                  <IonToggle labelPlacement="start" name="is_hidden" checked={content.is_hidden}>
+                    Skryté konto
+                  </IonToggle>
                 </IonRow>
               </IonGrid>
             </div>
@@ -195,7 +208,7 @@ const ProfileContent = ({}) => {
                   <IonInput label="Čip" labelPlacement="floating" name="chip_number" value={content.chip_number} placeholder="..." type="number" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Registračné číslo" labelPlacement="floating" name="register_number" value={content.register_number} placeholder="..." type="number" />
+                  <IonInput label="Registračné číslo" labelPlacement="floating" name="registration_number" value={content.registration_number} placeholder="..." type="number" />
                 </IonRow>
               </IonGrid>
             </div>
@@ -245,7 +258,9 @@ const ProfileContent = ({}) => {
         </IonAccordionGroup>
         <IonItem>
           <ButtonsWrapper>
-            <Button primary={true} type="submit">Zmeniť</Button>
+            <Button primary={true} type="submit">
+              Zmeniť
+            </Button>
           </ButtonsWrapper>
         </IonItem>
       </Form>

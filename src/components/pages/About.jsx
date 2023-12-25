@@ -39,14 +39,14 @@ const About = () => {
                 </IonItem>
                 <div slot="content" className="bg-orange-50 dark:bg-transparent">
                   <IonGrid className="mx-4 py-4">
-                    {
-                      collaborators.map((item) => (
-                        <IonRow>
-                          <IonCol>{item.name}</IonCol>
-                          <IonCol className="text-right text-orange-600 dark:text-orange-700"><Link href={item.link}>{item.value}</Link></IonCol>
-                        </IonRow>
-                      ))
-                    }
+                    {collaborators.map((item, index) => (
+                      <IonRow key={index}>
+                        <IonCol>{item.name}</IonCol>
+                        <IonCol className="text-right text-orange-600 dark:text-orange-700">
+                          <Link href={item.link}>{item.value}</Link>
+                        </IonCol>
+                      </IonRow>
+                    ))}
                   </IonGrid>
                 </div>
               </IonAccordion>
@@ -59,7 +59,7 @@ const About = () => {
                     </p>
                   </IonLabel>
                 </IonItem>
-                <div slot="content" className="bg-orange-50 dark:bg-transparent p-4">
+                <div slot="content" className="bg-orange-50 p-4 dark:bg-transparent">
                   <License />
                 </div>
               </IonAccordion>
@@ -69,5 +69,5 @@ const About = () => {
       </IonPage>
     </>
   );
-}
+};
 export default About;
