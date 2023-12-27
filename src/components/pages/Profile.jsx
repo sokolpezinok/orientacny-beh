@@ -87,7 +87,7 @@ const ProfileContent = ({}) => {
       phone: els.phone.value,
       phone_home: els.phone_home.value,
       phone_work: els.phone_work.value,
-      register_number: els.register_number.value,
+      registration_number: els.registration_number.value,
       chip_number: els.chip_number.value,
       licence_ob: els.licence_ob.value,
       licence_lob: els.licence_lob.value,
