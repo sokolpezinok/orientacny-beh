@@ -18,6 +18,7 @@ import {
   IonAccordion,
   IonAccordionGroup,
   IonToggle,
+  IonButton,
 } from "@ionic/react";
 import { useState, useEffect } from "react";
 import { FatalError, Spinner } from "../ui/Media";
@@ -25,7 +26,6 @@ import { ErrorModal, AlertModal } from "@/modals";
 import Form from "../ui/Form";
 import Store from "@/store";
 import Countries from "@/countries";
-import { Button, ButtonsWrapper } from "../ui/Buttons";
 import { fetchPrivateApi, privateApi } from "@/api";
 
 const Profile = ({}) => {
@@ -256,13 +256,11 @@ const ProfileContent = ({}) => {
             </div>
           </IonAccordion>
         </IonAccordionGroup>
-        <IonItem>
-          <ButtonsWrapper>
-            <Button primary={true} type="submit">
-              Zmeniť
-            </Button>
-          </ButtonsWrapper>
-        </IonItem>
+        <div className="p-4" style={{ backgroundColor: "var(--ion-item-background)" }}>
+          <IonButton fill="solid" type="submit" className="w-full">
+            Zmeniť
+          </IonButton>
+        </div>
       </Form>
     </>
   );

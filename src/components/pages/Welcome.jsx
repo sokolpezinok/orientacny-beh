@@ -9,6 +9,7 @@ import {
   IonSelectOption,
   IonLabel,
   IonInput,
+  IonButton,
   IonList,
   IonRefresher,
   IonRefresherContent,
@@ -23,7 +24,6 @@ import { fetchPublicApi, fetchApi, publicApi, privateApi } from "@/api";
 
 import License from "../ui/License";
 import Form from "../ui/Form";
-import { Button, ButtonsWrapper } from "../ui/Buttons";
 import { FatalError } from "../ui/Media";
 import { ErrorModal, FatalModal } from "@/modals";
 import { register, subscribe, getToken } from "@/notify";
@@ -131,51 +131,47 @@ const WelcomeContent = ({}) => {
       <div className="flex h-full items-center justify-center bg-white dark:bg-gray-900">
         <div className="w-full md:w-1/2">
           <Form onSubmit={handleSubmit}>
-            <IonList>
-              <img src="/favicon.png" className="m-auto my-6 w-24 shadow-[0_0_20px_10px_#0002] dark:shadow-[0_0_20px_10px_#fff2]" alt="Orienteering Logo" />
-              <IonItem>
-                <IonLabel class="text-center">
-                  <h1>Orientačný beh</h1>
-                </IonLabel>
-              </IonItem>
-              <IonItem>
-                <IonInput name="username" label="Meno *" labelPlacement="floating"></IonInput>
-              </IonItem>
-              <IonItem>
-                <IonInput name="password" type="password" label="Heslo *" labelPlacement="floating"></IonInput>
-              </IonItem>
-              <IonItem>
-                <IonSelect name="club" label="Klub *" labelPlacement="floating">
-                  {content.map((child, index) => (
-                    <IonSelectOption disabled={!isSupported(child.api_version, apiSupport)} key={child.fullname} value={index}>
-                      {child.fullname}
-                    </IonSelectOption>
-                  ))}
-                </IonSelect>
-              </IonItem>
-              {has_accepted_terms ? null : (
-                <>
-                  <IonItem>
-                    <IonCheckbox name="license">Súhlasím s licenčnými podmienkami</IonCheckbox>
-                  </IonItem>
-                  <IonAccordionGroup>
-                    <IonAccordion>
-                      <IonItem slot="header">Licenčné podmienky</IonItem>
-                      <div slot="content" className="bg-orange-50 p-4 dark:bg-transparent">
-                        <License />
-                      </div>
-                    </IonAccordion>
-                  </IonAccordionGroup>
-                </>
-              )}
-              <IonItem>
-                <ButtonsWrapper>
-                  <Button primary={true} type="submit">
-                    Prihlásiť sa
-                  </Button>
-                </ButtonsWrapper>
-              </IonItem>
-            </IonList>
+            <img src="/favicon.png" className="m-auto my-6 w-24 shadow-[0_0_20px_10px_#0002] dark:shadow-[0_0_20px_10px_#fff2]" alt="Orienteering Logo" />
+            <IonItem>
+              <IonLabel class="text-center">
+                <h1>Orientačný beh</h1>
+              </IonLabel>
+            </IonItem>
+            <IonItem>
+              <IonInput name="username" label="Meno *" labelPlacement="floating"></IonInput>
+            </IonItem>
+            <IonItem>
+              <IonInput name="password" type="password" label="Heslo *" labelPlacement="floating"></IonInput>
+            </IonItem>
+            <IonItem>
+              <IonSelect name="club" label="Klub *" labelPlacement="floating">
+                {content.map((child, index) => (
+                  <IonSelectOption disabled={!isSupported(child.api_version, apiSupport)} key={child.fullname} value={index}>
+                    {child.fullname}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
+            {has_accepted_terms ? null : (
+              <>
+                <IonItem>
+                  <IonCheckbox name="license">Súhlasím s licenčnými podmienkami</IonCheckbox>
+                </IonItem>
+                <IonAccordionGroup>
+                  <IonAccordion>
+                    <IonItem slot="header">Licenčné podmienky</IonItem>
+                    <div slot="content" className="bg-orange-50 p-4 dark:bg-transparent">
+                      <License />
+                    </div>
+                  </IonAccordion>
+                </IonAccordionGroup>
+              </>
+            )}
+            <div className="p-4">
+              <IonButton fill="solid" type="submit" className="w-full">
+                Prihlásiť sa
+              </IonButton>
+            </div>
           </Form>
         </div>
       </div>

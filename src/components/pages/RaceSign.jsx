@@ -2,6 +2,7 @@ import {
   IonBackButton,
   IonButtons,
   IonLabel,
+  IonButton,
   IonItem,
   IonPage,
   IonHeader,
@@ -21,7 +22,6 @@ import { useParams, useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Spinner, FatalError } from "../ui/Media";
 import Form from "../ui/Form";
-import { Button, ButtonsWrapper } from "../ui/Buttons";
 import Store from "@/store";
 import { fetchPrivateApi, privateApi } from "@/api";
 import { AlertModal, ErrorModal } from "@/modals";
@@ -104,7 +104,7 @@ const RaceSignContent = ({}) => {
 
     await fetchPrivateApi(privateApi.race, { action: "signin", race_id, user_id: currentUser.user_id, token, ...wanted_inputs })
       .then(() => AlertModal("Prihlásenie prebehlo úspešne."))
-      .then(() => history.push(`/tabs/races/${race_id}`));
+      .then(() => history.goBack()); // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
 
     updateContent();
   };
@@ -114,7 +114,7 @@ const RaceSignContent = ({}) => {
 
     await fetchPrivateApi(privateApi.race, { action: "signout", race_id, user_id: currentUser.user_id, token })
       .then(() => AlertModal("Odhlásenie prebehlo úspešne."))
-      .then(() => history.push(`/tabs/races/${race_id}`));
+      .then(() => history.goBack()); // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
 
     updateContent();
   };
@@ -186,16 +186,14 @@ const RaceSignContent = ({}) => {
             <IonItem>
               <IonInput label="Poznámka (interná)" labelPlacement="floating" name="note_internal" placeholder="..." value={currentUser.note_internal}></IonInput>
             </IonItem>
-            <IonItem>
-              <ButtonsWrapper>
-                <Button type="submit" primary={true}>
-                  {currentUser.is_signed_in ? "Zmeniť" : "Prihlásiť sa"}
-                </Button>
-                <Button disabled={!currentUser.is_signed_in} type="button" onClick={handleSignout}>
-                  Odhlásiť sa
-                </Button>
-              </ButtonsWrapper>
-            </IonItem>
+            <div className="p-4">
+              <IonButton fill="solid" type="submit" className="w-full">
+                {currentUser.is_signed_in ? "Zmeniť" : "Prihlásiť sa"}
+              </IonButton>
+              <IonButton fill="clear" type="button" className="w-full" disabled={!currentUser.is_signed_in} onClick={handleSignout}>
+                Odhlásiť sa
+              </IonButton>
+            </div>
           </IonList>
         </Form>
       </div>

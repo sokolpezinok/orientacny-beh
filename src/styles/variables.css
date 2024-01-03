@@ -8,6 +8,9 @@ ion-tab-button {
 ion-toolbar {
   --ion-text-color: #ffffff;
 }
+ion-button {
+  --box-shadow: none;
+}
 
 /** Ionic CSS Variables **/
 :root {

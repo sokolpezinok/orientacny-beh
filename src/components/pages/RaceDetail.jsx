@@ -39,7 +39,6 @@ import classNames from "classnames";
 import { bus, home, chevronForwardOutline, shareSocial, calendar, logIn, location, checkmark, close, refresh } from "ionicons/icons";
 import { category, directionsRun, group } from "../ui/CustomIcons";
 import BoolIcon from "../ui/BoolIcon";
-import { Button, ButtonsWrapper } from "../ui/Buttons";
 
 const RaceDetail = ({}) => {
   return (
@@ -267,7 +266,7 @@ const Showcase = ({ children }) => {
 
 const ShowcaseItem = ({ children, title, icon, src, onClick }) => {
   return (
-    <div className="flex items-center gap-4 rounded-xl bg-orange-50 px-4 py-2 dark:bg-orange-950/[.5]" onClick={onClick}>
+    <div className="flex items-center gap-4 rounded-xl bg-orange-100 px-4 py-2 dark:bg-orange-950/[.5]" onClick={onClick}>
       <IonIcon src={src} icon={icon} className="hidden text-3xl xs:block" color="primary" />
       <div>
         <div className="flex items-center text-xl text-orange-600 dark:text-orange-700">{title}</div>

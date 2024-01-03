@@ -13,8 +13,8 @@
 
 const appName = "Orientačný beh";
 const appBuildVersion = 2.15;
-const appBuildPatch = "a1";
-const appBuildName = `v${appBuildVersion}{appBuildPatch}`;
+const appBuildPatch = "a2";
+const appBuildName = `v${appBuildVersion}${appBuildPatch}`;
 
 const apiSupport = 2.12;
 
