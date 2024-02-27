@@ -24,9 +24,8 @@ import { useState, useEffect } from "react";
 import { FatalError, Spinner } from "../ui/Media";
 import { ErrorModal, AlertModal } from "@/modals";
 import Form from "../ui/Form";
-import Store from "@/store";
 import Countries from "@/countries";
-import { fetchPrivateApi, privateApi } from "@/api";
+import { UserApi } from "@/api";
 
 const Profile = ({}) => {
   return (
@@ -53,12 +52,9 @@ const ProfileContent = ({}) => {
   const [error, setError] = useState(null);
 
   const updateContent = async () => {
-    const { token } = Store.getRawState();
-
-    const data = await fetchPrivateApi(privateApi.user, { action: "user_data", token }, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
-    if (data === undefined) return;
-
-    setContent(data);
+    UserApi.data()
+      .catch((error) => (content ? ErrorModal(error) : setError(error)))
+      .then((data) => data && setContent(data));
   };
 
   useEffect(() => {
@@ -71,8 +67,6 @@ const ProfileContent = ({}) => {
   };
 
   const handleSubmit = async (els) => {
-    const { token } = Store.getRawState();
-
     const wanted_inputs = {
       name: els.name.value,
       surname: els.surname.value,
@@ -95,9 +89,9 @@ const ProfileContent = ({}) => {
       is_hidden: els.is_hidden.checked,
     };
 
-    await fetchPrivateApi(privateApi.user, { action: "update_user_data", token, ...wanted_inputs });
-
-    AlertModal("Vaše údaje boli úspešne aktualizované.");
+    await UserApi.update(wanted_inputs)
+      .catch((error) => (content ? ErrorModal(error) : setError(error)))
+      .then(() => AlertModal("Vaše údaje boli úspešne aktualizované."));
   };
 
   if (content === null && error === null) return <Spinner />;

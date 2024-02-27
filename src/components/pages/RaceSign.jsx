@@ -22,8 +22,7 @@ import { useParams, useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Spinner, FatalError } from "../ui/Media";
 import Form from "../ui/Form";
-import Store from "@/store";
-import { fetchPrivateApi, privateApi } from "@/api";
+import { RaceApi } from "@/api";
 import { AlertModal, ErrorModal } from "@/modals";
 
 const RaceSign = ({}) => {
@@ -59,12 +58,10 @@ const RaceSignContent = ({}) => {
   const history = useHistory();
 
   const updateContent = async (is_first_call = false) => {
-    const { token } = Store.getRawState();
-
-    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id }, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
+    const data = await RaceApi.detail(race_id).catch((error) => (content ? ErrorModal(error) : setError(error)));
     if (data === undefined) return;
 
-    data.relations = await fetchPrivateApi(privateApi.race, { action: "relations", race_id, token }, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
+    data.relations = await RaceApi.relations(race_id).catch((error) => (content ? ErrorModal(error) : setError(error)));
     if (data.relations === undefined) return;
 
     setContent(data);
@@ -89,8 +86,6 @@ const RaceSignContent = ({}) => {
   };
 
   const handleSubmit = async (els) => {
-    const { token } = Store.getRawState();
-
     const wanted_inputs = {
       category: els.category.value,
       transport: els.transport.value.length > 0,
@@ -102,7 +97,8 @@ const RaceSignContent = ({}) => {
     if (wanted_inputs.user_id === "") return AlertModal("Nezabudni vybrať koho prihlasuješ.");
     if (wanted_inputs.category === "") return AlertModal("Nezabudni zadať kategóriu.");
 
-    await fetchPrivateApi(privateApi.race, { action: "signin", race_id, user_id: currentUser.user_id, token, ...wanted_inputs })
+    await RaceApi.signin(race_id, currentUser.user_id, wanted_inputs)
+      .catch((error) => ErrorModal(error))
       .then(() => AlertModal("Prihlásenie prebehlo úspešne."))
       .then(() => history.goBack()); // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
 
@@ -110,9 +106,8 @@ const RaceSignContent = ({}) => {
   };
 
   const handleSignout = async () => {
-    const { token } = Store.getRawState();
-
-    await fetchPrivateApi(privateApi.race, { action: "signout", race_id, user_id: currentUser.user_id, token })
+    await RaceApi.signout(race_id, currentUser.user_id)
+      .catch((error) => ErrorModal(error))
       .then(() => AlertModal("Odhlásenie prebehlo úspešne."))
       .then(() => history.goBack()); // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
 

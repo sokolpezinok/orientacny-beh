@@ -1,6 +1,6 @@
 import { IonBackButton, IonButtons, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol, IonAccordionGroup, IonAccordion } from "@ionic/react";
 import License from "../ui/License";
-import { apiSupport, appBuildName, collaborators } from "@/manifest";
+import { appBuildVersion } from "@/manifest";
 import Link from "../ui/Link";
 
 const About = () => {
@@ -20,13 +20,7 @@ const About = () => {
             <IonItem>
               <IonLabel className="ion-text-wrap">
                 <h1>Verzia</h1>
-                <p>{appBuildName}</p>
-              </IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel className="ion-text-wrap">
-                <h1>Podpora API</h1>
-                <p>{apiSupport}</p>
+                <p>{appBuildVersion}</p>
               </IonLabel>
             </IonItem>
             <IonAccordionGroup>
@@ -39,14 +33,24 @@ const About = () => {
                 </IonItem>
                 <div slot="content" className="bg-orange-50 dark:bg-transparent">
                   <IonGrid className="mx-4 py-4">
-                    {collaborators.map((item, index) => (
-                      <IonRow key={index}>
-                        <IonCol>{item.name}</IonCol>
-                        <IonCol className="text-right text-orange-600 dark:text-orange-700">
-                          <Link href={item.link}>{item.value}</Link>
-                        </IonCol>
-                      </IonRow>
-                    ))}
+                    <IonRow>
+                      <IonCol>Vývojár</IonCol>
+                      <IonCol className="text-right text-orange-600 dark:text-orange-700">
+                        <Link href="https://github.com/jurakin">Jurakin</Link>
+                      </IonCol>
+                    </IonRow>
+                    <IonRow>
+                      <IonCol>Dizajn</IonCol>
+                      <IonCol className="text-right text-orange-600 dark:text-orange-700">
+                        <Link href="mailto:ondrej.honsch@gmail.com">Ondrej</Link>
+                      </IonCol>
+                    </IonRow>
+                    <IonRow>
+                      <IonCol>Od klubu</IonCol>
+                      <IonCol className="text-right text-orange-600 dark:text-orange-700">
+                        <Link href="https://www.sokolpezinok.sk/">KOB Sokol Pezinok</Link>
+                      </IonCol>
+                    </IonRow>
                   </IonGrid>
                 </div>
               </IonAccordion>

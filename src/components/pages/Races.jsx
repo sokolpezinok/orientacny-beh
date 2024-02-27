@@ -5,7 +5,7 @@ import { Spinner, FatalError, SadFace } from "../ui/Media";
 import { useEffect, useState } from "react";
 
 import Store from "@/store";
-import { fetchPrivateApi, privateApi } from "@/api";
+import { RaceApi } from "@/api";
 import { ErrorModal } from "@/modals";
 import classNames from "classnames";
 
@@ -32,10 +32,9 @@ const RacesContent = ({}) => {
   const [error, setError] = useState(null);
 
   const updateContent = async () => {
-    const data = await fetchPrivateApi(privateApi.race, { action: "list" }, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
-    if (data === undefined) return;
-
-    setContent(data);
+    RaceApi.list()
+      .catch((error) => (content ? ErrorModal(error) : setError(error)))
+      .then((data) => data && setContent(data));
   };
 
   useEffect(() => {

@@ -1,43 +1,47 @@
-// Example:
-//     ┌─┬─── build version
-//    v2.1a3
-//     │ │└┴─ patch (alpha 3)
-//     │ └ minor version (compatible)
-//     └ major version (non compatible)
-//
-// If `apiSupport = 1.2`:
-//  - is compatible with `apiVersion`:
-//      - `1.2`, `1.3`
-//  - is not compatible with `apiVersion`:
-//      - `1.1`, `1`, `2`
+//                                                                                                       //
+//                7JJ^                ..............~                                                    //
+//               :77~                 ............~??                                                    //
+//                :^~!777!~:          ..........~????                                                    //
+//       :~~~~!7???7!~^:   :^         ........~??????                                                    //
+//          :::::                     ......~????????                                                    //
+//          :^!7?JJJJ?!^              ....~??????????                                                    //
+//       :!JYJ?!~^^^^~7?J?~:  :^7~    ..~????????????                                                    //
+//     :?J?~:            ^!7???!:     ~??????????????                                                    //
+//    ~?~                                                                                                //
+//    :                    ::^^^:      ##  ##   ######  ######       #####   #####  #   ##  ######  #    //
+// :~!!~:    :7JJJJ?!    ^?JYYYYJ?^    ## ##   ##   ## ##   ##      ##  ##  ##  ## ##  ##  ###  ## ##    //
+// !JJJJ~    !YYYYYYY^   !YYJJJJYY7    ####    ##   ## #####        ##     ##   ## #####   ##   ## ##    //
+//            :~!!!^      ^!7???7^     ## ##  ##   ## ###  ##         ###  ##   ## ## ##   ##   ## ##    //
+//     :!7777!:    :!?JJJ?7^          ##  ##  ##   ## ##   ##      ##   ## ##  ### ##  ##  ##  ##  ##    //
+//    7YYJJJJYY?  ~YYJJJJJJY7        ###   ##  #####  ######        #####   ####   #    #   ####   ##### //
+//    7YYYJJJYY7  ~YYJJJJJJY7                                                                            //
+//     :~!77!~:    :!7?JJ?7^                                                                             //
+//           ^7????7^                  #####    ###########   ##  ##   #  ###### ##  ##                  //
+//         :JYJJJJJJY?:                ##  ##  ##       ##   ##   ### ## ##   ## ## ##                   //
+//         7YJJJJJJJJY!               #####   ####    ##     ##  ## # ## ##   ## ####                    //
+//         :JYJJJJJJJ?:               ##     ##     ##      ##   ## #### ##   ## ## ##                   //
+//           ~7JJJJ7~                ##    ######  ####### ###  ##   ##  ######  ##   ##                 //
+//                                                                                                       //
+// (c) KOB Sokol Pezinok
 
 const appName = "Orientačný beh";
-const appBuildVersion = 2.15;
-const appBuildPatch = "a2";
-const appBuildName = `v${appBuildVersion}${appBuildPatch}`;
-
-const apiSupport = 2.12;
-
-const isSupported = (version, support) => Math.floor(version) == Math.floor(support) && support <= version;
-
-const collaborators = [
-    {name: "Vývojár", value: "Jurakin", link: "https://github.com/jurakin"},
-    {name: "Dizajn", value: "Ondrej", link: "mailto:ondrej.honsch@gmail.com"},
-    {name: "Vytvorené pre klub", value: "KOB Sokol Pezinok", link: "https://www.sokolpezinok.sk/"},
-];
-
+const appBuildVersion = `v3.01a1`;
 const appPackageName = "orienteering.app";
+
+//======================================//
+// do NOT add trailing slash at the end //
+//======================================//
 const appServerDomain = "members.eob.cz";
 const appServerProtocol = "https";
+const appServerHost = `${appServerProtocol}://${appServerDomain}`;
+const appServerApi = "https://members.eob.cz/api";
 
 module.exports = { // use CommonJS syntax for compatibility reasons with capacitor.confit.ts
     appName,
     appBuildVersion,
-    appBuildName,
-    apiSupport,
-    isSupported,
-    collaborators,
     appPackageName,
     appServerDomain,
     appServerProtocol,
+    appServerHost,
+    appServerApi,
 };

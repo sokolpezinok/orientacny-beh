@@ -7,9 +7,9 @@ const Store = new PullStateStore({
   is_logged_in: false,
   allow_notify: true,
   has_accepted_terms: false,
- 
-  token: null,
-  club: null,
+
+  user: {},
+  club: {},
 });
 export default Store;
 

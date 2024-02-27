@@ -10,7 +10,6 @@ import {
   IonLabel,
   IonInput,
   IonButton,
-  IonList,
   IonRefresher,
   IonRefresherContent,
   IonCheckbox,
@@ -20,14 +19,13 @@ import {
 import { Redirect } from "react-router-dom";
 import Store, { syncStorage } from "@/store";
 import { useEffect, useState } from "react";
-import { fetchPublicApi, fetchApi, publicApi, privateApi } from "@/api";
+import { GeneralApi, UserApi } from "@/api";
 
 import License from "../ui/License";
 import Form from "../ui/Form";
 import { FatalError } from "../ui/Media";
 import { ErrorModal, FatalModal } from "@/modals";
 import { register, subscribe, getToken } from "@/notify";
-import { apiSupport, isSupported } from "@/manifest";
 
 const Welcome = ({}) => {
   return (
@@ -50,15 +48,15 @@ const WelcomeContent = ({}) => {
   const is_logged_in = Store.useState((s) => s.is_logged_in);
   const has_accepted_terms = Store.useState((s) => s.has_accepted_terms);
 
-  const [content, setClublist] = useState([]);
+  const [content, setClubs] = useState([]);
   const [error, setError] = useState(null);
 
-  const updateClublist = async () => {
-    const data = await fetchPublicApi(publicApi.clublist, {}, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
+  const updateClubs = async () => {
+    const data = await GeneralApi.clubs().catch((error) => (content ? ErrorModal(error) : setError(error)));
     if (data === undefined) return;
 
     // sort A-Z
-    setClublist(
+    setClubs(
       data.sort((a, b) => {
         const x = a.fullname.toLowerCase();
         const y = b.fullname.toLowerCase();
@@ -68,7 +66,7 @@ const WelcomeContent = ({}) => {
   };
 
   useEffect(() => {
-    updateClublist();
+    updateClubs();
   }, []);
 
   const handleSubmit = async (els) => {
@@ -84,16 +82,11 @@ const WelcomeContent = ({}) => {
     if (wanted_inputs.club === undefined) return ErrorModal("Nezabudni vybrať klub.");
     if (!wanted_inputs.license) return ErrorModal("Súhlas s licenčnými podmienkami je povinný.");
 
-    const data = await fetchApi(wanted_inputs.club.url + privateApi.user, {
-      action: "login",
-      username: wanted_inputs.username,
-      password: wanted_inputs.password,
-    });
-
-    if (data === undefined) return;
+    const data = await UserApi.login(wanted_inputs.username, wanted_inputs.password, wanted_inputs.club.clubname).catch((error) => FatalModal(error));
+    if (data === undefined) return FatalModal("Nepodarilo sa prihlásiť");
 
     Store.update((s) => {
-      s.token = data.token;
+      s.user = data;
       s.club = wanted_inputs.club;
       s.is_logged_in = true;
       s.has_accepted_terms = true;
@@ -101,7 +94,7 @@ const WelcomeContent = ({}) => {
     await syncStorage().catch((error) => FatalModal(error));
 
     await register()?.catch((error) => FatalModal(error));
-    await subscribe(wanted_inputs.club.shortcut)?.catch((error) => FatalModal(error));
+    await subscribe(wanted_inputs.club.clubname)?.catch((error) => FatalModal(error));
 
     // alert("Subscribed: " + wanted_inputs.club.shortcut);
   };
@@ -146,7 +139,7 @@ const WelcomeContent = ({}) => {
             <IonItem>
               <IonSelect name="club" label="Klub *" labelPlacement="floating">
                 {content.map((child, index) => (
-                  <IonSelectOption disabled={!isSupported(child.api_version, apiSupport)} key={child.fullname} value={index}>
+                  <IonSelectOption disabled={child.is_release === false} key={child.clubname} value={index}>
                     {child.fullname}
                   </IonSelectOption>
                 ))}

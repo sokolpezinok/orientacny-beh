@@ -1,7 +1,6 @@
 import {
   IonBackButton,
   IonButtons,
-  IonRippleEffect,
   IonItem,
   IonPage,
   IonHeader,
@@ -25,7 +24,7 @@ import { useParams, useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import Store from "@/store";
-import { fetchPrivateApi, privateApi } from "@/api";
+import { RaceApi } from "@/api";
 import { AlertModal, ErrorModal } from "@/modals";
 
 import { Share } from "@capacitor/share";
@@ -64,7 +63,6 @@ const RaceDetailContent = ({}) => {
   const [error, setError] = useState(null);
 
   const { race_id } = useParams();
-
   const history = useHistory();
 
   const handleShare = async () => {
@@ -81,12 +79,10 @@ const RaceDetailContent = ({}) => {
   };
 
   const updateContent = async () => {
-    const { token } = Store.getRawState();
-
-    const data = await fetchPrivateApi(privateApi.race, { action: "detail", race_id, token }, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
+    const data = await RaceApi.detail(race_id).catch((error) => (content ? ErrorModal(error) : setError(error)));
     if (data === undefined) return;
 
-    data.relations = await fetchPrivateApi(privateApi.race, { action: "relations", race_id, token }, false).catch((response) => (content ? ErrorModal(response) : setError(response)));
+    data.relations = await RaceApi.relations(race_id).catch((error) => (content ? ErrorModal(error) : setError(error)));
     if (data.relations === undefined) return;
 
     setContent(data);
@@ -123,7 +119,7 @@ const RaceDetailContent = ({}) => {
         <IonItem>
           <IonLabel className="ion-text-wrap">
             <div className="flex w-full justify-between">
-              <h1 className={classNames("mt-0 !font-bold", content.is_cancelled ? "line-through" : null)}>{content.name}</h1>
+              <h1 className={classNames("mt-0 flex-1 !font-bold", content.is_cancelled ? "line-through" : null)}>{content.name}</h1>
               <IonIcon className="cursor-pointer text-2xl" onClick={handleShare} icon={shareSocial} />
             </div>
             {content.note.length > 0 ? <p className="!mt-4">{content.note}</p> : null}
