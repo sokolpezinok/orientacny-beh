@@ -139,7 +139,7 @@ const WelcomeContent = ({}) => {
             <IonItem>
               <IonSelect name="club" label="Klub *" labelPlacement="floating">
                 {content.map((child, index) => (
-                  <IonSelectOption disabled={child.is_release === false} key={child.clubname} value={index}>
+                  <IonSelectOption key={child.clubname} value={index}>
                     {child.fullname}
                   </IonSelectOption>
                 ))}

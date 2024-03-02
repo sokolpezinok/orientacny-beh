@@ -2,11 +2,14 @@
 import { appServerApi } from "@/manifest";
 import Store from "@/store";
 
+const getToken = () => Store.getRawState().user.token;
+const getServer = () => `${appServerApi}/club/${Store.getRawState().club.clubname}`
+
 // server api packaged into a class
 class Api {
     static async fetch(part, {data={}, auth=false, headers={}, method="POST", server=null, token=null} = {}) {
-        server = server || `${appServerApi}/club/${Store.getRawState().club.clubname}`;
-        token = token || Store.getRawState().user.token;
+        server = server || getServer();
+        token = token || getToken();
 
         // add required headers and authorization when needed
         headers = Object.assign({
@@ -76,6 +79,12 @@ export class UserApi extends Api {
 }
 
 export class RaceApi extends Api {
+    // returns url
+    static get_redirect(race_id) {
+        return `${getServer()}/race/${race_id}/redirect`;
+    }
+    
+    // methods
     static list() {
         return this.fetch(`/races`);
     }

@@ -24,16 +24,29 @@ const DeepLinkListener = () => {
   const history = useHistory();
 
   const handleUrlOpen = (url) => {
+    // expects url in format
+    // https://members.eob.cz/api/club/spt/race/132
+    // https://members.eob.cz/api/club/spt/race/132/redirect
+    //
+    // ^/api/club/(\w+)/race/(\d+)
+
     const path = new URL(url);
 
-    if (path.hostname !== appServerDomain) return FatalModal("Odkaz sa nezhoduje so serverom.");
-    if (!url.startsWith(Store.getRawState().club.server_url)) return FatalModal("Odkaz nie je z tvojho klubu.");
+    if (path.hostname !== appServerDomain) {
+      return FatalModal("Odkaz sa nezhoduje so serverom.");
+    }
 
-    const params = new URLSearchParams(path.search);
+    const search = /^\/api\/club\/(\w+)\/race\/(\d+)/.exec(path.pathname);
 
-    const race_id = params.get("id_zav"); // anything that contain id_zav
+    if (search === null) {
+      return FatalModal("Odkaz má neočakávaný formát.");
+    }
 
-    if (race_id === null) return;
+    const [_, club, race_id] = search;
+
+    if (club !== Store.getRawState().club.clubname) {
+      return FatalModal("Odkaz nie je z tvojho klubu");
+    }
 
     history.push(`/tabs/races/${race_id}`);
   };

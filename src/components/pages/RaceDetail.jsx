@@ -72,8 +72,8 @@ const RaceDetailContent = ({}) => {
 
     await Share.share({
       title: content.name,
-      text: `${content.name} ${content.note}`,
-      url: `${Store.getRawState().club.server_url}race_info_show.php?id_zav=${race_id}`,
+      text: `${content.name}\n${content.note}`,
+      url: RaceApi.get_redirect(race_id),
       dialogTitle: content.name,
     });
   };
