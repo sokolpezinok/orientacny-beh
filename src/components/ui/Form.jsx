@@ -1,5 +1,5 @@
 const Form = ({ children, onSubmit, ...props }) => {
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     return onSubmit(event.target.elements);

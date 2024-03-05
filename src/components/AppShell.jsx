@@ -1,6 +1,5 @@
-import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
-
+import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Redirect, Route } from "react-router-dom";
 
@@ -16,9 +15,9 @@ const matchColorMode = async (status) => {
     });
     await StatusBar.setBackgroundColor({
       color: status.matches ? "#c2410c" : "#ea580c",
-    })
+    });
   } catch {}
-}
+};
 
 // create a listener to color mode change
 window.matchMedia("(prefers-color-scheme: dark)").addListener(matchColorMode);

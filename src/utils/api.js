@@ -1,6 +1,6 @@
 // import { FatalModal } from "@/modals";
 import { appServerApi } from "@/manifest";
-import Store from "@/store";
+import Store from "@/utils/store";
 
 const getToken = () => Store.getRawState().user.token;
 const getServer = () => `${appServerApi}/club/${Store.getRawState().club.clubname}`

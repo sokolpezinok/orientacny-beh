@@ -18,7 +18,7 @@ const Link = ({ children, href }) => {
   }
 
   return (
-    <a onClick={openLink} href={href}>
+    <a onClick={openLink} href={href} className="!dark:text-orange-700 !text-orange-600">
       {<IonIcon className="mr-1 align-text-top" icon={openOutline} />}
       {children}
     </a>

@@ -1,4 +1,4 @@
-const Countries = [
+const countries = [
   ['AF', 'Afghánistán'],
   ['AX', 'Alandy'],
   ['AL', 'Albánie'],
@@ -249,4 +249,4 @@ const Countries = [
   ['EH', 'Západní Sahara'],
   ['ZW', 'Zimbabwe'],
 ];
-export default Countries;
+export default countries;

@@ -1,71 +1,40 @@
 import {
-  IonBackButton,
-  IonButtons,
-  IonItem,
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonLabel,
-  IonGrid,
-  IonRow,
-  IonRefresher,
-  IonRefresherContent,
-  IonInput,
-  IonSelect,
-  IonSelectOption,
   IonAccordion,
   IonAccordionGroup,
-  IonToggle,
+  IonBackButton,
   IonButton,
+  IonButtons,
+  IonGrid,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonRow,
+  IonSelect,
+  IonSelectOption,
+  IonTitle,
+  IonToggle,
+  IonToolbar,
 } from "@ionic/react";
-import { useState, useEffect } from "react";
-import { FatalError, Spinner } from "../ui/Media";
-import { ErrorModal, AlertModal } from "@/modals";
+
+import { UserApi } from "@/utils/api";
+import countries from "@/utils/countries";
+import { alertModal, errorModal } from "@/utils/modals";
+import Content from "../ui/Content";
 import Form from "../ui/Form";
-import Countries from "@/countries";
-import { UserApi } from "@/api";
 
-const Profile = ({}) => {
-  return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/tabs/settings" />
-          </IonButtons>
-          <IonTitle>Profil</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent>
-        <ProfileContent />
-      </IonContent>
-    </IonPage>
-  );
-};
+export default () => <Content Render={Profile} Header={Header} updateData={() => UserApi.data()} errorText="Nepodarilo sa načítať dáta." />;
 
-export default Profile;
+const Header = ({}) => (
+  <IonToolbar>
+    <IonButtons slot="start">
+      <IonBackButton defaultHref="/tabs/settings" />
+    </IonButtons>
+    <IonTitle>Profil</IonTitle>
+  </IonToolbar>
+);
 
-const ProfileContent = ({}) => {
-  const [content, setContent] = useState(null);
-  const [error, setError] = useState(null);
-
-  const updateContent = async () => {
-    UserApi.data()
-      .catch((error) => (content ? ErrorModal(error) : setError(error)))
-      .then((data) => data && setContent(data));
-  };
-
-  useEffect(() => {
-    updateContent();
-  }, []);
-
-  const handleRefresh = (event) => {
-    updateContent();
-    event.detail.complete();
-  };
-
+const Profile = ({ content }) => {
   const handleSubmit = async (els) => {
     const wanted_inputs = {
       name: els.name.value,
@@ -90,38 +59,24 @@ const ProfileContent = ({}) => {
     };
 
     await UserApi.update(wanted_inputs)
-      .catch((error) => (content ? ErrorModal(error) : setError(error)))
-      .then(() => AlertModal("Vaše údaje boli úspešne aktualizované."));
+      .catch((error) => (content ? errorModal(error) : setError(error)))
+      .then(() => alertModal("Vaše údaje boli úspešne aktualizované."));
   };
 
-  if (content === null && error === null) return <Spinner />;
-  if (content === null)
-    return (
-      <>
-        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent />
-        </IonRefresher>
-        <FatalError text="Nepodarilo sa načítať dáta." error={error} />
-      </>
-    );
-
+  /* <IonItem>
+    <IonLabel className="ion-text-wrap p-4">
+      <h1>Ahoj, {content.name}!</h1>
+      <ul className="mt-2 text-gray-500">
+        <li>Čip: {content.chip_number}</li>
+        <li>Email: {content.email}</li>
+        <li>Číslo: {content.registration_number}</li>
+        <li>ID: {content.user_id}</li>
+      </ul>
+    </IonLabel>
+  </IonItem> */
   return (
-    <>
-      <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-        <IonRefresherContent />
-      </IonRefresher>
-      {/* <IonItem>
-        <IonLabel className="ion-text-wrap p-4">
-          <h1>Ahoj, {content.name}!</h1>
-          <ul className="mt-2 text-gray-500">
-            <li>Čip: {content.chip_number}</li>
-            <li>Email: {content.email}</li>
-            <li>Číslo: {content.registration_number}</li>
-            <li>ID: {content.user_id}</li>
-          </ul>
-        </IonLabel>
-      </IonItem> */}
-      <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
+      <IonList>
         <IonAccordionGroup>
           <IonAccordion>
             <IonItem slot="header">
@@ -149,7 +104,7 @@ const ProfileContent = ({}) => {
                 </IonRow>
                 <IonRow>
                   <IonSelect label="Národnosť" labelPlacement="floating" name="nationality" value={content.nationality} placeholder="...">
-                    {Countries.map(([code, name]) => (
+                    {countries.map(([code, name]) => (
                       <IonSelectOption key={code} value={code}>
                         {name}
                       </IonSelectOption>
@@ -250,12 +205,12 @@ const ProfileContent = ({}) => {
             </div>
           </IonAccordion>
         </IonAccordionGroup>
-        <div className="p-4" style={{ backgroundColor: "var(--ion-item-background)" }}>
+        <div className="p-4">
           <IonButton fill="solid" type="submit" className="w-full">
             Zmeniť
           </IonButton>
         </div>
-      </Form>
-    </>
+      </IonList>
+    </Form>
   );
 };

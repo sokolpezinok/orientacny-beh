@@ -1,5 +1,5 @@
 import { IonPage, IonHeader, IonItem, IonToolbar, IonTitle, IonContent, IonList, IonLabel } from "@ionic/react";
-import Store, { syncStorage } from "@/store";
+import Store, { syncStorage } from "@/utils/store";
 
 const Settings = () => {
   const handleLogout = async (event) => {
