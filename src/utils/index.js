@@ -1,1 +1,1 @@
-export const isEntryExpired = (entries) => Math.min(...entries.map((a) => new Date(a).getTime())) - Date.now() < 0;
+export const isEntryExpired = (entries) => Math.min(entries.map((a) => new Date(a).getTime())) < new Date().setHours(0, 0, 0, 0);

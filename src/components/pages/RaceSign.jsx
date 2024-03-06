@@ -34,10 +34,10 @@ const RaceSign = ({ content, handleUpdate }) => {
 
   // the user signed in the app is at index zero
   // default index is based on the url if found
-  const [userIndex, setuserIndex] = useState(userIndexFromUrl === -1 ? 0 : userIndexFromUrl);
+  const [userIndex, setUserIndex] = useState(userIndexFromUrl === -1 ? 0 : userIndexFromUrl);
   const user = relations[userIndex];
 
-  const handleSubmit = async (els) => {
+  const handleSubmit = (els) => {
     const wanted_inputs = {
       category: els.category.value,
       transport: els.transport.value.length > 0,
@@ -49,22 +49,25 @@ const RaceSign = ({ content, handleUpdate }) => {
     if (wanted_inputs.user_id === "") return alertModal("Nezabudni vybrať koho prihlasuješ.");
     if (wanted_inputs.category === "") return alertModal("Nezabudni zadať kategóriu.");
 
-    await RaceApi.signin(race_id, user.user_id, wanted_inputs)
-      .catch((error) => errorModal(error))
-      .then(() => alertModal("Prihlásenie prebehlo úspešne."))
-      .then(() => history.goBack()); // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
-
-    handleUpdate();
+    RaceApi.signin(race_id, user.user_id, wanted_inputs)
+      .then(() => {
+        alertModal("Prihlásenie prebehlo úspešne.");
+        // handleUpdate();
+        // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
+        history.goBack();
+      })
+      .catch((error) => errorModal(error));
   };
 
-  const handleSignout = async () => {
-    await RaceApi.signout(race_id, user.user_id)
-      .catch((error) => errorModal(error))
-      .then(() => alertModal("Odhlásenie prebehlo úspešne."))
-      .then(() => history.goBack()); // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
-
-    handleUpdate();
-  };
+  const handleSignout = () =>
+    RaceApi.signout(race_id, user.user_id)
+      .then(() => {
+        alertModal("Odhlásenie prebehlo úspešne.");
+        // handleUpdate();
+        // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
+        history.goBack();
+      })
+      .catch((error) => errorModal(error));
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -75,7 +78,7 @@ const RaceSign = ({ content, handleUpdate }) => {
           </IonLabel>
         </IonItem>
         <IonItem>
-          <IonSelect label="Pretekár/-ka *" labelPlacement="floating" name="user_id" value={userIndex} onIonChange={(event) => setuserIndex(event.target.value)}>
+          <IonSelect label="Pretekár/-ka *" labelPlacement="floating" name="user_id" value={userIndex} onIonChange={(event) => setUserIndex(event.target.value)}>
             {relations.map((child, index) => (
               <IonSelectOption key={child.user_id} value={index}>
                 {`${child.name} ${child.surname} (${child.chip_number})`}

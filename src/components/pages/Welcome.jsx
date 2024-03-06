@@ -43,7 +43,6 @@ const Welcome = ({ content }) => {
     if (!wanted_inputs.license) return errorModal("Súhlas s licenčnými podmienkami je povinný.");
 
     const data = await UserApi.login(wanted_inputs.username, wanted_inputs.password, wanted_inputs.club.clubname).catch((error) => fatalModal(error));
-    if (data === undefined) return fatalModal("Nepodarilo sa prihlásiť");
 
     Store.update((s) => {
       s.user = data;
