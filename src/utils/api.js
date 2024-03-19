@@ -6,7 +6,7 @@ const getServer = () => `${appServerApi}/club/${Store.getRawState().club.clubnam
 
 // server api packaged into a class
 class Api {
-    static async fetch(part, {data={}, auth=false, headers={}, method="POST", server=null, token=null} = {}) {
+    static async fetch(part, { data = {}, auth = false, headers = {}, method = "POST", server = null, token = null } = {}) {
         server = server || getServer();
         token = token || getToken();
 
@@ -18,19 +18,21 @@ class Api {
             "Authorization": "Bearer " + token,
         }, headers);
 
-        return new Promise(async (resolve, reject) => {
-            try {
-                const fetcher = await fetch(server + part, {
-                    method,
-                    headers,
-                    body: JSON.stringify(data),
-                });
-                const content = await fetcher.json();
-                fetcher.ok ? resolve(content) : reject(content?.message ?? "Unknown status code error.");
-            } catch (error) {
-                return reject(error?.message ?? "Unknown fetch/json parse error.");
-            }
+        // make a request
+        const fetcher = await fetch(server + part, {
+            method,
+            headers,
+            body: JSON.stringify(data),
         });
+
+        // always try to parse json to be able provide error message
+        const content = await fetcher.json();
+
+        // raise an error based on status code and try to report an error
+        if (!fetcher.ok) throw content?.message ?? "Unknown error that could not be reported.";
+
+        // all right, return content
+        return content;
     }
 }
 
@@ -42,7 +44,7 @@ export class GeneralApi extends Api {
 
 export class UserApi extends Api {
     static login = (username, password, clubname) => this.fetch(`/user/login`, {
-        data: {username, password},
+        data: { username, password },
         server: `${appServerApi}/club/${clubname}`
     });
     static show = (user_id) => this.fetch(`/user/${user_id}`);
@@ -60,17 +62,17 @@ export class UserApi extends Api {
 
 export class RaceApi extends Api {
     // returns url
-    static get_redirect = (race_id) => `${getServer()}/race/${race_id}/redirect`;
-    
+    static getRedirect = (race_id) => `${getServer()}/race/${race_id}/redirect`;
+
     // methods
     static list = () => this.fetch(`/races`);
     static detail = (race_id) => this.fetch(`/race/${race_id}`);
     static relations = (race_id) => this.fetch(`/race/${race_id}/relations`, {
         auth: true,
     });
-    static signin = (race_id, user_id, {category, note, note_internal, transport, accommodation}) => this.fetch(`/race/${race_id}/signin/${user_id}`, {
+    static signin = (race_id, user_id, { category, note, note_internal, transport, accommodation }) => this.fetch(`/race/${race_id}/signin/${user_id}`, {
         auth: true,
-        data: {category, note, note_internal, transport, accommodation}
+        data: { category, note, note_internal, transport, accommodation }
     });
     static signout = (race_id, user_id) => this.fetch(`/race/${race_id}/signout/${user_id}`, {
         auth: true,

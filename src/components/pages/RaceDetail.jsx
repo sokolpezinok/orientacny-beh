@@ -7,7 +7,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { isEntryExpired } from "@/utils";
 import { RaceApi } from "@/utils/api";
 import { formatDate, formatDates } from "@/utils/format";
-import { alertModal, errorModal } from "@/utils/modals";
+import { useModal } from "@/utils/modals";
 import BoolIcon from "../ui/BoolIcon";
 import Content from "../ui/Content";
 import { category, directionsRun, group } from "../ui/CustomIcons";
@@ -32,19 +32,20 @@ const RaceDetail = ({ content, handleUpdate }) => {
 
   const { race_id } = useParams();
   const history = useHistory();
+  const { smartModal, alertModal } = useModal();
 
-  const handleShare = async () => {
+  const handleShare = smartModal(async () => {
     const shareSupport = await Share.canShare();
 
-    if (!shareSupport.value) return errorModal("Share is not avaible in browser.");
-
+    if (!shareSupport.value) throw "Zdielanie nie je dostupné.";
+    // catch share cancel
     await Share.share({
       title: detail.name,
       text: `${detail.name}\n${detail.note}`,
-      url: RaceApi.get_redirect(race_id),
+      url: RaceApi.getRedirect(race_id),
       dialogTitle: detail.name,
-    });
-  };
+    }).catch(() => null);
+  });
 
   return (
     <IonList>
@@ -80,7 +81,7 @@ const RaceDetail = ({ content, handleUpdate }) => {
               {relations.map((item) => (
                 <IonLabel
                   key={item.user_id}
-                  onClick={() => (isEntryExpired(detail.entries) ? alertModal("eez appku sa už nedá prihlásiť!") : history.push(`/tabs/races/${race_id}/sign/${item.user_id}`))}
+                  onClick={() => (isEntryExpired(detail.entries) ? alertModal("Cez appku sa už nedá prihlásiť!") : history.push(`/tabs/races/${race_id}/sign/${item.user_id}`))}
                 >
                   <h2>
                     {item.name} {item.surname} ({item.chip_number})

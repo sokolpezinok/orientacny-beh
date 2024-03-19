@@ -1,69 +1,48 @@
 import { FCM } from "@capacitor-community/fcm";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Capacitor } from "@capacitor/core";
+import Store from "./store";
 
-// await PushNotifications.addListener(
-//   "pushNotificationActionPerformed",
-//   (notification) => {
-//     console.log(
-//       "Push notification action performed",
-//       notification.actionId,
-//       notification.inputValue
-//     );
-//   }
-// );
+export class Notifications {
+  static register = async () => {
+    if (!Capacitor.isNativePlatform()) return;
 
-// export const register = async () => {
-//   if (!Capacitor.isNativePlatform()) return; // prevent running notifications on web
+    let status = await PushNotifications.checkPermissions();
 
-//   let permStatus = await PushNotifications.checkPermissions();
+    if (status.receive === "prompt") {
+      status = await PushNotifications.requestPermissions();
+    }
 
-//   if (permStatus.receive === "prompt") {
-//     permStatus = await PushNotifications.requestPermissions();
-//   }
+    if (status.receive !== "granted") {
+      throw "Notifications are denied by user.";
+    }
 
-//   if (permStatus.receive !== "granted") {
-//     throw new Error("User denied permissions!");
-//   }
+    await PushNotifications.register();
+    await FCM.setAutoInit({ enabled: true });
+    await FCM.subscribeTo({ topic: Store.getRawState().club.clubname });
 
-//   return await PushNotifications.register();
-// };
+    Store.update(s => {
+      s.allow_notify = true;
+    });
+  }
 
-// export const unregister = async () => {
-//   if (!Capacitor.isNativePlatform()) return; // prevent running notifications on web
+  static unregister = async () => {
+    if (!Capacitor.isNativePlatform()) return;
 
-//   return await PushNotifications.unregister();
-// };
+    await FCM.setAutoInit({ enabled: false });
+    await PushNotifications.unregister();
 
-export const register = async () => {
-  if (!Capacitor.isNativePlatform()) return; // not implemented on web
+    Store.update(s => {
+      s.allow_notify = false;
+    });
+  }
 
-  await PushNotifications.requestPermissions();
-  await PushNotifications.register();
-  await FCM.setAutoInit({enabled: true});
+  static getToken = async () => {
+    return await FCM.getToken();
+  }
 }
 
-export const unregister = async () => {
-  if (!Capacitor.isNativePlatform()) return; // not implemented on web
-
-  await PushNotifications.unregister();
-  await FCM.setAutoInit({enabled: false});
-}
-
-export const subscribe = (topic) => {
-  if (!Capacitor.isNativePlatform()) return; // not implemented on web
-
-  return FCM.subscribeTo({topic});
-}
-
-export const unsubscribe = (topic) => {
-  if (!Capacitor.isNativePlatform()) return; // not implemented on web
-  
-  return FCM.unsubscribeFrom({topic});
-}
-
-export const getToken = () => {
-  if (!Capacitor.isNativePlatform()) return; // not implemented on web
-
-  return FCM.getToken();
+export class NotificantionsContent {
+  static EVENT_BASIC = 1;
+  static EVENT_RACE_CHANGED = 2;
 }

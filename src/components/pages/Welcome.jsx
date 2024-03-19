@@ -2,8 +2,8 @@ import { IonAccordion, IonAccordionGroup, IonButton, IonCheckbox, IonInput, IonI
 import { Redirect } from "react-router-dom";
 
 import { GeneralApi, UserApi } from "@/utils/api";
-import { errorModal, fatalModal } from "@/utils/modals";
-import { register, subscribe } from "@/utils/notify";
+import { useModal } from "@/utils/modals";
+// import { Notifications } from "@/utils/notify";
 import Store, { syncStorage } from "@/utils/store";
 import Content from "../ui/Content";
 import Form from "../ui/Form";
@@ -21,6 +21,8 @@ const Welcome = ({ content }) => {
   const is_logged_in = Store.useState((s) => s.is_logged_in);
   const has_accepted_terms = Store.useState((s) => s.has_accepted_terms);
 
+  const { smartModal } = useModal();
+
   // sort clubs alphabetically
   content = content.sort((club0, club1) => {
     // normalize club name
@@ -29,7 +31,7 @@ const Welcome = ({ content }) => {
     return x < y ? -1 : x > y ? 1 : 0;
   });
 
-  const handleSubmit = async (els) => {
+  const handleSubmit = smartModal(async (els) => {
     const wanted_inputs = {
       username: els.username.value,
       password: els.password.value,
@@ -37,12 +39,12 @@ const Welcome = ({ content }) => {
       license: els.license?.value?.length > 0 || has_accepted_terms,
     };
 
-    if (wanted_inputs.username === "") return errorModal("Nezabudni zadať meno.");
-    if (wanted_inputs.password === "") return errorModal("Nezabudni zadať heslo.");
-    if (wanted_inputs.club === undefined) return errorModal("Nezabudni vybrať klub.");
-    if (!wanted_inputs.license) return errorModal("Súhlas s licenčnými podmienkami je povinný.");
+    if (wanted_inputs.username === "") throw "Nezabudni zadať meno.";
+    if (wanted_inputs.password === "") throw "Nezabudni zadať heslo.";
+    if (wanted_inputs.club === undefined) throw "Nezabudni vybrať klub.";
+    if (!wanted_inputs.license) throw "Súhlas s licenčnými podmienkami je povinný.";
 
-    const data = await UserApi.login(wanted_inputs.username, wanted_inputs.password, wanted_inputs.club.clubname).catch((error) => fatalModal(error));
+    const data = await UserApi.login(wanted_inputs.username, wanted_inputs.password, wanted_inputs.club.clubname);
 
     Store.update((s) => {
       s.user = data;
@@ -50,13 +52,9 @@ const Welcome = ({ content }) => {
       s.is_logged_in = true;
       s.has_accepted_terms = true;
     });
-    await syncStorage().catch((error) => fatalModal(error));
-
-    await register()?.catch((error) => fatalModal(error));
-    await subscribe(wanted_inputs.club.clubname)?.catch((error) => fatalModal(error));
-
-    // alert("Subscribed: " + wanted_inputs.club.shortcut);
-  };
+    await syncStorage();
+    // await Notifications.register();
+  });
 
   if (is_logged_in) return <Redirect to="/tabs/" />;
 

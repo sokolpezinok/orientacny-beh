@@ -19,7 +19,7 @@ import {
 
 import { UserApi } from "@/utils/api";
 import countries from "@/utils/countries";
-import { alertModal, errorModal } from "@/utils/modals";
+import { useModal } from "@/utils/modals";
 import Content from "../ui/Content";
 import Form from "../ui/Form";
 
@@ -35,7 +35,9 @@ const Header = ({}) => (
 );
 
 const Profile = ({ content }) => {
-  const handleSubmit = async (els) => {
+  const { smartModal } = useModal({ errorHeader: "Nepodarilo sa aktualizovať profil." });
+
+  const handleSubmit = smartModal(async (els) => {
     const wanted_inputs = {
       name: els.name.value,
       surname: els.surname.value,
@@ -57,11 +59,9 @@ const Profile = ({ content }) => {
       licence_mtbo: els.licence_mtbo.value,
       is_hidden: els.is_hidden.checked,
     };
-
-    await UserApi.update(wanted_inputs)
-      .catch((error) => (content ? errorModal(error) : setError(error)))
-      .then(() => alertModal("Vaše údaje boli úspešne aktualizované."));
-  };
+    await UserApi.update(wanted_inputs);
+    return "Vaše údaje boli úspešne aktualizované.";
+  });
 
   /* <IonItem>
     <IonLabel className="ion-text-wrap p-4">

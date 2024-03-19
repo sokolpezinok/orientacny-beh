@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
 import { RaceApi } from "@/utils/api";
-import { alertModal, errorModal } from "@/utils/modals";
+import { useModal } from "@/utils/modals";
 import Content from "../ui/Content";
 import Form from "../ui/Form";
 
@@ -24,11 +24,12 @@ const Header = ({}) => {
   );
 };
 
-const RaceSign = ({ content, handleUpdate }) => {
+const RaceSign = ({ content }) => {
   const [detail, relations] = content;
 
   const { race_id, user_id } = useParams();
   const history = useHistory();
+  const { smartModal } = useModal();
 
   const userIndexFromUrl = relations.findIndex((value) => value.user_id == user_id);
 
@@ -37,7 +38,7 @@ const RaceSign = ({ content, handleUpdate }) => {
   const [userIndex, setUserIndex] = useState(userIndexFromUrl === -1 ? 0 : userIndexFromUrl);
   const user = relations[userIndex];
 
-  const handleSubmit = (els) => {
+  const handleSubmit = smartModal(async (els) => {
     const wanted_inputs = {
       category: els.category.value,
       transport: els.transport.value.length > 0,
@@ -46,28 +47,24 @@ const RaceSign = ({ content, handleUpdate }) => {
       note_internal: els.note_internal.value,
     };
 
-    if (wanted_inputs.user_id === "") return alertModal("Nezabudni vybrať koho prihlasuješ.");
-    if (wanted_inputs.category === "") return alertModal("Nezabudni zadať kategóriu.");
+    if (wanted_inputs.category === "") throw "Nezabudni zadať kategóriu.";
 
-    RaceApi.signin(race_id, user.user_id, wanted_inputs)
-      .then(() => {
-        alertModal("Prihlásenie prebehlo úspešne.");
-        // handleUpdate();
-        // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
-        history.goBack();
-      })
-      .catch((error) => errorModal(error));
-  };
+    await RaceApi.signin(race_id, user.user_id, wanted_inputs);
 
-  const handleSignout = () =>
-    RaceApi.signout(race_id, user.user_id)
-      .then(() => {
-        alertModal("Odhlásenie prebehlo úspešne.");
-        // handleUpdate();
-        // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
-        history.goBack();
-      })
-      .catch((error) => errorModal(error));
+    // handleUpdate();
+    // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
+    history.goBack();
+    return "Prihlásenie prebehlo úspešne.";
+  });
+
+  const handleSignout = smartModal(async () => {
+    await RaceApi.signout(race_id, user.user_id);
+
+    // handleUpdate();
+    // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
+    history.goBack();
+    return "Odhlásenie prebehlo úspešne.";
+  });
 
   return (
     <Form onSubmit={handleSubmit}>

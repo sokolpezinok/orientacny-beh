@@ -3,6 +3,8 @@ import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Redirect, Route } from "react-router-dom";
 
+import ModalContextProvider from "@/utils/modals";
+
 import Tabs from "./Tabs";
 import Welcome from "./pages/Welcome";
 
@@ -24,18 +26,20 @@ window.matchMedia("(prefers-color-scheme: dark)").addListener(matchColorMode);
 
 // applies default color mode
 matchColorMode(window.matchMedia("(prefers-color-scheme: dark)"));
-
 const AppShell = () => {
   return (
     <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet id="main">
-          <Route path="/welcome" render={() => <Welcome />} exact={true} />
-          <Route path="/" render={() => <Redirect to="/tabs" />} exact={true} />
-          <Route path="/tabs" render={() => <Tabs />} />
-          {/* /tabs MUST NOT BE EXACT */}
-        </IonRouterOutlet>
-      </IonReactRouter>
+      <ModalContextProvider>
+        <IonReactRouter>
+          <IonRouterOutlet id="main">
+            <Route path="/welcome" render={() => <Welcome />} exact={true} />
+            <Route path="/" render={() => <Redirect to="/tabs" />} exact={true} />
+
+            {/* /tabs MUST NOT BE EXACT */}
+            <Route path="/tabs" render={() => <Tabs />} exact={false} />
+          </IonRouterOutlet>
+        </IonReactRouter>
+      </ModalContextProvider>
     </IonApp>
   );
 };

@@ -14,7 +14,7 @@ const Store = new PullStateStore({
 export default Store;
 
 export const syncStorage = async () => {
-  const {_is_loading, ...store} = Store.getRawState(); // delete _is_loading
+  const { _is_loading, ...store } = Store.getRawState(); // delete _is_loading
 
   await SecureStoragePlugin.set({
     key: "profile",

@@ -2,11 +2,12 @@ import { IonContent, IonHeader, IonPage, IonRefresher, IonRefresherContent } fro
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { fatalModal } from "@/utils/modals";
+import { useModal } from "@/utils/modals";
 import { FatalError, Spinner } from "./Media";
 
 const Content = ({ Render, Header, updateData, errorText }) => {
   const params = useParams();
+  const { errorModal } = useModal();
 
   const [content, setContent] = useState(null);
   const [error, setError] = useState(null);
@@ -14,7 +15,7 @@ const Content = ({ Render, Header, updateData, errorText }) => {
   const handleUpdate = () =>
     updateData(params)
       .then((data) => setContent(data))
-      .catch((error) => (content === null ? setError(error) : fatalModal(errorText)));
+      .catch((error) => (content === null ? setError(error) : errorModal(error, errorText)));
 
   useEffect(() => {
     handleUpdate();

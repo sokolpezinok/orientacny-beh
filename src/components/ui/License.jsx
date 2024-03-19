@@ -1,8 +1,13 @@
+import Link from "./Link";
+
 export default () => {
   return (
     <div>
-      <h3 className="text-orange-600 dark:text-orange-700">Copyright © 2023 KOB Sokol Pezinok</h3>
+      <h3 className="my-2 text-orange-600 dark:text-orange-700">Copyright © 2023 KOB Sokol Pezinok</h3>
       <div className="text-sm">
+        <p className="mb-2">
+          <Link href="https://prihlasky.sokolpezinok.sk/legal/gdpr.html">Oznámenie o spracovaní osobných údajov</Link>
+        </p>
         <h3 className="mb-2">MIT License</h3>
         <p className="mb-2">
           Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without
