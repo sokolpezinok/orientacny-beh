@@ -4,7 +4,7 @@ import { calendar, location } from "ionicons/icons";
 import { isEntryExpired } from "@/utils";
 import { RaceApi } from "@/utils/api";
 import { formatDates } from "@/utils/format";
-import Content from "../ui/Content";
+import Content from "../controllers/Content";
 import { SadFace } from "../ui/Media";
 
 export default () => <Content Render={Races} Header={Header} updateData={() => RaceApi.list()} errorText="Nepodarilo sa načítať preteky." />;

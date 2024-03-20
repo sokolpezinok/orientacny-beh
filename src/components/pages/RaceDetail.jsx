@@ -8,9 +8,9 @@ import { isEntryExpired } from "@/utils";
 import { RaceApi } from "@/utils/api";
 import { formatDate, formatDates } from "@/utils/format";
 import { useModal } from "@/utils/modals";
+import { category, directionsRun, group } from "../../utils/icons";
+import Content from "../controllers/Content";
 import BoolIcon from "../ui/BoolIcon";
-import Content from "../ui/Content";
-import { category, directionsRun, group } from "../ui/CustomIcons";
 import Link from "../ui/Link";
 import { SadFace } from "../ui/Media";
 

@@ -1,6 +1,6 @@
 import Link from "./Link";
 
-export default () => {
+export default ({}) => {
   return (
     <div>
       <h3 className="my-2 text-orange-600 dark:text-orange-700">Copyright © 2023 KOB Sokol Pezinok</h3>

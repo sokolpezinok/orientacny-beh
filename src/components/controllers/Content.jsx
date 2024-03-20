@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { useModal } from "@/utils/modals";
-import { FatalError, Spinner } from "./Media";
+import { FatalError, Spinner } from "../ui/Media";
 
 const Content = ({ Render, Header, updateData, errorText }) => {
   const params = useParams();
@@ -27,7 +27,7 @@ const Content = ({ Render, Header, updateData, errorText }) => {
         <Header />
       </IonHeader>
       <IonContent>
-        <IonRefresher slot="fixed" onIonRefresh={(event) => handleUpdate().finally(() => event.detail.complete())}>
+        <IonRefresher slot="fixed" onIonRefresh={(event) => handleUpdate().finally(event.detail.complete)}>
           <IonRefresherContent />
         </IonRefresher>
         {content === null ? <ContentNotPresent error={error} errorText={errorText} /> : <Render content={content} error={error} handleUpdate={handleUpdate} />}

@@ -5,8 +5,8 @@ import { GeneralApi, UserApi } from "@/utils/api";
 import { useModal } from "@/utils/modals";
 // import { Notifications } from "@/utils/notify";
 import Store, { syncStorage } from "@/utils/store";
-import Content from "../ui/Content";
-import Form from "../ui/Form";
+import Content from "../controllers/Content";
+import Form from "../controllers/Form";
 import License from "../ui/License";
 
 export default () => <Content Render={Welcome} Header={Header} updateData={() => GeneralApi.clubs()} errorText="Nepodarilo sa načítať zoznam klubov." />;

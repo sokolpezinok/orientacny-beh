@@ -20,8 +20,8 @@ import {
 import { UserApi } from "@/utils/api";
 import countries from "@/utils/countries";
 import { useModal } from "@/utils/modals";
-import Content from "../ui/Content";
-import Form from "../ui/Form";
+import Content from "../controllers/Content";
+import Form from "../controllers/Form";
 
 export default () => <Content Render={Profile} Header={Header} updateData={() => UserApi.data()} errorText="Nepodarilo sa načítať dáta." />;
 

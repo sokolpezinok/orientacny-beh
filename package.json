@@ -7,9 +7,9 @@
     "build": "next build",
     "compile-android": "cap sync && cap open android",
     "android": "cap run android",
-    "add-android-platform": "cap add android && npm run refresh-assets && npm run refresh-notifications",
-    "refresh-notifications": "python3 ./manifest-insert.py && cp --verbose ./google-services.json ./android/app/google-services.json",
-    "refresh-assets": "capacitor-assets generate --splashBackgroundColor '#ffffff' --splashBackgroundColorDark '#111827' --android"
+    "add-android-platform": "cap add android && npm run insert-assets && npm run insert-notifications",
+    "insert-splashscreen": "cp --verbose -r ./resources/* ./android/app/src/main/res/",
+    "insert-notifications": "python3 ./insert-manifest.py && cp --verbose ./google-services.json ./android/app/google-services.json"
   },
   "dependencies": {
     "@capacitor-community/fcm": "^5.0.2",
@@ -31,7 +31,6 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@capacitor/assets": "^3.0.1",
     "@capacitor/cli": "^5.0.5",
     "autoprefixer": "^10.4.16",
     "concurrently": "^8.2.1",
