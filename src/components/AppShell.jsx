@@ -6,7 +6,7 @@ import { Redirect, Route } from "react-router-dom";
 import ModalContextProvider from "@/utils/modals";
 
 import Tabs from "./Tabs";
-import Welcome from "./pages/Welcome";
+import Login from "./pages/Login";
 
 setupIonicReact({});
 
@@ -32,7 +32,7 @@ const AppShell = () => {
       <ModalContextProvider>
         <IonReactRouter>
           <IonRouterOutlet id="main">
-            <Route path="/welcome" render={() => <Welcome />} exact={true} />
+            <Route path="/login" render={() => <Login />} exact={true} />
             <Route path="/" render={() => <Redirect to="/tabs" />} exact={true} />
 
             {/* /tabs MUST NOT BE EXACT */}

@@ -18,18 +18,23 @@ export const useModal = () => {
     const OKButton = { text: "OK", role: true };
 
     // wrappers
-    const modalWrapper = options => new Promise(resolve => presentAlert({ ...options, onDidDismiss: event => resolve(event) }));
+    const modalWrapper = ({ header, message, ...options }) => new Promise(resolve => presentAlert({
+        header: header && header + "",
+        message: message && message + "",
+        onDidDismiss: resolve,
+        ...options,
+    }));
     const buttonDismissed = event => event.detail.role && event.detail.role !== "backdrop";
 
     // the modals
-    const alertModal = (header, message = null) => modalWrapper({ header, message, buttons: [OKButton] }).then(buttonDismissed);
-    const errorModal = (header, message = null) => modalWrapper({ header, message, buttons: [OKButton] }).then(buttonDismissed);
-    const confirmModal = (header, message = null) => modalWrapper({ header, message, buttons: [CancelButton, OKButton] }).then(buttonDismissed);
+    const alertModal = (header, message = null) => modalWrapper({ header: header || message, message: header && message, buttons: [OKButton] }).then(buttonDismissed);
+    const errorModal = (header, message = null) => modalWrapper({ header: header || message, message: header && message, buttons: [OKButton] }).then(buttonDismissed);
+    const confirmModal = (header, message = null) => modalWrapper({ header: header || message, message: header && message, buttons: [CancelButton, OKButton] }).then(buttonDismissed);
 
     // smart modal that wraps async function
     const smartModal = (func, errorHeader = null, alertHeader = null) => (...args) => func(...args)
-        .then(value => value && alertModal(value, alertHeader))
-        .catch(value => value && errorModal(value, errorHeader));
+        .then(value => value && alertModal(alertHeader, value))
+        .catch(value => value && errorModal(errorHeader, value));
 
     // smart modal that wraps sync function
     const smartModalSync = (func, errorHeader = null, alertHeader = null) => (...args) => {

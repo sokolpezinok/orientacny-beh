@@ -1,10 +1,11 @@
-import { IonIcon, IonItem, IonLabel, IonList, IonTitle, IonToolbar } from "@ionic/react";
+import { IonIcon, IonList, IonTitle, IonToolbar } from "@ionic/react";
 import { calendar, location } from "ionicons/icons";
 
 import { isEntryExpired } from "@/utils";
 import { RaceApi } from "@/utils/api";
 import { formatDates } from "@/utils/format";
 import Content from "../controllers/Content";
+import { Text, Title } from "../ui/Design";
 import { SadFace } from "../ui/Media";
 
 export default () => <Content Render={Races} Header={Header} updateData={() => RaceApi.list()} errorText="Nepodarilo sa načítať preteky." />;
@@ -23,16 +24,12 @@ const Races = ({ content }) => {
   return (
     <IonList>
       {content.map((child) => (
-        <IonItem key={child.race_id} routerLink={`/tabs/races/${child.race_id}`} className="p-2">
-          <IonLabel>
-            <h1 className="text-xl !font-bold text-gray-700 dark:text-gray-200">
-              <span className={child.is_cancelled ? "line-through" : null}>{child.name}</span>
-            </h1>
-            {isEntryExpired(child.entries) && <p className="!text-rose-500">Cez appku sa už nedá prihlásiť! Kontaktuj organizátorov.</p>}
-            <ListItem icon={calendar} text={formatDates(child.dates)} />
-            <ListItem icon={location} text={child.place} />
-          </IonLabel>
-        </IonItem>
+        <Text key={child.race_id} routerLink={`/tabs/races/${child.race_id}`} className="p-2">
+          <Title className={child.cancelled && "line-through"}>{child.name}</Title>
+          {isEntryExpired(child.entries) && <p className="!text-rose-500">Cez appku sa už nedá prihlásiť! Kontaktuj organizátorov.</p>}
+          <ListItem icon={calendar} text={formatDates(child.dates)} />
+          <ListItem icon={location} text={child.place} />
+        </Text>
       ))}
     </IonList>
   );

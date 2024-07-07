@@ -15,7 +15,7 @@ const Content = ({ Render, Header, updateData, errorText }) => {
   const handleUpdate = () =>
     updateData(params)
       .then((data) => setContent(data))
-      .catch((error) => (content === null ? setError(error) : errorModal(error, errorText)));
+      .catch((error) => (content === null ? setError(error) : errorModal(errorText, error)));
 
   useEffect(() => {
     handleUpdate();

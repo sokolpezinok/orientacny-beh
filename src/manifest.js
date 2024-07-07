@@ -25,23 +25,21 @@
 // (c) KOB Sokol Pezinok
 
 const appName = "Orientačný beh";
-const appBuildVersion = `v3.02a0`;
+const appBuildVersion = `v3.03a0`;
 const appPackageName = "orienteering.app";
 
 //======================================//
 // do NOT add trailing slash at the end //
 //======================================//
-const appServerDomain = "members.eob.cz";
-const appServerProtocol = "https";
-const appServerHost = `${appServerProtocol}://${appServerDomain}`;
-const appServerApi = "https://members.eob.cz/api";
+const apiDomain = "members.eob.cz";
+const apiVersion = 1;
+const apiServer = `https://members.eob.cz/api/${apiVersion}`;
 
 module.exports = { // use CommonJS syntax for compatibility reasons with capacitor.confit.ts
     appName,
     appBuildVersion,
     appPackageName,
-    appServerDomain,
-    appServerProtocol,
-    appServerHost,
-    appServerApi,
+    apiDomain,
+    apiVersion,
+    apiServer,
 };

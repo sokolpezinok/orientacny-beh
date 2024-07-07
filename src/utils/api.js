@@ -1,8 +1,8 @@
-import { appServerApi } from "@/manifest";
-import Store from "@/utils/store";
+import { apiServer } from "@/manifest";
+import { Storage } from "@/utils/storage";
 
-const getToken = () => Store.getRawState().user.token;
-const getServer = () => `${appServerApi}/club/${Store.getRawState().club.clubname}`
+const getToken = () => Storage.pull().token;
+const getServer = () => `${apiServer}/${Storage.pull().club.clubname}`;
 
 // server api packaged into a class
 class Api {
@@ -38,14 +38,14 @@ class Api {
 
 export class GeneralApi extends Api {
     static clubs = () => this.fetch(`/clubs`, {
-        server: appServerApi
+        server: apiServer
     });
 }
 
 export class UserApi extends Api {
-    static login = (username, password, clubname) => this.fetch(`/user/login`, {
+    static login = ({ username, password, clubname }) => this.fetch(`/user/login`, {
         data: { username, password },
-        server: `${appServerApi}/club/${clubname}`
+        server: `${apiServer}/${clubname}`,
     });
     static show = (user_id) => this.fetch(`/user/${user_id}`);
     static managing = (user_id) => this.fetch(`/user/${user_id}/managing`, {
@@ -72,9 +72,28 @@ export class RaceApi extends Api {
     });
     static signin = (race_id, user_id, { category, note, note_internal, transport, accommodation }) => this.fetch(`/race/${race_id}/signin/${user_id}`, {
         auth: true,
-        data: { category, note, note_internal, transport, accommodation }
+        data: { category, note, note_internal, transport, accommodation },
     });
     static signout = (race_id, user_id) => this.fetch(`/race/${race_id}/signout/${user_id}`, {
         auth: true,
     });
+    static notify = (race_id, { title, body, image }) => this.fetch(`/race/${race_id}/notify`, {
+        auth: true,
+        data: { title, body, image },
+    });
+}
+
+export class PolicyEnums {
+    static BIG_MANAGER = 4;
+    static SMALL_MANAGER = 2;
+}
+
+export class RaceEnums {
+    static TRANSPORT_UNAVAILABLE = 0;
+    static TRANSPORT_AVAILABLE = 1;
+    static TRANSPORT_REQUIRED = 2;
+
+    static ACCOMMODATION_UNAVAILABLE = 0;
+    static ACCOMMODATION_AVAILABLE = 1;
+    static ACCOMMODATION_REQUIRED = 2;
 }

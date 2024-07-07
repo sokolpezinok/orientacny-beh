@@ -1,4 +1,4 @@
-import Link from "./Link";
+import { BasicLink } from "./Design";
 
 export default ({}) => {
   return (
@@ -6,7 +6,7 @@ export default ({}) => {
       <h3 className="my-2 text-orange-600 dark:text-orange-700">Copyright © 2023 KOB Sokol Pezinok</h3>
       <div className="text-sm">
         <p className="mb-2">
-          <Link href="https://prihlasky.sokolpezinok.sk/legal/gdpr.html">Oznámenie o spracovaní osobných údajov</Link>
+          <BasicLink href="https://prihlasky.sokolpezinok.sk/legal/gdpr.html">Oznámenie o spracovaní osobných údajov</BasicLink>
         </p>
         <h3 className="mb-2">MIT License</h3>
         <p className="mb-2">

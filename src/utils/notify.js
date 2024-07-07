@@ -1,48 +1,50 @@
-import { FCM } from "@capacitor-community/fcm";
-import { PushNotifications } from "@capacitor/push-notifications";
+import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { Capacitor } from "@capacitor/core";
-import Store from "./store";
+import { LocalNotifications } from "@capacitor/local-notifications";
+import { Storage } from "./storage";
 
 export class Notifications {
-  static register = async () => {
-    if (!Capacitor.isNativePlatform()) return;
+  static isSupported = () => Capacitor.isNativePlatform();
 
-    let status = await PushNotifications.checkPermissions();
+  static register = async () => {
+    if (!this.isSupported()) throw "Funkcia nie je podporovaná pre tento typ zariadenia.";
+
+    let status = await FirebaseMessaging.checkPermissions();
 
     if (status.receive === "prompt") {
-      status = await PushNotifications.requestPermissions();
+      status = await FirebaseMessaging.requestPermissions();
     }
 
     if (status.receive !== "granted") {
-      throw "Notifications are denied by user.";
+      throw "Povolenie bolo zrušené používateľom.";
     }
 
-    await PushNotifications.register();
-    await FCM.setAutoInit({ enabled: true });
-    await FCM.subscribeTo({ topic: Store.getRawState().club.clubname });
+    alert("Subscribing: " + Storage.pull().club.clubname);
 
-    Store.update(s => {
-      s.allow_notify = true;
-    });
+    await FirebaseMessaging.subscribeToTopic({ topic: Storage.pull().club.clubname });
   }
 
   static unregister = async () => {
-    if (!Capacitor.isNativePlatform()) return;
+    if (!this.isSupported()) return;
 
-    await FCM.setAutoInit({ enabled: false });
-    await PushNotifications.unregister();
-
-    Store.update(s => {
-      s.allow_notify = false;
-    });
+    alert("Unsubscribing: " + Storage.pull().club.clubname);
+    await FirebaseMessaging.unsubscribeFromTopic({ topic: Storage.pull().club.clubname });
   }
 
-  static getToken = async () => {
-    return await FCM.getToken();
-  }
+  static getToken = FirebaseMessaging.getToken;
+
+  static notify = ({ id, data, title, body, ...options }) => LocalNotifications.schedule({
+    notifications: [{
+      // 32-bit int, the value should be between -2147483648 and 2147483647 inclusive
+      id: id ?? Math.floor(Math.random() * 4294967295) - 2147483648,
+      title,
+      largeBody: body,
+      ...options,
+    }],
+  });
 }
 
-export class NotificantionsContent {
-  static EVENT_BASIC = 1;
-  static EVENT_RACE_CHANGED = 2;
+export class NotifyEvents {
+  static BASIC = 0;
+  static RACE = 1;
 }

@@ -1,68 +1,57 @@
-import { IonBackButton, IonButtons, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol, IonAccordionGroup, IonAccordion } from "@ionic/react";
-import License from "../ui/License";
 import { appBuildVersion } from "@/manifest";
-import Link from "../ui/Link";
+import { IonAccordion, IonAccordionGroup, IonCol, IonContent, IonGrid, IonHeader, IonList, IonPage, IonRow } from "@ionic/react";
+import { BasicLink, Header, Text } from "../ui/Design";
+import License from "../ui/License";
 
 const About = () => {
   return (
     <>
       <IonPage>
         <IonHeader>
-          <IonToolbar>
-            <IonButtons slot="start">
-              <IonBackButton defaultHref="/tabs/settings" />
-            </IonButtons>
-            <IonTitle>O aplikácii</IonTitle>
-          </IonToolbar>
+          <Header backHref="/tabs/settings">O aplikácii</Header>
         </IonHeader>
         <IonContent>
           <IonList>
-            <IonItem>
-              <IonLabel className="ion-text-wrap">
-                <h1>Verzia</h1>
-                <p>{appBuildVersion}</p>
-              </IonLabel>
-            </IonItem>
+            <Text>
+              <h1>Verzia</h1>
+              <p>{appBuildVersion}</p>
+            </Text>
             <IonAccordionGroup>
               <IonAccordion>
-                <IonItem slot="header">
-                  <IonLabel className="ion-text-wrap">
-                    <h1>Poďakovanie</h1>
-                    <p>Ďakujeme všetkým, ktorí akýmkoľvek spôsobom prispeli na vývoj aplikácie Orientačného behu.</p>
-                  </IonLabel>
-                </IonItem>
+                <Text slot="header">
+                  <h1>Poďakovanie</h1>
+                  <p>Ďakujeme všetkým, ktorí akýmkoľvek spôsobom prispeli na vývoj aplikácie Orientačného behu.</p>
+                </Text>
                 <div slot="content" className="bg-orange-50 dark:bg-transparent">
                   <IonGrid className="mx-4 py-4">
                     <IonRow>
                       <IonCol>Vývojár</IonCol>
                       <IonCol className="text-right text-orange-600 dark:text-orange-700">
-                        <Link href="https://github.com/jurakin">Jurakin</Link>
+                        <BasicLink href="https://github.com/jurakin">Jurakin</BasicLink>
                       </IonCol>
                     </IonRow>
                     <IonRow>
                       <IonCol>Dizajn</IonCol>
                       <IonCol className="text-right text-orange-600 dark:text-orange-700">
-                        <Link href="mailto:ondrej.honsch@gmail.com">Ondrej</Link>
+                        <BasicLink href="mailto:ondrej.honsch@gmail.com">Ondrej</BasicLink>
                       </IonCol>
                     </IonRow>
                     <IonRow>
                       <IonCol>Od klubu</IonCol>
                       <IonCol className="text-right text-orange-600 dark:text-orange-700">
-                        <Link href="https://www.sokolpezinok.sk/">KOB Sokol Pezinok</Link>
+                        <BasicLink href="https://www.sokolpezinok.sk/">KOB Sokol Pezinok</BasicLink>
                       </IonCol>
                     </IonRow>
                   </IonGrid>
                 </div>
               </IonAccordion>
               <IonAccordion>
-                <IonItem slot="header">
-                  <IonLabel className="ion-text-wrap">
-                    <h1>Licencia</h1>
-                    <p>
-                      Aplikácia Orientačný beh je pod licenciou <b>MIT License</b>.
-                    </p>
-                  </IonLabel>
-                </IonItem>
+                <Text slot="header">
+                  <h1>Licencia</h1>
+                  <p>
+                    Aplikácia Orientačný beh je pod licenciou <b>MIT License</b>.
+                  </p>
+                </Text>
                 <div slot="content" className="bg-orange-50 p-4 dark:bg-transparent">
                   <License />
                 </div>

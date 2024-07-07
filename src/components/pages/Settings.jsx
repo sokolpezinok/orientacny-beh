@@ -1,50 +1,76 @@
 import { useModal } from "@/utils/modals";
 import { Notifications } from "@/utils/notify";
-import Store, { syncStorage } from "@/utils/store";
-import { IonContent, IonHeader, IonItem, IonLabel, IonList, IonPage, IonTitle, IonToolbar } from "@ionic/react";
+import { Storage } from "@/utils/storage";
+import { IonContent, IonHeader, IonItem, IonList, IonPage } from "@ionic/react";
+import { useEffect, useState } from "react";
+import { Header, ItemLink, Text, Toggle } from "../ui/Design";
 
 const Settings = () => {
-  const { errorModal, confirmModal } = useModal();
+  const { errorModal, confirmModal, smartModal } = useModal();
+  const [token, setToken] = useState(null);
 
   const handleLogout = async (event) => {
-    if (!(await confirmModal("Naozaj sa chceš odhlásiť?"))) return event.preventDefault();
+    const surety = await confirmModal("Naozaj sa chceš odhlásiť?");
+    if (!surety) return event.preventDefault();
 
-    Store.update((s) => {
-      s.is_logged_in = false;
+    await Notifications.unregister();
+    await Storage.push((s) => {
+      s.isLoggedIn = false;
     });
-
-    await syncStorage();
   };
 
-  const handleAllowNotify = (event) =>
-    (event.target.checked ? Notifications.register() : Notifications.unregister()).catch((error) => {
-      errorModal("Nepodarilo sa zmeniť nastavenie.", error);
+  const handleAllowNotify = smartModal(async (event) => {
+    try {
+      if (event.target.checked) {
+        await Notifications.register();
+      } else {
+        await Notifications.unregister();
+      }
+    } catch (error) {
+      // when an error is thrown, undo toggle check
       event.target.checked = !event.target.checked;
+      throw error;
+    }
+
+    await Storage.push((s) => {
+      s.preferences.allowNotify = event.target.checked;
     });
+  }, "Nepodarilo sa zmeniť nastavenie.");
+
+  useEffect(() => {
+    if (Storage.pull().preferences.allowNotify) {
+      Notifications.getToken()
+        .then((data) => setToken(data.token))
+        .catch((error) => errorModal(error.message));
+    }
+  }, []);
 
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
-          <IonTitle>Nastavenia</IonTitle>
-        </IonToolbar>
+        <Header>Nastavenia</Header>
       </IonHeader>
       <IonContent>
         <IonList>
-          <IonItem routerLink="/tabs/settings/profile">
-            <IonLabel>Profil</IonLabel>
-          </IonItem>
-          {/* <IonItem>
-            <IonToggle labelPlacement="start" checked={Store.getRawState().allow_notify} onIonChange={handleAllowNotify}>
+          <ItemLink routerLink="/tabs/settings/profile">Profil</ItemLink>
+          <IonItem>
+            <Toggle checked={Storage.pull().preferences.allowNotify} onIonChange={handleAllowNotify}>
               Povoliť notifikácie
-            </IonToggle>
-          </IonItem> */}
-          <IonItem routerLink="#" onClick={handleLogout}>
-            <IonLabel>Odhlásiť sa</IonLabel>
+            </Toggle>
           </IonItem>
-          <IonItem routerLink="/tabs/settings/about">
-            <IonLabel>O aplikácii</IonLabel>
-          </IonItem>
+          <Text>
+            <p>{token ?? "-"}</p>
+          </Text>
+          <Text>
+            <p>{JSON.stringify(Storage.pull().policies) ?? "-"}</p>
+          </Text>
+          <ItemLink routerLink="#" onClick={() => Notifications.notify({ title: "Hello", body: "World" })}>
+            Notify
+          </ItemLink>
+          <ItemLink routerLink="#" onClick={handleLogout}>
+            Odhlásiť sa
+          </ItemLink>
+          <ItemLink routerLink="/tabs/settings/about">O aplikácii</ItemLink>
         </IonList>
       </IonContent>
     </IonPage>

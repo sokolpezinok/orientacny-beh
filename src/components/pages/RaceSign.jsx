@@ -1,28 +1,23 @@
-import { IonBackButton, IonButton, IonButtons, IonInput, IonItem, IonLabel, IonList, IonSelect, IonSelectOption, IonTitle, IonToggle, IonToolbar } from "@ionic/react";
-import { useState } from "react";
+import { IonItem, IonList, IonSelectOption } from "@ionic/react";
+import { useRef, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
-import { RaceApi } from "@/utils/api";
+import { RaceApi, RaceEnums } from "@/utils/api";
 import { useModal } from "@/utils/modals";
 import Content from "../controllers/Content";
-import Form from "../controllers/Form";
+import { Header, Input, PrimaryButton, SecondaryButton, Select, Spacing, Text, Title, Toggle } from "../ui/Design";
 
 export default () => (
-  <Content Render={RaceSign} Header={Header} updateData={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])} errorText="Nepodarilo sa načítať preteky." />
+  <Content
+    Render={RaceSign}
+    Header={() => {
+      const { race_id } = useParams();
+      return <Header backHref={`/tabs/races/${race_id}`}>Prihláška</Header>;
+    }}
+    updateData={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])}
+    errorText="Nepodarilo sa načítať preteky."
+  />
 );
-
-const Header = ({}) => {
-  const { race_id } = useParams();
-
-  return (
-    <IonToolbar>
-      <IonButtons slot="start">
-        <IonBackButton defaultHref={`/tabs/races/${race_id}`} />
-      </IonButtons>
-      <IonTitle>Prihláška</IonTitle>
-    </IonToolbar>
-  );
-};
 
 const RaceSign = ({ content }) => {
   const [detail, relations] = content;
@@ -30,6 +25,7 @@ const RaceSign = ({ content }) => {
   const { race_id, user_id } = useParams();
   const history = useHistory();
   const { smartModal } = useModal();
+  const ref = useRef(null);
 
   const userIndexFromUrl = relations.findIndex((value) => value.user_id == user_id);
 
@@ -38,8 +34,9 @@ const RaceSign = ({ content }) => {
   const [userIndex, setUserIndex] = useState(userIndexFromUrl === -1 ? 0 : userIndexFromUrl);
   const user = relations[userIndex];
 
-  const handleSubmit = smartModal(async (els) => {
-    const wanted_inputs = {
+  const handleSubmit = smartModal(async () => {
+    const els = ref.current.elements;
+    const collected = {
       category: els.category.value,
       transport: els.transport.value.length > 0,
       accommodation: els.accommodation.value.length > 0,
@@ -47,15 +44,15 @@ const RaceSign = ({ content }) => {
       note_internal: els.note_internal.value,
     };
 
-    if (wanted_inputs.category === "") throw "Nezabudni zadať kategóriu.";
+    if (collected.category === "") throw "Nezabudni zadať kategóriu.";
 
-    await RaceApi.signin(race_id, user.user_id, wanted_inputs);
+    await RaceApi.signin(race_id, user.user_id, collected);
 
     // handleUpdate();
     // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
     history.goBack();
     return "Prihlásenie prebehlo úspešne.";
-  });
+  }, "Nepodarilo sa prihlásiť.");
 
   const handleSignout = smartModal(async () => {
     await RaceApi.signout(race_id, user.user_id);
@@ -64,65 +61,66 @@ const RaceSign = ({ content }) => {
     // use .goBack() instead of .push(...) to prevent saving this into history and to act like a back button
     history.goBack();
     return "Odhlásenie prebehlo úspešne.";
-  });
+  }, "Nepodarilo sa odhlásiť.");
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <form ref={ref}>
       <IonList>
+        <Text>
+          <Title>{detail.name}</Title>
+        </Text>
         <IonItem>
-          <IonLabel className="ion-text-wrap">
-            <h1 className="mt-0 !font-bold">{detail.name}</h1>
-          </IonLabel>
-        </IonItem>
-        <IonItem>
-          <IonSelect label="Pretekár/-ka *" labelPlacement="floating" name="user_id" value={userIndex} onIonChange={(event) => setUserIndex(event.target.value)}>
+          <Select label="Pretekár/-ka *" name="user_id" value={userIndex} onIonChange={(event) => setUserIndex(event.target.value)}>
             {relations.map((child, index) => (
               <IonSelectOption key={child.user_id} value={index}>
                 {`${child.name} ${child.surname} (${child.chip_number})`}
               </IonSelectOption>
             ))}
-          </IonSelect>
+          </Select>
         </IonItem>
-        <IonItem>
-          {detail.categories.length === 0 ? (
-            <IonInput label="Kategória *" labelPlacement="floating" name="category" value={user.category} />
-          ) : (
-            <IonSelect label="Kategória *" labelPlacement="floating" name="category" value={user.category}>
+        {detail.categories.length === 0 ? (
+          <IonItem>
+            <Input label="Kategória *" name="category" value={user.category} />
+          </IonItem>
+        ) : (
+          <IonItem>
+            <Select label="Kategória *" name="category" value={user.category}>
               {detail.categories.map((child) => (
                 <IonSelectOption key={child} value={child}>
                   {child}
                 </IonSelectOption>
               ))}
-            </IonSelect>
-          )}
-        </IonItem>
+            </Select>
+          </IonItem>
+        )}
+
         <IonItem>
-          {/* transport can be: 0 => not avaible; 1 = up to user; 2 = commanded */}
-          <IonToggle labelPlacement="start" name="transport" checked={detail.transport == 1 ? user.transport : detail.transport} disabled={detail.transport != 1}>
+          <Toggle name="transport" checked={detail.transport == RaceEnums.TRANSPORT_AVAILABLE ? user.transport : detail.transport} disabled={detail.transport != RaceEnums.TRANSPORT_AVAILABLE}>
             Chcem využiť spoločnú dopravu
-          </IonToggle>
+          </Toggle>
         </IonItem>
         <IonItem>
-          {/* accommodation can be: 0 => not avaible; 1 = up to user; 2 = commanded */}
-          <IonToggle labelPlacement="start" name="accommodation" checked={detail.accommodation == 1 ? user.accommodation : detail.accommodation} disabled={detail.accommodation != 1}>
+          <Toggle
+            name="accommodation"
+            checked={detail.accommodation == RaceEnums.ACCOMMODATION_AVAILABLE ? user.accommodation : detail.accommodation}
+            disabled={detail.accommodation != RaceEnums.ACCOMMODATION_AVAILABLE}
+          >
             Chcem využiť spoločné ubytovanie
-          </IonToggle>
+          </Toggle>
         </IonItem>
         <IonItem>
-          <IonInput label="Poznámka (do prihlášky)" labelPlacement="floating" name="note" placeholder="..." value={user.note} />
+          <Input label="Poznámka (do prihlášky)" name="note" value={user.note} />
         </IonItem>
         <IonItem>
-          <IonInput label="Poznámka (interná)" labelPlacement="floating" name="note_internal" placeholder="..." value={user.note_internal}></IonInput>
+          <Input label="Poznámka (interná)" labelPlacement="floating" name="note_internal" placeholder="..." value={user.note_internal} />
         </IonItem>
-        <div className="p-4">
-          <IonButton fill="solid" type="submit" className="w-full">
-            {user.is_signed_in ? "Zmeniť" : "Prihlásiť sa"}
-          </IonButton>
-          <IonButton fill="clear" type="button" className="w-full" disabled={!user.is_signed_in} onClick={handleSignout}>
+        <Spacing>
+          <PrimaryButton onClick={handleSubmit}>{user.is_signed_in ? "Zmeniť" : "Prihlásiť sa"}</PrimaryButton>
+          <SecondaryButton disabled={!user.is_signed_in} onClick={handleSignout}>
             Odhlásiť sa
-          </IonButton>
-        </div>
+          </SecondaryButton>
+        </Spacing>
       </IonList>
-    </Form>
+    </form>
   );
 };

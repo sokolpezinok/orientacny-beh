@@ -7,7 +7,7 @@ export const FatalError = ({ text = "", error = "" }) => {
       <div className="text-center">
         <IonIcon size="large" className="text-rose-500" icon={alertCircle} />
         <p className="ion-text-wrap font-bold text-rose-500">{text}</p>
-        <p className="ion-text-wrap text-sm text-gray-700 dark:text-gray-400">{error}</p>
+        <p className="ion-text-wrap text-sm text-gray-700 dark:text-gray-400">{typeof error === "string" ? error : error + ""}</p>
       </div>
     </div>
   );

@@ -1,44 +1,24 @@
-import {
-  IonAccordion,
-  IonAccordionGroup,
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonGrid,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonRow,
-  IonSelect,
-  IonSelectOption,
-  IonTitle,
-  IonToggle,
-  IonToolbar,
-} from "@ionic/react";
+import { IonAccordion, IonAccordionGroup, IonGrid, IonList, IonRow, IonSelect, IonSelectOption } from "@ionic/react";
 
 import { UserApi } from "@/utils/api";
 import countries from "@/utils/countries";
 import { useModal } from "@/utils/modals";
+import { Storage } from "@/utils/storage";
+import { useRef } from "react";
 import Content from "../controllers/Content";
-import Form from "../controllers/Form";
+import { Header, Input, PrimaryButton, Select, Spacing, Text, Toggle } from "../ui/Design";
 
-export default () => <Content Render={Profile} Header={Header} updateData={() => UserApi.data()} errorText="Nepodarilo sa načítať dáta." />;
-
-const Header = ({}) => (
-  <IonToolbar>
-    <IonButtons slot="start">
-      <IonBackButton defaultHref="/tabs/settings" />
-    </IonButtons>
-    <IonTitle>Profil</IonTitle>
-  </IonToolbar>
-);
+export default () => <Content Render={Profile} Header={() => <Header backHref="/tabs/settings">Profil</Header>} updateData={() => UserApi.data()} errorText="Nepodarilo sa načítať dáta." />;
 
 const Profile = ({ content }) => {
   const { smartModal } = useModal({ errorHeader: "Nepodarilo sa aktualizovať profil." });
+  const ref = useRef(null);
 
-  const handleSubmit = smartModal(async (els) => {
-    const wanted_inputs = {
+  const canUserEdit = !Storage.pull().policies.policy_mng;
+
+  const handleSubmit = smartModal(async () => {
+    const els = ref.current.elements;
+    const collected = {
       name: els.name.value,
       surname: els.surname.value,
       email: els.email.value,
@@ -59,51 +39,38 @@ const Profile = ({ content }) => {
       licence_mtbo: els.licence_mtbo.value,
       is_hidden: els.is_hidden.checked,
     };
-    await UserApi.update(wanted_inputs);
+    await UserApi.update(collected);
     return "Vaše údaje boli úspešne aktualizované.";
-  });
+  }, "Nepodarilo sa aktualizovať údaje.");
 
-  /* <IonItem>
-    <IonLabel className="ion-text-wrap p-4">
-      <h1>Ahoj, {content.name}!</h1>
-      <ul className="mt-2 text-gray-500">
-        <li>Čip: {content.chip_number}</li>
-        <li>Email: {content.email}</li>
-        <li>Číslo: {content.registration_number}</li>
-        <li>ID: {content.user_id}</li>
-      </ul>
-    </IonLabel>
-  </IonItem> */
   return (
-    <Form onSubmit={handleSubmit}>
+    <form ref={ref}>
       <IonList>
         <IonAccordionGroup>
           <IonAccordion>
-            <IonItem slot="header">
-              <IonLabel>Všeobecné</IonLabel>
-            </IonItem>
+            <Text slot="header">Všeobecné</Text>
             <div slot="content" className="bg-orange-50 dark:bg-transparent">
               <IonGrid className="mx-4 py-4">
                 <IonRow>
-                  <IonInput label="Meno" labelPlacement="floating" name="name" value={content.name} placeholder="..." />
+                  <Input disabled={canUserEdit} label="Meno" name="name" value={content.name} />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Priezvisko" labelPlacement="floating" name="surname" value={content.surname} placeholder="..." />
+                  <Input disabled={canUserEdit} label="Priezvisko" name="surname" value={content.surname} />
                 </IonRow>
                 <IonRow>
-                  <IonSelect label="Pohlavie" labelPlacement="floating" name="gender" value={content.gender} placeholder="...">
+                  <Select disabled={canUserEdit} label="Pohlavie" name="gender" value={content.gender}>
                     <IonSelectOption value="H">Mužské</IonSelectOption>
                     <IonSelectOption value="D">Ženské</IonSelectOption>
-                  </IonSelect>
+                  </Select>
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Narodenie" labelPlacement="floating" name="birth_date" value={content.birth_date} placeholder="..." type="date" />
+                  <Input disabled={canUserEdit} label="Narodenie" name="birth_date" value={content.birth_date} type="date" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Rodné číslo" labelPlacement="floating" name="birth_number" value={content.birth_number} placeholder="..." type="number" />
+                  <Input disabled={canUserEdit} label="Rodné číslo" name="birth_number" value={content.birth_number} type="number" />
                 </IonRow>
                 <IonRow>
-                  <IonSelect label="Národnosť" labelPlacement="floating" name="nationality" value={content.nationality} placeholder="...">
+                  <IonSelect disabled={canUserEdit} label="Národnosť" name="nationality" value={content.nationality}>
                     {countries.map(([code, name]) => (
                       <IonSelectOption key={code} value={code}>
                         {name}
@@ -112,64 +79,60 @@ const Profile = ({ content }) => {
                   </IonSelect>
                 </IonRow>
                 <IonRow>
-                  <IonToggle labelPlacement="start" name="is_hidden" checked={content.is_hidden}>
+                  <Toggle disabled={true} name="is_hidden" checked={content.is_hidden}>
                     Skryté konto
-                  </IonToggle>
+                  </Toggle>
                 </IonRow>
               </IonGrid>
             </div>
           </IonAccordion>
           <IonAccordion>
-            <IonItem slot="header">
-              <IonLabel>Kontakty</IonLabel>
-            </IonItem>
+            <Text slot="header">Kontakty</Text>
             <div slot="content" className="bg-orange-50 dark:bg-transparent">
               <IonGrid className="mx-4 py-4">
                 <IonRow>
-                  <IonInput label="Email" labelPlacement="floating" name="email" value={content.email} placeholder="..." />
+                  <Input label="Email" name="email" value={content.email} />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Adresa" labelPlacement="floating" name="address" value={content.address} placeholder="..." />
+                  <Input label="Adresa" name="address" value={content.address} />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Mesto" labelPlacement="floating" name="city" value={content.city} placeholder="..." />
+                  <Input label="Mesto" name="city" value={content.city} />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="PŠC" labelPlacement="floating" name="postal_code" value={content.postal_code} placeholder="..." type="number" />
+                  <Input label="PŠC" name="postal_code" value={content.postal_code} type="number" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Mobil" labelPlacement="floating" name="phone" value={content.phone} placeholder="..." type="tel" />
+                  <Input label="Mobil" name="phone" value={content.phone} type="tel" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Mobil domov" labelPlacement="floating" name="phone_home" value={content.phone_home} placeholder="..." type="tel" />
+                  <Input label="Domáci mobil" name="phone_home" value={content.phone_home} type="tel" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Mobil pracovný" labelPlacement="floating" name="phone_work" value={content.phone_work} placeholder="..." type="tel" />
+                  <Input label="Pracovný mobil" name="phone_work" value={content.phone_work} type="tel" />
                 </IonRow>
               </IonGrid>
             </div>
           </IonAccordion>
           <IonAccordion>
-            <IonItem slot="header">Čip</IonItem>
+            <Text slot="header">Čip</Text>
             <div slot="content" className="bg-orange-50 dark:bg-transparent">
               <IonGrid className="mx-4 py-4">
                 <IonRow>
-                  <IonInput label="Čip" labelPlacement="floating" name="chip_number" value={content.chip_number} placeholder="..." type="number" />
+                  <Input label="Čip" name="chip_number" value={content.chip_number} type="number" />
                 </IonRow>
                 <IonRow>
-                  <IonInput label="Registračné číslo" labelPlacement="floating" name="registration_number" value={content.registration_number} placeholder="..." type="number" />
+                  <Input disabled={canUserEdit} label="Registračné číslo" name="registration_number" value={content.registration_number} type="number" />
                 </IonRow>
               </IonGrid>
             </div>
           </IonAccordion>
           <IonAccordion>
-            <IonItem slot="header">
-              <IonLabel>Licencie</IonLabel>
-            </IonItem>
+            <Text slot="header">Licencie</Text>
             <div slot="content" className="bg-orange-50 dark:bg-transparent">
               <IonGrid className="mx-4 py-4">
                 <IonRow>
-                  <IonSelect label="Licencia OB" labelPlacement="floating" name="licence_ob" value={content.licence_ob} placeholder="...">
+                  <Select label="Licencia OB" name="licence_ob" value={content.licence_ob}>
                     <IonSelectOption value="-">Žiadna</IonSelectOption>
                     <IonSelectOption value="E">E</IonSelectOption>
                     <IonSelectOption value="A">A</IonSelectOption>
@@ -177,10 +140,10 @@ const Profile = ({ content }) => {
                     <IonSelectOption value="C">C</IonSelectOption>
                     <IonSelectOption value="D">D</IonSelectOption>
                     <IonSelectOption value="R">R</IonSelectOption>
-                  </IonSelect>
+                  </Select>
                 </IonRow>
                 <IonRow>
-                  <IonSelect label="Licencia LOB" labelPlacement="floating" name="licence_lob" value={content.licence_lob} placeholder="...">
+                  <Select label="Licencia LOB" name="licence_lob" value={content.licence_lob}>
                     <IonSelectOption value="-">Žiadna</IonSelectOption>
                     <IonSelectOption value="E">E</IonSelectOption>
                     <IonSelectOption value="A">A</IonSelectOption>
@@ -188,10 +151,10 @@ const Profile = ({ content }) => {
                     <IonSelectOption value="C">C</IonSelectOption>
                     <IonSelectOption value="D">D</IonSelectOption>
                     <IonSelectOption value="R">R</IonSelectOption>
-                  </IonSelect>
+                  </Select>
                 </IonRow>
                 <IonRow>
-                  <IonSelect label="Licencia MTBO" labelPlacement="floating" name="licence_mtbo" value={content.licence_mtbo} placeholder="...">
+                  <Select label="Licencia MTBO" name="licence_mtbo" value={content.licence_mtbo}>
                     <IonSelectOption value="-">Žiadna</IonSelectOption>
                     <IonSelectOption value="E">E</IonSelectOption>
                     <IonSelectOption value="A">A</IonSelectOption>
@@ -199,18 +162,16 @@ const Profile = ({ content }) => {
                     <IonSelectOption value="C">C</IonSelectOption>
                     <IonSelectOption value="D">D</IonSelectOption>
                     <IonSelectOption value="R">R</IonSelectOption>
-                  </IonSelect>
+                  </Select>
                 </IonRow>
               </IonGrid>
             </div>
           </IonAccordion>
         </IonAccordionGroup>
-        <div className="p-4">
-          <IonButton fill="solid" type="submit" className="w-full">
-            Zmeniť
-          </IonButton>
-        </div>
+        <Spacing>
+          <PrimaryButton onClick={handleSubmit}>Zmeniť</PrimaryButton>
+        </Spacing>
       </IonList>
-    </Form>
+    </form>
   );
 };
