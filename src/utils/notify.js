@@ -4,11 +4,13 @@ import { LocalNotifications } from "@capacitor/local-notifications";
 import { Storage } from "./storage";
 
 export class Notifications {
-  static isSupported = () => Capacitor.isNativePlatform();
+  static checkSupport = () => {
+    if (!Capacitor.isNativePlatform()) {
+      throw "Funkcia nie je podporovaná pre tento typ zariadenia.";
+    }
+  };
 
-  static register = async () => {
-    if (!this.isSupported()) throw "Funkcia nie je podporovaná pre tento typ zariadenia.";
-
+  static requestPermissions = async () => {
     let status = await FirebaseMessaging.checkPermissions();
 
     if (status.receive === "prompt") {
@@ -18,30 +20,44 @@ export class Notifications {
     if (status.receive !== "granted") {
       throw "Povolenie bolo zrušené používateľom.";
     }
+  };
 
-    alert("Subscribing: " + Storage.pull().club.clubname);
+  static register = async (state) => {
+    if (state === Storage.pull().preferences.allowNotify) {
+      return;
+    }
 
-    await FirebaseMessaging.subscribeToTopic({ topic: Storage.pull().club.clubname });
-  }
+    this.checkSupport();
 
-  static unregister = async () => {
-    if (!this.isSupported()) return;
+    if (state) {
+      await this.requestPermissions();
 
-    alert("Unsubscribing: " + Storage.pull().club.clubname);
-    await FirebaseMessaging.unsubscribeFromTopic({ topic: Storage.pull().club.clubname });
-  }
+      await FirebaseMessaging.subscribeToTopic({ topic: Storage.pull().club.clubname });
+      await Storage.push((s) => {
+        s.preferences.allowNotify = true;
+      });
+    } else {
+      await FirebaseMessaging.unsubscribeFromTopic({ topic: Storage.pull().club.clubname });
+      await Storage.push((s) => {
+        s.preferences.allowNotify = false;
+      });
+    }
+  };
 
   static getToken = FirebaseMessaging.getToken;
 
-  static notify = ({ id, data, title, body, ...options }) => LocalNotifications.schedule({
-    notifications: [{
-      // 32-bit int, the value should be between -2147483648 and 2147483647 inclusive
-      id: id ?? Math.floor(Math.random() * 4294967295) - 2147483648,
-      title,
-      largeBody: body,
-      ...options,
-    }],
-  });
+  static notify = ({ id, data, title, body, ...options }) =>
+    LocalNotifications.schedule({
+      notifications: [
+        {
+          // 32-bit int, the value should be between -2147483648 and 2147483647 inclusive
+          id: id ?? Math.floor(Math.random() * 4294967295) - 2147483648,
+          title,
+          largeBody: body,
+          ...options,
+        },
+      ],
+    });
 }
 
 export class NotifyEvents {

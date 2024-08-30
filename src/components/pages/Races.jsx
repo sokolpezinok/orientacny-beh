@@ -1,14 +1,15 @@
-import { IonIcon, IonList, IonTitle, IonToolbar } from "@ionic/react";
+import { IonIcon, IonTitle, IonToolbar } from "@ionic/react";
 import { calendar, location } from "ionicons/icons";
 
 import { isEntryExpired } from "@/utils";
 import { RaceApi } from "@/utils/api";
-import { formatDates } from "@/utils/format";
+import { formatDate } from "@/utils/format";
+import classNames from "classnames";
+import { useHistory } from "react-router-dom";
 import Content from "../controllers/Content";
-import { Text, Title } from "../ui/Design";
-import { SadFace } from "../ui/Media";
+import { Item, SadFace } from "../ui/Design";
 
-export default () => <Content Render={Races} Header={Header} updateData={() => RaceApi.list()} errorText="Nepodarilo sa načítať preteky." />;
+export default () => <Content Render={Races} Header={Header} updateData={RaceApi.list} errorText="Nepodarilo sa načítať preteky." />;
 
 const Header = ({}) => (
   <IonToolbar>
@@ -17,29 +18,31 @@ const Header = ({}) => (
 );
 
 const Races = ({ content }) => {
+  const history = useHistory();
+
   if (content.length === 0) {
-    return <SadFace text="V najbližšej dobe nie sú naplánované preteky." subtext="Môžeš si zabehať nesúťažne :)" />;
+    return <SadFace title="V najbližšej dobe nie sú naplánované preteky." subtitle="Môžeš si zabehať nesúťažne :)" />;
   }
 
   return (
-    <IonList>
+    <>
       {content.map((child) => (
-        <Text key={child.race_id} routerLink={`/tabs/races/${child.race_id}`} className="p-2">
-          <Title className={child.cancelled && "line-through"}>{child.name}</Title>
-          {isEntryExpired(child.entries) && <p className="!text-rose-500">Cez appku sa už nedá prihlásiť! Kontaktuj organizátorov.</p>}
-          <ListItem icon={calendar} text={formatDates(child.dates)} />
-          <ListItem icon={location} text={child.place} />
-        </Text>
+        <Item key={child.race_id} routerLink={`/tabs/races/${child.race_id}`}>
+          <h1 className={classNames("text-2xl font-bold", child.cancelled && "line-through")}>{child.name}</h1>
+          {isEntryExpired(child.entries) && <span className="text-rose-500">Vypršal minimálny termín prihlášok.</span>}
+          <ListItem icon={calendar}>{child.dates.map(formatDate).join(" - ")}</ListItem>
+          <ListItem icon={location}>{child.place}</ListItem>
+        </Item>
       ))}
-    </IonList>
+    </>
   );
 };
 
-const ListItem = ({ icon, text }) => {
+const ListItem = ({ children, icon }) => {
   return (
     <p>
       <IonIcon icon={icon} color="primary" className="align-text-top" />
-      <span className="ml-2">{text}</span>
+      <span className="ml-2">{children}</span>
     </p>
   );
 };

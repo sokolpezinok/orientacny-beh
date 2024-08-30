@@ -1,0 +1,123 @@
+/* Based on tailwind color palette (https://tailwindcss.com/docs/customizing-colors). */
+
+:root {
+  /*
+  Primary
+  */
+
+  /* orange-600 */
+  --theme-primary: #ea580c;
+  --theme-primary-rgb: 233, 89, 12;
+
+  /* orange-700 */
+  --theme-primary-shade: #c2410c;
+  /* orange-500 */
+  --theme-primary-tint: #f97316;
+
+  /*
+  Grayscale
+  */
+
+  /* gray-100 */
+  --theme-background: #f3f4f6;
+  --theme-background-rgb: 243, 244, 246;
+
+  /* gray-300 */
+  --theme-border: #d1d5db;
+
+  /*
+  Typography
+  */
+
+  /* gray-700 */
+  --theme-typography: #374151;
+  --theme-typography-rgb: 55, 65, 81;
+
+  /* gray-500 */
+  --theme-typography-tint: #6b7280;
+  /* gray-800 */
+  --theme-typography-shade: #1f2937;
+
+  /*
+  Should be bright in light & dark modes
+  */
+
+  /* gray-100 */
+  --theme-bright: #f3f4f6;
+  --theme-bright-rgb: 243, 244, 246;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /*
+    Primary
+    */
+
+    /* orange-600 */
+    --theme-primary: #ea580c;
+    --theme-primary-rgb: 233, 89, 12;
+
+    /* orange-700 */
+    --theme-primary-shade: #c2410c;
+
+    /* orange-500 */
+    --theme-primary-tint: #f97316;
+
+    /*
+    Grayscale
+    */
+
+    /* gray-800 */
+    --theme-background: #1f2937;
+    --theme-background-rgb: 31, 41, 55;
+
+    /* gray-700 */
+    --theme-border: #374151;
+
+    /*
+    Typography
+    */
+
+    /* gray-200 */
+    --theme-typography: #e5e7eb;
+    --theme-typography-rgb: 229, 231, 235;
+
+    /* gray-400 */
+    --theme-typography-tint: #9ca3af;
+    /* gray-200 */
+    --theme-typography-shade: #e5e7eb;
+
+    /*
+    Should be bright in light & dark modes
+    */
+
+    /* gray-200 */
+    --theme-bright: #e5e7eb;
+    --theme-bright-rgb: 229, 231, 235;
+  }
+
+  /*
+  Ionic Dark Theme (based on tailwind color palette, half tones interpolated)
+  */
+  body {
+    --ion-color-step-50: #030712;
+    --ion-color-step-100: #111827;
+    --ion-color-step-150: #18212f;
+    --ion-color-step-200: #1f2937;
+    --ion-color-step-250: #2b3544;
+    --ion-color-step-300: #374151;
+    --ion-color-step-350: #414b5a;
+    --ion-color-step-400: #4b5563;
+    --ion-color-step-450: #5b6472;
+    --ion-color-step-500: #6b7280;
+    --ion-color-step-550: #848b98;
+    --ion-color-step-600: #9ca3af;
+    --ion-color-step-650: #b7bcc5;
+    --ion-color-step-700: #d1d5db;
+    --ion-color-step-750: #dbdee3;
+    --ion-color-step-800: #e5e7eb;
+    --ion-color-step-850: #eceef1;
+    --ion-color-step-900: #f3f4f6;
+    --ion-color-step-950: #f9fafb;
+  }
+}

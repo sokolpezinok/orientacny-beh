@@ -1,31 +1,27 @@
 import { useModal } from "@/utils/modals";
 import { Notifications } from "@/utils/notify";
 import { Storage } from "@/utils/storage";
-import { IonContent, IonHeader, IonItem, IonList, IonPage } from "@ionic/react";
+import { IonContent, IonHeader, IonPage } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { Header, ItemLink, Text, Toggle } from "../ui/Design";
+import { Header, ItemLink } from "../ui/Design";
 
 const Settings = () => {
   const { errorModal, confirmModal, smartModal } = useModal();
   const [token, setToken] = useState(null);
 
-  const handleLogout = async (event) => {
+  const handleLogout = smartModal(async (event) => {
     const surety = await confirmModal("Naozaj sa chceš odhlásiť?");
     if (!surety) return event.preventDefault();
 
-    await Notifications.unregister();
+    await Notifications.register(false);
     await Storage.push((s) => {
       s.isLoggedIn = false;
     });
-  };
+  }, "Nepodarilo sa ťa odhlásiť.");
 
   const handleAllowNotify = smartModal(async (event) => {
     try {
-      if (event.target.checked) {
-        await Notifications.register();
-      } else {
-        await Notifications.unregister();
-      }
+      await Notifications.register(event.target.checked);
     } catch (error) {
       // when an error is thrown, undo toggle check
       event.target.checked = !event.target.checked;
@@ -51,27 +47,12 @@ const Settings = () => {
         <Header>Nastavenia</Header>
       </IonHeader>
       <IonContent>
-        <IonList>
-          <ItemLink routerLink="/tabs/settings/profile">Profil</ItemLink>
-          <IonItem>
-            <Toggle checked={Storage.pull().preferences.allowNotify} onIonChange={handleAllowNotify}>
-              Povoliť notifikácie
-            </Toggle>
-          </IonItem>
-          <Text>
-            <p>{token ?? "-"}</p>
-          </Text>
-          <Text>
-            <p>{JSON.stringify(Storage.pull().policies) ?? "-"}</p>
-          </Text>
-          <ItemLink routerLink="#" onClick={() => Notifications.notify({ title: "Hello", body: "World" })}>
-            Notify
-          </ItemLink>
-          <ItemLink routerLink="#" onClick={handleLogout}>
-            Odhlásiť sa
-          </ItemLink>
-          <ItemLink routerLink="/tabs/settings/about">O aplikácii</ItemLink>
-        </IonList>
+        <ItemLink routerLink="/tabs/settings/profile">Profil</ItemLink>
+        <ItemLink routerLink="/tabs/settings/notify">Upozornenia</ItemLink>
+        <ItemLink routerLink="#" onClick={handleLogout}>
+          Odhlásiť sa
+        </ItemLink>
+        <ItemLink routerLink="/tabs/settings/about">O aplikácii</ItemLink>
       </IonContent>
     </IonPage>
   );

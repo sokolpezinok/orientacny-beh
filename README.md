@@ -11,14 +11,8 @@ Aplikácia na zjednodušenia prihlasovania na preteky zo stránky https://member
 ```sh
 git clone https://github.com/sokolpezinok/orientacny-beh && cd orientacny-beh
 
-# install packages
 npm install
-
-# build project
 npm run build
-
-# add android platform
-npm run add-android-platform
 ```
 
 ## Debug
@@ -47,9 +41,9 @@ npm run android
 
 - Android
 
-```
+```sh
 npm run build
-npm run compile-android
+npm run open-android
 ```
 
 V Android Studio zvoľ `Build`->`Generate Signed Bundle / APK`.

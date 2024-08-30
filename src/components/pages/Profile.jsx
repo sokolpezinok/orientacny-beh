@@ -1,20 +1,21 @@
-import { IonAccordion, IonAccordionGroup, IonGrid, IonList, IonRow, IonSelect, IonSelectOption } from "@ionic/react";
+import { IonButton, IonIcon, IonSelectOption } from "@ionic/react";
 
 import { UserApi } from "@/utils/api";
 import countries from "@/utils/countries";
 import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
+import { helpCircle } from "ionicons/icons";
 import { useRef } from "react";
 import Content from "../controllers/Content";
-import { Header, Input, PrimaryButton, Select, Spacing, Text, Toggle } from "../ui/Design";
+import { Header, Input, ItemGroup, List, PrimaryButton, Select, Toggle } from "../ui/Design";
 
-export default () => <Content Render={Profile} Header={() => <Header backHref="/tabs/settings">Profil</Header>} updateData={() => UserApi.data()} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={Profile} Header={() => <Header backHref="/tabs/settings">Profil</Header>} updateData={UserApi.data} errorText="Nepodarilo sa načítať dáta." />;
 
 const Profile = ({ content }) => {
-  const { smartModal } = useModal({ errorHeader: "Nepodarilo sa aktualizovať profil." });
+  const { smartModal, alertModal } = useModal();
   const ref = useRef(null);
 
-  const canUserEdit = !Storage.pull().policies.policy_mng;
+  const userEditDisabled = !Storage.pull().policies.policy_mng;
 
   const handleSubmit = smartModal(async () => {
     const els = ref.current.elements;
@@ -39,139 +40,89 @@ const Profile = ({ content }) => {
       licence_mtbo: els.licence_mtbo.value,
       is_hidden: els.is_hidden.checked,
     };
-    await UserApi.update(collected);
+    await UserApi.data_update(collected);
     return "Vaše údaje boli úspešne aktualizované.";
   }, "Nepodarilo sa aktualizovať údaje.");
 
+  const handleExplainDisabled = () =>
+    alertModal(
+      "Prečo nemôžem meniť niektoré nastavenia?",
+      "Niektoré nastavenia sú pre členov zablokované, aby sa predišlo problémom s prihlasovaním do pretekov a zabezpečila sa stabilita systému. Ak potrebuješ vykonať zmeny, prosím, obráť sa na administrátora."
+    );
+
   return (
     <form ref={ref}>
-      <IonList>
-        <IonAccordionGroup>
-          <IonAccordion>
-            <Text slot="header">Všeobecné</Text>
-            <div slot="content" className="bg-orange-50 dark:bg-transparent">
-              <IonGrid className="mx-4 py-4">
-                <IonRow>
-                  <Input disabled={canUserEdit} label="Meno" name="name" value={content.name} />
-                </IonRow>
-                <IonRow>
-                  <Input disabled={canUserEdit} label="Priezvisko" name="surname" value={content.surname} />
-                </IonRow>
-                <IonRow>
-                  <Select disabled={canUserEdit} label="Pohlavie" name="gender" value={content.gender}>
-                    <IonSelectOption value="H">Mužské</IonSelectOption>
-                    <IonSelectOption value="D">Ženské</IonSelectOption>
-                  </Select>
-                </IonRow>
-                <IonRow>
-                  <Input disabled={canUserEdit} label="Narodenie" name="birth_date" value={content.birth_date} type="date" />
-                </IonRow>
-                <IonRow>
-                  <Input disabled={canUserEdit} label="Rodné číslo" name="birth_number" value={content.birth_number} type="number" />
-                </IonRow>
-                <IonRow>
-                  <IonSelect disabled={canUserEdit} label="Národnosť" name="nationality" value={content.nationality}>
-                    {countries.map(([code, name]) => (
-                      <IonSelectOption key={code} value={code}>
-                        {name}
-                      </IonSelectOption>
-                    ))}
-                  </IonSelect>
-                </IonRow>
-                <IonRow>
-                  <Toggle disabled={true} name="is_hidden" checked={content.is_hidden}>
-                    Skryté konto
-                  </Toggle>
-                </IonRow>
-              </IonGrid>
-            </div>
-          </IonAccordion>
-          <IonAccordion>
-            <Text slot="header">Kontakty</Text>
-            <div slot="content" className="bg-orange-50 dark:bg-transparent">
-              <IonGrid className="mx-4 py-4">
-                <IonRow>
-                  <Input label="Email" name="email" value={content.email} />
-                </IonRow>
-                <IonRow>
-                  <Input label="Adresa" name="address" value={content.address} />
-                </IonRow>
-                <IonRow>
-                  <Input label="Mesto" name="city" value={content.city} />
-                </IonRow>
-                <IonRow>
-                  <Input label="PŠC" name="postal_code" value={content.postal_code} type="number" />
-                </IonRow>
-                <IonRow>
-                  <Input label="Mobil" name="phone" value={content.phone} type="tel" />
-                </IonRow>
-                <IonRow>
-                  <Input label="Domáci mobil" name="phone_home" value={content.phone_home} type="tel" />
-                </IonRow>
-                <IonRow>
-                  <Input label="Pracovný mobil" name="phone_work" value={content.phone_work} type="tel" />
-                </IonRow>
-              </IonGrid>
-            </div>
-          </IonAccordion>
-          <IonAccordion>
-            <Text slot="header">Čip</Text>
-            <div slot="content" className="bg-orange-50 dark:bg-transparent">
-              <IonGrid className="mx-4 py-4">
-                <IonRow>
-                  <Input label="Čip" name="chip_number" value={content.chip_number} type="number" />
-                </IonRow>
-                <IonRow>
-                  <Input disabled={canUserEdit} label="Registračné číslo" name="registration_number" value={content.registration_number} type="number" />
-                </IonRow>
-              </IonGrid>
-            </div>
-          </IonAccordion>
-          <IonAccordion>
-            <Text slot="header">Licencie</Text>
-            <div slot="content" className="bg-orange-50 dark:bg-transparent">
-              <IonGrid className="mx-4 py-4">
-                <IonRow>
-                  <Select label="Licencia OB" name="licence_ob" value={content.licence_ob}>
-                    <IonSelectOption value="-">Žiadna</IonSelectOption>
-                    <IonSelectOption value="E">E</IonSelectOption>
-                    <IonSelectOption value="A">A</IonSelectOption>
-                    <IonSelectOption value="B">B</IonSelectOption>
-                    <IonSelectOption value="C">C</IonSelectOption>
-                    <IonSelectOption value="D">D</IonSelectOption>
-                    <IonSelectOption value="R">R</IonSelectOption>
-                  </Select>
-                </IonRow>
-                <IonRow>
-                  <Select label="Licencia LOB" name="licence_lob" value={content.licence_lob}>
-                    <IonSelectOption value="-">Žiadna</IonSelectOption>
-                    <IonSelectOption value="E">E</IonSelectOption>
-                    <IonSelectOption value="A">A</IonSelectOption>
-                    <IonSelectOption value="B">B</IonSelectOption>
-                    <IonSelectOption value="C">C</IonSelectOption>
-                    <IonSelectOption value="D">D</IonSelectOption>
-                    <IonSelectOption value="R">R</IonSelectOption>
-                  </Select>
-                </IonRow>
-                <IonRow>
-                  <Select label="Licencia MTBO" name="licence_mtbo" value={content.licence_mtbo}>
-                    <IonSelectOption value="-">Žiadna</IonSelectOption>
-                    <IonSelectOption value="E">E</IonSelectOption>
-                    <IonSelectOption value="A">A</IonSelectOption>
-                    <IonSelectOption value="B">B</IonSelectOption>
-                    <IonSelectOption value="C">C</IonSelectOption>
-                    <IonSelectOption value="D">D</IonSelectOption>
-                    <IonSelectOption value="R">R</IonSelectOption>
-                  </Select>
-                </IonRow>
-              </IonGrid>
-            </div>
-          </IonAccordion>
-        </IonAccordionGroup>
-        <Spacing>
-          <PrimaryButton onClick={handleSubmit}>Zmeniť</PrimaryButton>
-        </Spacing>
-      </IonList>
+      <ItemGroup title="Všeobecné">
+        {userEditDisabled && (
+          <IonButton onClick={handleExplainDisabled} fill="clear" color="danger" className="w-full normal-case">
+            <IonIcon slot="start" icon={helpCircle} />
+            Prečo nemôžem meniť niektoré nastavenia?
+          </IonButton>
+        )}
+        <Input disabled={userEditDisabled} label="Meno" name="name" value={content.name} required />
+        <Input disabled={userEditDisabled} label="Priezvisko" name="surname" value={content.surname} required />
+        <Select disabled={userEditDisabled} label="Pohlavie" name="gender" value={content.gender} required>
+          <IonSelectOption value="H">Mužské</IonSelectOption>
+          <IonSelectOption value="D">Ženské</IonSelectOption>
+        </Select>
+        <Input disabled={userEditDisabled} label="Narodenie" name="birth_date" value={content.birth_date} type="date" required />
+        <Input disabled={userEditDisabled} label="Rodné číslo" name="birth_number" value={content.birth_number} type="number" required />
+        <Select disabled={userEditDisabled} label="Národnosť" name="nationality" value={content.nationality} required>
+          {countries.map(([code, name]) => (
+            <IonSelectOption key={code} value={code}>
+              {name}
+            </IonSelectOption>
+          ))}
+        </Select>
+        <Toggle disabled={true} name="is_hidden" checked={content.is_hidden}>
+          Skryté konto
+        </Toggle>
+      </ItemGroup>
+      <ItemGroup title="Kontakty">
+        <Input label="Email" name="email" value={content.email} />
+        <Input label="Adresa" name="address" value={content.address} />
+        <Input label="Mesto" name="city" value={content.city} />
+        <Input label="PŠC" name="postal_code" value={content.postal_code} type="number" />
+        <Input label="Mobil" name="phone" value={content.phone} type="tel" />
+        <Input label="Domáci mobil" name="phone_home" value={content.phone_home} type="tel" />
+        <Input label="Pracovný mobil" name="phone_work" value={content.phone_work} type="tel" />
+      </ItemGroup>
+      <ItemGroup title="Čip">
+        <Input label="Čip" name="chip_number" value={content.chip_number} type="number" required />
+        <Input disabled={userEditDisabled} label="Registračné číslo" name="registration_number" value={content.registration_number} type="number" required />
+      </ItemGroup>
+      <ItemGroup title="Licenie">
+        <Select label="Licencia OB" name="licence_ob" value={content.licence_ob}>
+          <IonSelectOption value="-">Žiadna</IonSelectOption>
+          <IonSelectOption value="E">E</IonSelectOption>
+          <IonSelectOption value="A">A</IonSelectOption>
+          <IonSelectOption value="B">B</IonSelectOption>
+          <IonSelectOption value="C">C</IonSelectOption>
+          <IonSelectOption value="D">D</IonSelectOption>
+          <IonSelectOption value="R">R</IonSelectOption>
+        </Select>
+        <Select label="Licencia LOB" name="licence_lob" value={content.licence_lob}>
+          <IonSelectOption value="-">Žiadna</IonSelectOption>
+          <IonSelectOption value="E">E</IonSelectOption>
+          <IonSelectOption value="A">A</IonSelectOption>
+          <IonSelectOption value="B">B</IonSelectOption>
+          <IonSelectOption value="C">C</IonSelectOption>
+          <IonSelectOption value="D">D</IonSelectOption>
+          <IonSelectOption value="R">R</IonSelectOption>
+        </Select>
+        <Select label="Licencia MTBO" name="licence_mtbo" value={content.licence_mtbo}>
+          <IonSelectOption value="-">Žiadna</IonSelectOption>
+          <IonSelectOption value="E">E</IonSelectOption>
+          <IonSelectOption value="A">A</IonSelectOption>
+          <IonSelectOption value="B">B</IonSelectOption>
+          <IonSelectOption value="C">C</IonSelectOption>
+          <IonSelectOption value="D">D</IonSelectOption>
+          <IonSelectOption value="R">R</IonSelectOption>
+        </Select>
+      </ItemGroup>
+      <List innerPadding>
+        <PrimaryButton onClick={handleSubmit}>Zmeniť</PrimaryButton>
+      </List>
     </form>
   );
 };

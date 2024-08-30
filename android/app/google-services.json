@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "204214244361",
+    "project_id": "orientacny-beh",
+    "storage_bucket": "orientacny-beh.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:204214244361:android:ab39cf0a4c321b9a1d54d8",
+        "android_client_info": {
+          "package_name": "orienteering.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMXJYYXIKZ-ss-_CmVCGSJHHPcO8Ps0WA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

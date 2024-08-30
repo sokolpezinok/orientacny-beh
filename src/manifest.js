@@ -25,7 +25,7 @@
 // (c) KOB Sokol Pezinok
 
 const appName = "Orientačný beh";
-const appBuildVersion = `v3.03a0`;
+const appBuildVersion = `v3.02a0`;
 const appPackageName = "orienteering.app";
 
 //======================================//
@@ -33,13 +33,14 @@ const appPackageName = "orienteering.app";
 //======================================//
 const apiDomain = "members.eob.cz";
 const apiVersion = 1;
-const apiServer = `https://members.eob.cz/api/${apiVersion}`;
+const apiServer = `https://members.eob.cz/api/debug/${apiVersion}`;
 
-module.exports = { // use CommonJS syntax for compatibility reasons with capacitor.confit.ts
-    appName,
-    appBuildVersion,
-    appPackageName,
-    apiDomain,
-    apiVersion,
-    apiServer,
+module.exports = {
+  // use CommonJS syntax for compatibility reasons with capacitor.config.ts
+  appName,
+  appBuildVersion,
+  appPackageName,
+  apiDomain,
+  apiVersion,
+  apiServer,
 };

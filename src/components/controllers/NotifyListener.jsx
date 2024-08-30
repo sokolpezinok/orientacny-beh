@@ -14,8 +14,6 @@ const NotifyListener = ({}) => {
   const { smartModal } = useModal();
 
   const handleNotifyActionPerformed = smartModal(async (event) => {
-    alert("action-performed: " + JSON.stringify(event));
-
     const data = event?.notification?.data || event?.notification?.extra;
     const type = data?.event ?? NotifyEvents.BASIC;
 
@@ -30,7 +28,6 @@ const NotifyListener = ({}) => {
   }, "Nepodarilo sa otvoriť notifikáciu.");
 
   const handleNotifyReceived = smartModal(async (event) => {
-    alert("notify-received: " + JSON.stringify(event));
     await Notifications.notify({
       title: event.notification.title,
       body: event.notification.body,
@@ -41,7 +38,6 @@ const NotifyListener = ({}) => {
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
-      alert("registering push actions");
       FirebaseMessaging.addListener("notificationActionPerformed", handleNotifyActionPerformed);
       FirebaseMessaging.addListener("notificationReceived", handleNotifyReceived);
       LocalNotifications.addListener("localNotificationActionPerformed", handleNotifyActionPerformed);

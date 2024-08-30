@@ -5,9 +5,10 @@ import { Redirect, Route } from "react-router-dom";
 import { Storage } from "@/utils/storage";
 import DeeplinkListener from "./controllers/DeeplinkListener";
 import NotifyListener from "./controllers/NotifyListener";
-import { Spinner } from "./ui/Media";
+import { Spinner } from "./ui/Design";
 
 import About from "./pages/About";
+import Notify from "./pages/Notify";
 import Profile from "./pages/Profile";
 import RaceDetail from "./pages/RaceDetail";
 import RaceNotify from "./pages/RaceNotify";
@@ -34,16 +35,17 @@ const Tabs = () => {
           <Route path="/tabs/races/:race_id/notify" render={() => <RaceNotify />} exact={true} />
           <Route path="/tabs/settings" render={() => <Settings />} exact={true} />
           <Route path="/tabs/settings/profile" render={() => <Profile />} exact={true} />
+          <Route path="/tabs/settings/notify" render={() => <Notify />} exact={true} />
           <Route path="/tabs/settings/about" render={() => <About />} exact={true} />
           <Route path="/tabs" render={() => <Redirect to="/tabs/races" />} exact={true} />
         </IonRouterOutlet>
-        <IonTabBar slot="bottom" className="shadow-2xl shadow-black">
+        <IonTabBar slot="bottom">
           <IonTabButton tab="races" href="/tabs/races">
             <IonIcon icon={trailSign} />
             <IonLabel>Preteky</IonLabel>
           </IonTabButton>
           <IonTabButton tab="settings" href="/tabs/settings">
-            <IonIcon icon={settings} />
+            <IonIcon src={settings} />
             <IonLabel>Nastavenia</IonLabel>
           </IonTabButton>
         </IonTabBar>

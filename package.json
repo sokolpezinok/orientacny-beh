@@ -5,11 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "compile-android": "cap sync && cap open android",
-    "android": "next build && cap run android",
-    "add-android-platform": "cap add android && npm run insert-splashscreen && npm run insert-notifications",
-    "insert-splashscreen": "cp --verbose -r ./resources/* ./android/app/src/main/res/",
-    "insert-notifications": "python3 ./insert-manifest.py && cp --verbose ./google-services.json ./android/app/google-services.json"
+    "open-android": "cap sync && cap open android",
+    "android": "next build && cap run android"
   },
   "dependencies": {
     "@capacitor-firebase/messaging": "^5.4.1",
@@ -24,12 +21,12 @@
     "capacitor-secure-storage-plugin": "^0.9.0",
     "classnames": "^2.3.2",
     "eslint": "8.43.0",
-    "eslint-config-next": "13.4.7",
+    "eslint-config-next": "^14.2.7",
     "firebase": "^10.10.0",
-    "next": "^13.5.4",
+    "next": "^14.2.7",
     "pullstate": "^1.25.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^5.0.5",

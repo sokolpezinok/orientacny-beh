@@ -1,4 +1,3 @@
-import { IonItem, IonList } from "@ionic/react";
 import { useParams } from "react-router-dom";
 
 import { RaceApi } from "@/utils/api";
@@ -6,7 +5,7 @@ import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
 import { useRef } from "react";
 import Content from "../controllers/Content";
-import { Header, Input, PrimaryButton, Spacing, Text, Textarea, Title } from "../ui/Design";
+import { Header, Input, Item, ItemGroup, PrimaryButton, Textarea } from "../ui/Design";
 
 export default () => (
   <Content
@@ -45,21 +44,14 @@ const RaceNotify = ({ content }) => {
 
   return (
     <form ref={ref}>
-      <IonList>
-        <Text>
-          <Title>{detail.name}</Title>
-          <p>Môžeš napísať notifikáciu. Členovia klubu, ktorí majú nainštalovanú našu mobilnú aplikáciu, dostanú tvoju správu okamžite.</p>
-        </Text>
-        <IonItem>
-          <Input label="Nadpis" name="title" value="Pripomienka" />
-        </IonItem>
-        <IonItem>
-          <Textarea label="Obsah" name="body" value="Už len dnes sa dá prihlásiť. Nikto ďalší nechce prísť?" />
-        </IonItem>
-        <Spacing>
-          <PrimaryButton onClick={handleSubmit}>Poslať celému klubu</PrimaryButton>
-        </Spacing>
-      </IonList>
+      <Item>
+        <h1 className="text-2xl font-bold">{detail.name}</h1>
+      </Item>
+      <ItemGroup title="Notifikácia" subtitle="Môžeš napísať notifikáciu. Členovia klubu, ktorí majú nainštalovanú našu mobilnú aplikáciu, dostanú tvoju správu okamžite.">
+        <Input label="Nadpis" name="title" value="Pripomienka" required />
+        <Textarea label="Obsah" name="body" value="Už len dnes sa dá prihlásiť. Nikto ďalší nechce prísť?" />
+        <PrimaryButton onClick={handleSubmit}>Poslať celému klubu</PrimaryButton>
+      </ItemGroup>
     </form>
   );
 };

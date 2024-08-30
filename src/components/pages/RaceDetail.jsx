@@ -1,18 +1,17 @@
 import { Share } from "@capacitor/share";
-import { IonAccordion, IonAccordionGroup, IonCol, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonRow } from "@ionic/react";
+import { IonAccordionGroup, IonCol, IonGrid, IonIcon, IonLabel, IonRow } from "@ionic/react";
 import classNames from "classnames";
 import { bus, calendar, home, location, logIn, shareSocial } from "ionicons/icons";
 import { useHistory, useParams } from "react-router-dom";
 
 import { isEntryExpired } from "@/utils";
 import { PolicyEnums, RaceApi } from "@/utils/api";
-import { formatDate, formatDates } from "@/utils/format";
+import { formatDate } from "@/utils/format";
 import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
 import { category, directionsRun, group } from "../../utils/icons";
 import Content from "../controllers/Content";
-import { BasicLink, BooleanIcon, Header, ItemLink, SecondaryButton, Showcase, Spacing, Text, Title, VerticalSpacing } from "../ui/Design";
-import { SadFace } from "../ui/Media";
+import { Accordion, BasicLink, BooleanIcon, Header, Item, ItemLink, List, ReadMore, SadFace, SecondaryButton, Showcase } from "../ui/Design";
 
 export default () => (
   <Content
@@ -43,95 +42,124 @@ const RaceDetail = ({ content, handleUpdate }) => {
     }).catch(() => null);
   }, "Nepodarilo sa zdielať.");
 
+  const handleSignin = (link) => (event) => {
+    event.preventDefault();
+
+    if (detail.cancelled) {
+      alertModal("Nie je možné sa prihlásiť!", "Tieto preteky boli zrušené administrátorom.");
+      return;
+    }
+
+    if (isEntryExpired(detail.entries)) {
+      alertModal("Prihlásenie cez aplikáciu už nie je možné!", "Vypršal minimálny termín prihlášok. Pre prihlásenie kontaktuj organizátorov.");
+      return;
+    }
+
+    history.push(link);
+  };
+
   return (
-    <IonList>
-      <Text>
-        <div className="flex w-full justify-between">
-          <Title className={classNames("flex-1", detail.cancelled && "line-through")}>{detail.name}</Title>
+    <>
+      <div className="p-4">
+        <div className="flex w-full">
+          <h1 className={classNames("flex-1 text-2xl font-bold", detail.cancelled && "line-through")}>{detail.name}</h1>
           <IonIcon className="cursor-pointer text-2xl" onClick={handleShare} icon={shareSocial} />
         </div>
-        {detail.note.length > 0 && <p>{detail.note}</p>}
-        {detail.link.length > 0 && <BasicLink href={detail.link} />}
-        {isEntryExpired(detail.entries) && <p className="!text-rose-500">Cez appku sa už nedá prihlásiť! Kontaktuj organizátorov.</p>}
-      </Text>
-      <IonItem>
+        {detail.link && (
+          <ReadMore>
+            <p>{detail.note}</p>
+          </ReadMore>
+        )}
+        {detail.link && <BasicLink href={detail.link} />}
+        {isEntryExpired(detail.entries) && <span className="text-sm text-rose-500">Vypršal minimálny termín prihlášok. Ak sa chceš prihlásiť, kontaktuj organizátorov.</span>}
+      </div>
+      <Item>
         <Showcase>
-          <Showcase.Item title="Dátum" icon={calendar} text={formatDates(detail.dates.sort())} />
-          <Showcase.Item title="Prihláška" icon={logIn} text={formatDate(detail.entries.sort()[0])} onClick={() => history.push(`/tabs/races/${race_id}/sign`)} />
-          <Showcase.Item title="Miesto" icon={location} text={detail.place} />
-          <Showcase.Item title="Klub" src={group} text={detail.club} />
-          <Showcase.Item title="Preprava" icon={bus} text={detail.transport ? "Organizovaná" : "Vlastná"} />
-          <Showcase.Item title="Ubytovanie" icon={home} text={detail.accommodation ? "Organizované" : "Vlastné"} />
-          <Showcase.Item title="Druh" src={category} text={detail.type} />
-          <Showcase.Item title="Šport" src={directionsRun} text={detail.sport} />
+          <Showcase.Item label="Dátum" icon={calendar}>
+            {detail.dates.sort().map(formatDate).join(" → ")}
+          </Showcase.Item>
+          <Showcase.Item label="Prihláška" icon={logIn} onClick={handleSignin(`/tabs/races/${race_id}/sign`)}>
+            <a className="cursor-pointer">{formatDate(detail.entries.sort()[0])}</a>
+          </Showcase.Item>
+          <Showcase.Item label="Miesto" icon={location}>
+            {detail.place}
+          </Showcase.Item>
+          <Showcase.Item label="Klub" src={group}>
+            {detail.club}
+          </Showcase.Item>
+          <Showcase.Item label="Preprava" icon={bus}>
+            {detail.transport ? "Organizovaná" : "Vlastná"}
+          </Showcase.Item>
+          <Showcase.Item label="Ubytovanie" icon={home}>
+            {detail.accommodation ? "Organizované" : "Vlastné"}
+          </Showcase.Item>
+          <Showcase.Item label="Druh" src={category}>
+            {detail.type}
+          </Showcase.Item>
+          <Showcase.Item label="Šport" src={directionsRun}>
+            {detail.sport}
+          </Showcase.Item>
         </Showcase>
-      </IonItem>
+      </Item>
       {Storage.pull().policies.policy_mng === PolicyEnums.BIG_MANAGER && <ItemLink routerLink={`/tabs/races/${race_id}/notify`}>Napísať notifikáciu</ItemLink>}
-      <ItemLink routerLink={`/tabs/races/${race_id}/sign`}>Prihlásiť sa</ItemLink>
+      <ItemLink routerLink="#" onClick={handleSignin(`/tabs/races/${race_id}/sign`)}>
+        Prihlásiť sa
+      </ItemLink>
       <IonAccordionGroup>
-        <IonAccordion>
-          <IonItem slot="header">Moji členovia</IonItem>
-          <div slot="content" className="bg-orange-50 p-4 dark:bg-transparent">
-            <VerticalSpacing>
-              <SecondaryButton onClick={handleUpdate}>Aktualizovať zoznam</SecondaryButton>
-              {relations.map((item) => (
-                <IonLabel
-                  key={item.user_id}
-                  onClick={() => (isEntryExpired(detail.entries) ? alertModal("Cez appku sa už nedá prihlásiť!") : history.push(`/tabs/races/${race_id}/sign/${item.user_id}`))}
-                >
-                  <h2>
-                    {`${item.name} ${item.surname} (${item.chip_number})`}
-                    <span className="ml-2">
-                      <BooleanIcon value={item.is_signed_in} />
-                    </span>
-                  </h2>
-                  <p>{item.category}</p>
-                </IonLabel>
-              ))}
-            </VerticalSpacing>
-          </div>
-        </IonAccordion>
-        <IonAccordion>
-          <IonItem slot="header">{`Prihlásení (${detail.everyone.length})`}</IonItem>
-          <div slot="content" className="bg-orange-50 p-4 dark:bg-transparent">
-            <VerticalSpacing>
-              <SecondaryButton onClick={handleUpdate}>Aktualizovať zoznam</SecondaryButton>
-              {detail.everyone.length > 0 ? (
-                <IonGrid className="relative w-full p-0">
-                  <IonRow className="sticky text-orange-600 dark:text-orange-700">
-                    <IonCol>Meno</IonCol>
-                    <IonCol>Priezvisko</IonCol>
-                    <IonCol>Kategória</IonCol>
+        <Accordion title="Moji členovia">
+          <List>
+            <SecondaryButton onClick={handleUpdate}>Aktualizovať zoznam</SecondaryButton>
+            {relations.map((item) => (
+              <IonLabel key={item.user_id} onClick={handleSignin(`/tabs/races/${race_id}/sign/${item.user_id}`)}>
+                <h2>
+                  {`${item.name} ${item.surname} (${item.chip_number})`}
+                  <span className="ml-2">
+                    <BooleanIcon value={item.is_signed_in} />
+                  </span>
+                </h2>
+                <p>{item.category}</p>
+              </IonLabel>
+            ))}
+          </List>
+        </Accordion>
+        <Accordion title={`Prihlásení (${detail.everyone.length})`}>
+          <List>
+            <SecondaryButton onClick={handleUpdate}>Aktualizovať zoznam</SecondaryButton>
+            {detail.everyone.length > 0 ? (
+              <IonGrid className="relative w-full">
+                <IonRow className="sticky font-semibold text-primary">
+                  <IonCol>Meno</IonCol>
+                  <IonCol>Priezvisko</IonCol>
+                  <IonCol>Kategória</IonCol>
+                  <IonCol size="auto">
+                    <IonIcon icon={bus} />
+                  </IonCol>
+                  <IonCol size="auto">
+                    <IonIcon icon={home} />
+                  </IonCol>
+                </IonRow>
+                {detail.everyone.map((child, index) => (
+                  <IonRow key={index}>
+                    <IonCol>{child.name}</IonCol>
+                    <IonCol>{child.surname}</IonCol>
+                    <IonCol>{child.category}</IonCol>
                     <IonCol size="auto">
-                      <IonIcon icon={bus} />
+                      <BooleanIcon value={child.transport} />
                     </IonCol>
                     <IonCol size="auto">
-                      <IonIcon icon={home} />
+                      <BooleanIcon value={child.accommodation} />
                     </IonCol>
                   </IonRow>
-                  {detail.everyone.map((child, index) => (
-                    <IonRow key={index}>
-                      <IonCol>{child.name}</IonCol>
-                      <IonCol>{child.surname}</IonCol>
-                      <IonCol>{child.category}</IonCol>
-                      <IonCol size="auto">
-                        <BooleanIcon value={child.transport} />
-                      </IonCol>
-                      <IonCol size="auto">
-                        <BooleanIcon value={child.accommodation} />
-                      </IonCol>
-                    </IonRow>
-                  ))}
-                </IonGrid>
-              ) : (
-                <Spacing>
-                  <SadFace text="Zatiaľ sa nikto neprihlásil." subtext="Môžeš sa prihlásiť ako prvý/-á :)" />
-                </Spacing>
-              )}
-            </VerticalSpacing>
-          </div>
-        </IonAccordion>
+                ))}
+              </IonGrid>
+            ) : (
+              <div className="p-4">
+                <SadFace title="Zatiaľ sa nikto neprihlásil." subtitle="Môžeš sa prihlásiť ako prvý/-á :)" />
+              </div>
+            )}
+          </List>
+        </Accordion>
       </IonAccordionGroup>
-    </IonList>
+    </>
   );
 };

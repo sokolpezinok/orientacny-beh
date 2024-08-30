@@ -19,8 +19,6 @@ const DeeplinkListener = ({}) => {
     //
     // ^/api/(\w+)/race/(\d+)
 
-    alert(JSON.stringify(event));
-
     const path = new URL(event.url);
 
     if (path.hostname !== apiDomain) throw "Odkaz sa nezhoduje so serverom.";
