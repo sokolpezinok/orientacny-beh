@@ -1,13 +1,12 @@
-import { IonCheckbox } from "@ionic/react";
-
+import { Drawer, Header, Input, ItemGroup, List, PrimaryButton, SmallWarning, Toggle } from "@/components/ui/Design";
 import { UserApi } from "@/utils/api";
 import { useModal } from "@/utils/modals";
 import { Notifications } from "@/utils/notify";
 import { Storage } from "@/utils/storage";
+import { IonCheckbox } from "@ionic/react";
 import classNames from "classnames";
 import { useRef, useState } from "react";
 import Content from "../controllers/Content";
-import { Drawer, Header, Input, ItemGroup, List, PrimaryButton, Toggle } from "../ui/Design";
 
 export default () => <Content Render={Notify} Header={() => <Header backHref="/tabs/settings">Upozornenia</Header>} updateData={UserApi.notify} errorText="Nepodarilo sa načítať dáta." />;
 
@@ -23,9 +22,7 @@ const Notify = ({ content }) => {
     } catch (error) {
       // when an error is thrown, undo toggle check
       event.target.checked = !event.target.checked;
-      await Storage.push((s) => {
-        s.preferences.allowNotify = event.target.checked;
-      });
+      // display error modal
       throw error;
     }
   }, "Nepodarilo sa zmeniť povolenie.");
@@ -87,6 +84,11 @@ const Notify = ({ content }) => {
     return (
       <div className={classNames("pl-4 pt-2", className)} {...props}>
         {content.map((child, index) => (
+          /* workaround to https://github.com/ionic-team/ionic-docs/issues/3459 */
+          // <div key={child.id} className="flex items-center" onClick={handleChange(index)}>
+          //   <IonCheckbox key={child.id} checked={child.value} name={name} value={child.id} />
+          //   <span className="ms-4">{child.name}</span>
+          // </div>
           <IonCheckbox key={child.id} checked={child.value} name={name} value={child.id} onIonChange={handleChange(index)} className="w-full" justify="start" labelPlacement="end">
             {child.name}
           </IonCheckbox>
@@ -114,6 +116,7 @@ const Notify = ({ content }) => {
         </Drawer>
       </ItemGroup>
       <ItemGroup title="Novinky">
+        <SmallWarning>Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email.</SmallWarning>
         <Toggle name="send_news" checked={state.send_news}>
           Upozorniť ma na pridané novinky
         </Toggle>
@@ -141,6 +144,7 @@ const Notify = ({ content }) => {
         </Drawer>
       </ItemGroup>
       <ItemGroup title="Financie">
+        <SmallWarning>Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email.</SmallWarning>
         <Toggle name="send_finances" checked={state.send_finances} onIonChange={handleChange("send_finances")}>
           Upozorniť ma na môj finančný stav
         </Toggle>
@@ -152,12 +156,13 @@ const Notify = ({ content }) => {
         </Drawer>
       </ItemGroup>
       <ItemGroup title="Pokročilé">
+        <SmallWarning>Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email.</SmallWarning>
         <List>
-          <Toggle name="send_internal_entry_expired" checked={state.send_internal_entry_expired}>
+          <Toggle name="send_internal_entry_expired" checked={state.send_internal_entry_expired} disabled={!Storage.pull().policies.policy_regs}>
             Upozorniť ma, keď uplynul interný termín
           </Toggle>
-          <Toggle name="send_member_minus" checked={state.send_member_minus}>
-            Upozorniť ma na člena, ktorý sa v financiach dostal do mínusu
+          <Toggle name="send_member_minus" checked={state.send_member_minus} disabled={!Storage.pull().policies.policy_fin}>
+            Upozorniť ma na členov, ktorí sa na účte dostali do mínusu
           </Toggle>
         </List>
       </ItemGroup>

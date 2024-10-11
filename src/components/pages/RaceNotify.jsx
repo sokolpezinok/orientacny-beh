@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 
+import { Header, Input, Item, ItemGroup, PrimaryButton, Textarea } from "@/components/ui/Design";
 import { RaceApi } from "@/utils/api";
 import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
 import { useRef } from "react";
 import Content from "../controllers/Content";
-import { Header, Input, Item, ItemGroup, PrimaryButton, Textarea } from "../ui/Design";
 
 export default () => (
   <Content

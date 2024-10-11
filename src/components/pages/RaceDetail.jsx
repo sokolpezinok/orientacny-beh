@@ -1,17 +1,17 @@
+import { category, directionsRun, group } from "@/utils/icons";
 import { Share } from "@capacitor/share";
 import { IonAccordionGroup, IonCol, IonGrid, IonIcon, IonLabel, IonRow } from "@ionic/react";
 import classNames from "classnames";
 import { bus, calendar, home, location, logIn, shareSocial } from "ionicons/icons";
 import { useHistory, useParams } from "react-router-dom";
 
+import { Accordion, Anchor, BooleanIcon, Header, Item, ItemLink, List, ReadMore, SadFace, SecondaryButton, Showcase } from "@/components/ui/Design";
 import { isEntryExpired } from "@/utils";
-import { PolicyEnums, RaceApi } from "@/utils/api";
+import { RaceApi } from "@/utils/api";
 import { formatDate } from "@/utils/format";
 import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
-import { category, directionsRun, group } from "../../utils/icons";
 import Content from "../controllers/Content";
-import { Accordion, BasicLink, BooleanIcon, Header, Item, ItemLink, List, ReadMore, SadFace, SecondaryButton, Showcase } from "../ui/Design";
 
 export default () => (
   <Content
@@ -70,7 +70,7 @@ const RaceDetail = ({ content, handleUpdate }) => {
             <p>{detail.note}</p>
           </ReadMore>
         )}
-        {detail.link && <BasicLink href={detail.link} />}
+        {detail.link && <Anchor href={detail.link} />}
         {isEntryExpired(detail.entries) && <span className="text-sm text-rose-500">Vypršal minimálny termín prihlášok. Ak sa chceš prihlásiť, kontaktuj organizátorov.</span>}
       </div>
       <Item>
@@ -101,7 +101,7 @@ const RaceDetail = ({ content, handleUpdate }) => {
           </Showcase.Item>
         </Showcase>
       </Item>
-      {Storage.pull().policies.policy_mng === PolicyEnums.BIG_MANAGER && <ItemLink routerLink={`/tabs/races/${race_id}/notify`}>Napísať notifikáciu</ItemLink>}
+      {Storage.pull().policies.policy_mng_big && <ItemLink routerLink={`/tabs/races/${race_id}/notify`}>Napísať notifikáciu</ItemLink>}
       <ItemLink routerLink="#" onClick={handleSignin(`/tabs/races/${race_id}/sign`)}>
         Prihlásiť sa
       </ItemLink>

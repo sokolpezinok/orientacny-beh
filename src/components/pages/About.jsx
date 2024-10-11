@@ -1,7 +1,7 @@
+import { Accordion, Anchor, Header, Item } from "@/components/ui/Design";
+import License from "@/components/ui/License";
 import { appBuildVersion } from "@/manifest";
 import { IonAccordionGroup, IonCol, IonContent, IonGrid, IonHeader, IonPage, IonRow } from "@ionic/react";
-import { Accordion, BasicLink, Header, Item } from "../ui/Design";
-import License from "../ui/License";
 
 const About = () => {
   return (
@@ -21,19 +21,19 @@ const About = () => {
                 <IonRow>
                   <IonCol>Vývojár</IonCol>
                   <IonCol className="text-right text-primary">
-                    <BasicLink href="https://github.com/jurakin">Jurakin</BasicLink>
+                    <Anchor href="https://github.com/jurakin">Jurakin</Anchor>
                   </IonCol>
                 </IonRow>
                 <IonRow>
                   <IonCol>Dizajn</IonCol>
                   <IonCol className="text-right text-primary">
-                    <BasicLink href="mailto:ondrej.honsch@gmail.com">Ondrej</BasicLink>
+                    <Anchor href="mailto:ondrej.honsch@gmail.com">Ondrej</Anchor>
                   </IonCol>
                 </IonRow>
                 <IonRow>
                   <IonCol>Od klubu</IonCol>
                   <IonCol className="text-right text-primary">
-                    <BasicLink href="https://www.sokolpezinok.sk/">KOB Sokol Pezinok</BasicLink>
+                    <Anchor href="https://www.sokolpezinok.sk/">KOB Sokol Pezinok</Anchor>
                   </IonCol>
                 </IonRow>
               </IonGrid>

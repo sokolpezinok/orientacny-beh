@@ -1,4 +1,4 @@
-import { BasicLink } from "./Design";
+import { Anchor } from "./Design";
 
 export default ({}) => {
   const license = `Copyright ${new Date().getFullYear()} KOB Sokol Pezinok
@@ -19,7 +19,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
   return (
     <>
-      <BasicLink href="https://prihlasky.sokolpezinok.sk/legal/gdpr.html">Oznámenie o spracovaní osobných údajov</BasicLink>
+      <Anchor href="https://prihlasky.sokolpezinok.sk/legal/gdpr.html">Oznámenie o spracovaní osobných údajov</Anchor>
       <pre className="mt-4">{license}</pre>
     </>
   );

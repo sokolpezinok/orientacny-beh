@@ -1,15 +1,15 @@
 import { IonBackButton, IonButton, IonButtons, IonContent, IonIcon, IonModal, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
-import { Redirect, useHistory } from "react-router-dom";
-
-import { sortAlphabetically } from "@/utils";
-import { GeneralApi, UserApi } from "@/utils/api";
-import { useModal } from "@/utils/modals";
-import { Storage } from "@/utils/storage";
 import { eye, eyeOff } from "ionicons/icons";
 import { useRef, useState } from "react";
+import { Redirect, useHistory } from "react-router-dom";
+
+import { Checkbox, Header, Input, List, PrimaryButton, SecondaryButton, Select, SmallWarning } from "@/components/ui/Design";
+import License from "@/components/ui/License";
+import { isTokenExpired, sortAlphabetically } from "@/utils";
+import { GeneralApi, SystemApi } from "@/utils/api";
+import { useModal } from "@/utils/modals";
+import { Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
-import { Checkbox, Header, Input, List, PrimaryButton, SecondaryButton, Select } from "../ui/Design";
-import License from "../ui/License";
 
 export default () => <Content Render={Login} Header={() => <Header>Prihlásiť sa</Header>} updateData={GeneralApi.clubs} errorText="Nepodarilo sa načítať zoznam klubov." />;
 
@@ -44,14 +44,10 @@ const Login = ({ content }) => {
     if (collected.club === undefined) throw "Nezabudni vybrať klub.";
     if (!collected.license) throw "Súhlas s licenčnými podmienkami je povinný.";
 
-    const { token, policies } = await UserApi.login({ username: collected.username, password: collected.password, clubname: collected.club.clubname });
+    await SystemApi.login({ username: collected.username, password: collected.password, clubname: collected.club.clubname });
 
     await Storage.push((s) => {
-      s.token = token;
-      s.policies = policies;
       s.club = collected.club;
-
-      s.isLoggedIn = true;
       s.preferences.hasAcceptedTerms = true;
     });
 
@@ -62,11 +58,14 @@ const Login = ({ content }) => {
 
   return (
     <div className="flex h-full items-center justify-center">
-      <div className="w-full max-w-xl p-4">
-        <form ref={ref}>
-          <img src="/favicon.png" className="m-auto my-6 w-24 shadow-[0_0_20px_10px_#0002] dark:shadow-[0_0_20px_10px_#fff2]" alt="Orienteering Logo" />
-          <h1 className="text-center text-2xl font-bold">Orientačný beh</h1>
+      <div className="flex w-full max-w-xl flex-col gap-8 p-8 lg:max-w-6xl lg:flex-row">
+        <div className="flex items-center gap-8">
+          <img className="w-24" src="/favicon.png" />
+          <h1 className="text-3xl font-bold lg:text-4xl">Orientačný beh</h1>
+        </div>
+        <form ref={ref} className="flex-1">
           <List>
+            {isTokenExpired() && Storage.pull().tokenExpiration !== 0 && <SmallWarning>Prístup do aplikácie vypršal. Prosím, prihlás sa znova.</SmallWarning>}
             <Input name="username" type="text" label="Meno" required />
             <div className="-mr-4 flex items-center">
               <Input name="password" type={showPassword ? "text" : "password"} label="Heslo" required />
@@ -83,12 +82,14 @@ const Login = ({ content }) => {
             </Select>
             {!hasAcceptedTerms && (
               <>
+                <hr />
+                <SecondaryButton onClick={() => setModalOpen(true)}>Licenčné podmienky</SecondaryButton>
                 <Checkbox name="license" required>
                   Súhlasím s licenčnými podmienkami
                 </Checkbox>
-                <SecondaryButton onClick={() => setModalOpen(true)}>Licenčné podmienky</SecondaryButton>
               </>
             )}
+            <hr />
             <PrimaryButton onClick={handleSubmit}>Prihlásiť sa</PrimaryButton>
           </List>
           <IonModal isOpen={modalOpen}>

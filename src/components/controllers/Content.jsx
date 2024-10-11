@@ -2,8 +2,8 @@ import { IonContent, IonHeader, IonPage, IonRefresher, IonRefresherContent } fro
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import { FatalError, Spinner } from "@/components/ui/Design";
 import { useModal } from "@/utils/modals";
-import { FatalError, Spinner } from "../ui/Design";
 
 const Content = ({ Render, Header, updateData, errorText }) => {
   const params = useParams();
@@ -19,7 +19,7 @@ const Content = ({ Render, Header, updateData, errorText }) => {
 
   useEffect(() => {
     handleUpdate();
-  }, []);
+  }, [params]);
 
   return (
     <IonPage>

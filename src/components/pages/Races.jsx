@@ -1,13 +1,12 @@
 import { IonIcon, IonTitle, IonToolbar } from "@ionic/react";
+import classNames from "classnames";
 import { calendar, location } from "ionicons/icons";
 
+import { Item, SadFace } from "@/components/ui/Design";
 import { isEntryExpired } from "@/utils";
 import { RaceApi } from "@/utils/api";
 import { formatDate } from "@/utils/format";
-import classNames from "classnames";
-import { useHistory } from "react-router-dom";
 import Content from "../controllers/Content";
-import { Item, SadFace } from "../ui/Design";
 
 export default () => <Content Render={Races} Header={Header} updateData={RaceApi.list} errorText="Nepodarilo sa načítať preteky." />;
 
@@ -18,8 +17,6 @@ const Header = ({}) => (
 );
 
 const Races = ({ content }) => {
-  const history = useHistory();
-
   if (content.length === 0) {
     return <SadFace title="V najbližšej dobe nie sú naplánované preteky." subtitle="Môžeš si zabehať nesúťažne :)" />;
   }

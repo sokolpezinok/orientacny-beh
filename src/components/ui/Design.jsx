@@ -1,7 +1,7 @@
 import { IonAccordion, IonBackButton, IonButton, IonButtons, IonCheckbox, IonIcon, IonInput, IonItem, IonSelect, IonSpinner, IonTextarea, IonTitle, IonToggle, IonToolbar } from "@ionic/react";
 import classNames from "classnames";
-import { alertCircle, checkmark, chevronForward, close, sad } from "ionicons/icons";
-import { forwardRef, useEffect, useState } from "react";
+import { alertCircle, checkmark, chevronForward, close, openOutline, sad, warning } from "ionicons/icons";
+import { forwardRef, useEffect, useRef, useState } from "react";
 
 export function Item({ children, className, innerPadding, ...props }) {
   return (
@@ -46,14 +46,20 @@ export function List({ children, innerPadding, topPadding, className, props }) {
 }
 
 export function ReadMore({ children }) {
-  const [active, setActive] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const ref = useRef(null);
 
   return (
     <>
-      <div className={active || "line-clamp-4"}>{children}</div>
-      <Anchor className="mb-2 block" onClick={() => setActive(!active)}>
-        {active ? "Čítaj menej ..." : "Čítaj viac ..."}
-      </Anchor>
+      <div ref={ref} className={expanded ? "" : "line-clamp-4"}>
+        {children}
+      </div>
+      {/* display only first time and if text has has been clamped (height was is hardcoded) */}
+      {!expanded && ref.current && ref.current.getBoundingClientRect().height >= 96 && (
+        <Anchor className="block" onClick={() => setExpanded(true)} textOnly>
+          Čítaj viac
+        </Anchor>
+      )}
     </>
   );
 }
@@ -143,6 +149,7 @@ export function Toggle({ children, className, required, ...props }) {
 }
 
 export function Checkbox({ children, className, required, ...props }) {
+  /* TODO: add separate label as a workaround to https://github.com/ionic-team/ionic-docs/issues/3459 */
   return (
     <IonCheckbox justify="space-between" className={classNames("w-full", className)} required={required} {...props}>
       <div className="whitespace-break-spaces">
@@ -170,22 +177,25 @@ export function ItemLink({ children, style, ...props }) {
   );
 }
 
-export const Anchor = forwardRef(function ({ children, className, ...props }, ref) {
+export const Anchor = forwardRef(function ({ children, className, href, textOnly, ...props }, ref) {
   return (
-    <span ref={ref} className={classNames("cursor-pointer font-medium text-primary underline", className)} {...props}>
-      {children}
-    </span>
+    (children || href) && (
+      <a ref={ref} href={href} target="_blank" className={classNames("cursor-pointer text-primary", textOnly && "no-underline", className)} {...props}>
+        {textOnly || <IonIcon icon={openOutline} className="mr-1 align-text-bottom" />}
+        {children || href}
+      </a>
+    )
   );
 });
 
-export const BasicLink = forwardRef(function ({ children, href, ...props }, ref) {
-  return (
-    <a ref={ref} target="_blank" href={href} {...props}>
-      {/* {<IonIcon className="mr-1 align-text-top" icon={openOutline} />} */}
-      {children ?? href}
-    </a>
-  );
-});
+// export const Anchor = forwardRef(function ({ children, href, ...props }, ref) {
+//   return (
+//     <a ref={ref} target="_blank" href={href} {...props}>
+// {/* {<IonIcon className="mr-1 align-text-top" icon={openOutline} />} */}
+//       {children ?? href}
+//     </a>
+//   );
+// });
 
 export function Showcase({ children }) {
   return <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">{children}</div>;
@@ -207,6 +217,15 @@ Showcase.Item = ({ children, label, icon, src, onClick }) => {
 
 export const BooleanIcon = ({ value, ...props }) => {
   return <IonIcon className={value ? "text-emerald-500" : "text-rose-500"} icon={value ? checkmark : close} {...props} />;
+};
+
+export const SmallWarning = ({ children }) => {
+  return (
+    <div className="flex items-center gap-2">
+      <IonIcon icon={warning} className="text-primary" />
+      <p>{children}</p>
+    </div>
+  );
 };
 
 export const SadFace = ({ title = "", subtitle = "" }) => {

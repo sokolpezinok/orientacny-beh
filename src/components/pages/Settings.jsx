@@ -1,45 +1,25 @@
+import { Header, ItemLink } from "@/components/ui/Design";
 import { useModal } from "@/utils/modals";
 import { Notifications } from "@/utils/notify";
 import { Storage } from "@/utils/storage";
+import { Capacitor } from "@capacitor/core";
 import { IonContent, IonHeader, IonPage } from "@ionic/react";
-import { useEffect, useState } from "react";
-import { Header, ItemLink } from "../ui/Design";
 
 const Settings = () => {
-  const { errorModal, confirmModal, smartModal } = useModal();
-  const [token, setToken] = useState(null);
+  const { confirmModal, smartModal } = useModal();
 
   const handleLogout = smartModal(async (event) => {
     const surety = await confirmModal("Naozaj sa chceš odhlásiť?");
     if (!surety) return event.preventDefault();
 
-    await Notifications.register(false);
+    if (Capacitor.isNativePlatform()) {
+      await Notifications.register(false);
+    }
+
     await Storage.push((s) => {
       s.isLoggedIn = false;
     });
   }, "Nepodarilo sa ťa odhlásiť.");
-
-  const handleAllowNotify = smartModal(async (event) => {
-    try {
-      await Notifications.register(event.target.checked);
-    } catch (error) {
-      // when an error is thrown, undo toggle check
-      event.target.checked = !event.target.checked;
-      throw error;
-    }
-
-    await Storage.push((s) => {
-      s.preferences.allowNotify = event.target.checked;
-    });
-  }, "Nepodarilo sa zmeniť nastavenie.");
-
-  useEffect(() => {
-    if (Storage.pull().preferences.allowNotify) {
-      Notifications.getToken()
-        .then((data) => setToken(data.token))
-        .catch((error) => errorModal(error.message));
-    }
-  }, []);
 
   return (
     <IonPage>

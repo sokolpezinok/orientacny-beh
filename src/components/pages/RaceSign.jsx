@@ -2,10 +2,10 @@ import { IonSelectOption } from "@ionic/react";
 import { useRef, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
-import { RaceApi, RaceEnums } from "@/utils/api";
+import Content from "@/components/controllers/Content";
+import { Drawer, Header, Input, Item, ItemGroup, List, PrimaryButton, SecondaryButton, Select, Toggle } from "@/components/ui/Design";
+import { RaceApi, RaceEnum } from "@/utils/api";
 import { useModal } from "@/utils/modals";
-import Content from "../controllers/Content";
-import { Drawer, Header, Input, Item, ItemGroup, List, PrimaryButton, SecondaryButton, Select, Toggle } from "../ui/Design";
 
 export default () => (
   <Content
@@ -42,7 +42,7 @@ const RaceSign = ({ content }) => {
     const collected = {
       category: els.category.value,
       transport: els.transport.value === "on",
-      transport_shared: els.transport_shared.value,
+      transport_shared: els.transport_shared?.value,
       accommodation: els.accommodation.value === "on",
       note: els.note.value,
       note_internal: els.note_internal.value,
@@ -94,7 +94,7 @@ const RaceSign = ({ content }) => {
       </ItemGroup>
       <ItemGroup title="Doprava a ubytovanie">
         <List>
-          {detail.transport == RaceEnums.TRANSPORT_SHARED ? (
+          {detail.transport == RaceEnum.TRANSPORT_SHARED ? (
             <>
               <Toggle name="transport" checked={sharedTransport} onIonChange={(event) => setSharedTransport(event.target.checked)}>
                 Chcem využiť zdielanú dopravu
@@ -116,14 +116,14 @@ const RaceSign = ({ content }) => {
               </Drawer>
             </>
           ) : (
-            <Toggle name="transport" checked={RaceEnums.isTransportSelectable(detail.transport) ? user.transport : detail.transport} disabled={!RaceEnums.isTransportSelectable(detail.transport)}>
+            <Toggle name="transport" checked={RaceEnum.isTransportSelectable(detail.transport) ? user.transport : detail.transport} disabled={!RaceEnum.isTransportSelectable(detail.transport)}>
               Chcem využiť spoločnú dopravu
             </Toggle>
           )}
           <Toggle
             name="accommodation"
-            checked={RaceEnums.isAccommodationSelectable(detail.accommodation) ? user.accommodation : detail.accommodation}
-            disabled={!RaceEnums.isAccommodationSelectable(detail.accommodation)}
+            checked={RaceEnum.isAccommodationSelectable(detail.accommodation) ? user.accommodation : detail.accommodation}
+            disabled={!RaceEnum.isAccommodationSelectable(detail.accommodation)}
           >
             Chcem využiť spoločné ubytovanie
           </Toggle>

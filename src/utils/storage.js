@@ -13,7 +13,8 @@ export class Storage {
     },
 
     // access token
-    token: null,
+    accessToken: null,
+    tokenExpiration: 0,
 
     // policy of the user
     policies: {
@@ -21,7 +22,8 @@ export class Storage {
       policy_news: false,
       policy_regs: false,
       policy_fin: false,
-      policy_mng: false,
+      policy_mng_small: false,
+      policy_mng_big: false,
     },
 
     // club info data
@@ -67,7 +69,7 @@ export class Storage {
     if (keys.value.includes(this.profile)) {
       const profile = await SecureStoragePlugin.get({ key: this.profile });
 
-      this.store.update(s => {
+      this.store.update((s) => {
         // push values to store
         Object.entries(JSON.parse(profile.value)).forEach(([key, val]) => {
           s[key] = val;
@@ -75,10 +77,9 @@ export class Storage {
 
         s.isLoading = false;
       });
-
     } else {
       // profile does not exists yet, create a profile via push
-      this.push(s => {
+      this.push((s) => {
         s.isLoading = false;
       });
     }

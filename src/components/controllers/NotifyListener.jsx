@@ -4,11 +4,12 @@ import { LocalNotifications } from "@capacitor/local-notifications";
 import { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
+import { SystemApi } from "@/utils/api";
 import { useModal } from "@/utils/modals";
 import { Notifications, NotifyEvents } from "@/utils/notify";
 
 const NotifyListener = ({}) => {
-  // listens for incoming notifications
+  // listens for push notifications
 
   const history = useHistory();
   const { smartModal } = useModal();
@@ -16,15 +17,17 @@ const NotifyListener = ({}) => {
   const handleNotifyActionPerformed = smartModal(async (event) => {
     const data = event?.notification?.data || event?.notification?.extra;
     const type = data?.event ?? NotifyEvents.BASIC;
+    const value = data?.value;
 
-    // use weak comparison, type is proba
-    if (type == NotifyEvents.RACE) {
-      if (!data.race_id) {
-        throw "Chyba v obsahu notifikácie. (race_id missing)";
-      }
-
-      history.push(`/tabs/races/${data.race_id}`);
+    if (type !== NotifyEvents.RACE) {
+      return;
     }
+
+    if (!value) {
+      throw "Chyba v obsahu notifikácie. (value missing)";
+    }
+
+    history.push(`/tabs/races/${value}`);
   }, "Nepodarilo sa otvoriť notifikáciu.");
 
   const handleNotifyReceived = smartModal(async (event) => {
@@ -36,10 +39,15 @@ const NotifyListener = ({}) => {
     });
   }, "Nepodarilo sa prijať notifikáciu.");
 
+  const handleTokenReceived = smartModal(async (event) => {
+    await SystemApi.fcm_token_update(event.token);
+  }, "Nepodarilo sa aktualizovať registračný token notifikácií.");
+
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
       FirebaseMessaging.addListener("notificationActionPerformed", handleNotifyActionPerformed);
       FirebaseMessaging.addListener("notificationReceived", handleNotifyReceived);
+      FirebaseMessaging.addListener("tokenReceived", handleTokenReceived);
       LocalNotifications.addListener("localNotificationActionPerformed", handleNotifyActionPerformed);
 
       return smartModal(async () => {

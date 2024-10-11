@@ -1,5 +1,6 @@
 import { IonButton, IonIcon, IonSelectOption } from "@ionic/react";
 
+import { Header, Input, ItemGroup, List, PrimaryButton, Select, Toggle } from "@/components/ui/Design";
 import { UserApi } from "@/utils/api";
 import countries from "@/utils/countries";
 import { useModal } from "@/utils/modals";
@@ -7,7 +8,6 @@ import { Storage } from "@/utils/storage";
 import { helpCircle } from "ionicons/icons";
 import { useRef } from "react";
 import Content from "../controllers/Content";
-import { Header, Input, ItemGroup, List, PrimaryButton, Select, Toggle } from "../ui/Design";
 
 export default () => <Content Render={Profile} Header={() => <Header backHref="/tabs/settings">Profil</Header>} updateData={UserApi.data} errorText="Nepodarilo sa načítať dáta." />;
 
@@ -15,7 +15,7 @@ const Profile = ({ content }) => {
   const { smartModal, alertModal } = useModal();
   const ref = useRef(null);
 
-  const userEditDisabled = !Storage.pull().policies.policy_mng;
+  const userEditDisabled = !Storage.pull().policies.policy_mng_big;
 
   const handleSubmit = smartModal(async () => {
     const els = ref.current.elements;

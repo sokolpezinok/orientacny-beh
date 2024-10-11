@@ -2,6 +2,7 @@ import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { Capacitor } from "@capacitor/core";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { Storage } from "./storage";
+import { SystemApi } from "./api";
 
 export class Notifications {
   static checkSupport = () => {
@@ -18,11 +19,12 @@ export class Notifications {
     }
 
     if (status.receive !== "granted") {
-      throw "Povolenie bolo zrušené používateľom.";
+      throw "Povolenie bolo zrušené používateľom. Notifikácie môžeš povoliť v systémových nastaveniach.";
     }
   };
 
   static register = async (state) => {
+    // state is already changed, no need to change
     if (state === Storage.pull().preferences.allowNotify) {
       return;
     }
@@ -32,19 +34,21 @@ export class Notifications {
     if (state) {
       await this.requestPermissions();
 
+      const result = await FirebaseMessaging.getToken();
       await FirebaseMessaging.subscribeToTopic({ topic: Storage.pull().club.clubname });
+      await SystemApi.fcm_token_update(result.token);
       await Storage.push((s) => {
         s.preferences.allowNotify = true;
       });
     } else {
       await FirebaseMessaging.unsubscribeFromTopic({ topic: Storage.pull().club.clubname });
+      await FirebaseMessaging.deleteToken();
+      await SystemApi.fcm_token_delete();
       await Storage.push((s) => {
         s.preferences.allowNotify = false;
       });
     }
   };
-
-  static getToken = FirebaseMessaging.getToken;
 
   static notify = ({ id, data, title, body, ...options }) =>
     LocalNotifications.schedule({
@@ -61,6 +65,6 @@ export class Notifications {
 }
 
 export class NotifyEvents {
-  static BASIC = 0;
-  static RACE = 1;
+  static BASIC = "0";
+  static RACE = "1";
 }

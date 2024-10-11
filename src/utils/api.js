@@ -1,34 +1,38 @@
 import { apiServer } from "@/manifest";
 import { Storage } from "@/utils/storage";
+import { Device } from "@capacitor/device";
+import { isTokenExpired, unixTime } from ".";
 
-const getToken = () => Storage.pull().token;
 const getServer = () => `${apiServer}/${Storage.pull().club.clubname}`;
+const getDevice = async () => (await Device.getId()).identifier;
 
 // server api packaged into a class
 class Api {
-  static async fetch(part, method, { data = null, auth = false, headers = {}, server = null, token = null } = {}) {
+  static async fetch(part, method, { data = null, authorize = false, headers = {}, server = null } = {}) {
     if (!window.navigator.onLine) {
       throw "Vyzerá to tak, že si offline. Skontroluj prosím pripojenie na internet.";
     }
 
-    server = server || getServer();
-    token = token || getToken();
+    if (isTokenExpired()) {
+      await Storage.push((s) => {
+        s.isLoggedIn = false;
+      });
+    }
 
-    // add required headers and authorization when needed
-    headers = Object.assign(
-      {
-        // these headers are required, do NOT touch
-        "Content-Type": "application/json; charset=utf-8",
-        Accept: "application/json",
-      },
-      auth && {
-        Authorization: "Bearer " + token,
-      },
-      headers
-    );
+    // these headers are required
+    // DO NOT TOUCH
+    headers = {
+      "Content-Type": "application/json; charset=utf-8",
+      Accept: "application/json",
+      ...headers,
+    };
+
+    if (authorize) {
+      headers.Authorization = "Bearer " + Storage.pull().accessToken;
+    }
 
     // make a request
-    const response = await fetch(server + part, {
+    const response = await fetch((server || getServer()) + part, {
       method,
       headers,
       body: data && JSON.stringify(data),
@@ -37,10 +41,18 @@ class Api {
     const length = response.headers.get("Content-Length");
 
     // try to parse json if got response to be able provide error message
-    const content = length === null || length === "0" ? {} : await response.json();
+    const content = length === "0" ? {} : await response.json();
 
     // raise an error based on status code and try to report an error
-    if (!response.ok) throw content?.message ?? "Unknown error that could not be reported.";
+    if (!response.ok) {
+      let message = content?.message ?? "Neznáma chyba, ktorej chýba chybová hláška.";
+
+      if (response.status >= 500) {
+        message += "\n\nChyba sa stala na serveri. Prosím, nahláste chybu administrátorom.";
+      }
+
+      throw message;
+    }
 
     // all right, return content
     return content;
@@ -50,77 +62,105 @@ class Api {
   static post = (part, options) => this.fetch(part, "POST", options);
 }
 
-export class GeneralApi extends Api {
+export class GeneralApi {
   static clubs = () =>
-    this.get(`/clubs`, {
+    Api.get(`/clubs`, {
       server: apiServer,
     });
 }
 
-export class UserApi extends Api {
-  static login = ({ username, password, clubname }) =>
-    this.post(`/user/login`, {
-      data: { username, password },
-      server: `${apiServer}/${clubname}`,
-    });
-  static show = (user_id) => this.get(`/user/${user_id}`);
+export class UserApi {
+  static show = (user_id) => Api.get(`/user/${user_id}`);
   static managing = (user_id) =>
-    this.get(`/user/${user_id}/managing`, {
-      auth: true,
+    Api.get(`/user/${user_id}/managing`, {
+      authorize: true,
     });
   static data = () =>
-    this.get(`/user/`, {
-      auth: true,
+    Api.get(`/user/`, {
+      authorize: true,
     });
   static data_update = (data) =>
-    this.post(`/user/`, {
-      auth: true,
+    Api.post(`/user/`, {
+      authorize: true,
       data,
     });
   static notify = () =>
-    this.get(`/user/notify`, {
-      auth: true,
+    Api.get(`/user/notify`, {
+      authorize: true,
     });
   static notify_update = (data) =>
-    this.post(`/user/notify`, {
-      auth: true,
+    Api.post(`/user/notify`, {
+      authorize: true,
       data,
     });
 }
 
-export class RaceApi extends Api {
+export class RaceApi {
   // returns url
   static getRedirect = (race_id) => `${getServer()}/race/${race_id}/redirect`;
 
   // methods
-  static list = () => this.get(`/races`);
-  static detail = (race_id) => this.get(`/race/${race_id}`);
+  static list = () => Api.get(`/races`);
+  static detail = (race_id) => Api.get(`/race/${race_id}`);
   static relations = (race_id) =>
-    this.get(`/race/${race_id}/relations`, {
-      auth: true,
+    Api.get(`/race/${race_id}/relations`, {
+      authorize: true,
     });
   static signin = (race_id, user_id, data) =>
-    this.post(`/race/${race_id}/signin/${user_id}`, {
-      auth: true,
+    Api.post(`/race/${race_id}/signin/${user_id}`, {
+      authorize: true,
       data,
     });
   static signout = (race_id, user_id) =>
-    this.post(`/race/${race_id}/signout/${user_id}`, {
-      auth: true,
+    Api.post(`/race/${race_id}/signout/${user_id}`, {
+      authorize: true,
     });
   static notify = (race_id, { title, body, image }) =>
-    this.post(`/race/${race_id}/notify`, {
-      auth: true,
+    Api.post(`/race/${race_id}/notify`, {
+      authorize: true,
       data: { title, body, image },
     });
 }
 
-export class PolicyEnums {
+export class SystemApi {
+  static login = async ({ username, password, clubname }) => {
+    const { access_token, expiration, policies } = await Api.post(`/system/login`, {
+      data: { username, password },
+      server: `${apiServer}/${clubname}`,
+    });
+
+    if (!access_token) throw "Got invalid access token from server!";
+    if (expiration < unixTime()) throw "Invalid expiration time!" + expiration + " < " + Date.now();
+
+    await Storage.push((s) => {
+      s.accessToken = access_token;
+      s.tokenExpiration = expiration;
+      s.policies = policies;
+      s.isLoggedIn = true;
+    });
+  };
+
+  static fcm_token_update = async (token) => {
+    return await Api.post(`/system/fcm_token/update`, {
+      authorize: true,
+      data: { token, device: await getDevice() },
+    });
+  };
+
+  static fcm_token_delete = async () => {
+    return await Api.post(`/system/fcm_token/delete`, {
+      authorize: true,
+      data: { device: await getDevice() },
+    });
+  };
+}
+
+export class PolicyEnum {
   static BIG_MANAGER = 4;
   static SMALL_MANAGER = 2;
 }
 
-export class RaceEnums {
+export class RaceEnum {
   static TRANSPORT_UNAVAILABLE = 0;
   static TRANSPORT_AVAILABLE = 1;
   static TRANSPORT_REQUIRED = 2;
