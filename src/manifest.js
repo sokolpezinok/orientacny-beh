@@ -32,8 +32,8 @@ const appPackageName = "orienteering.app";
 // do NOT add trailing slash at the end //
 //======================================//
 const apiDomain = "members.eob.cz";
-const apiVersion = 1;
-const apiServer = `https://members.eob.cz/api/debug/${apiVersion}`;
+const apiVersion = 2;
+const apiServer = `https://members.eob.cz/api/${apiVersion}`;
 
 module.exports = {
   // use CommonJS syntax for compatibility reasons with capacitor.config.ts

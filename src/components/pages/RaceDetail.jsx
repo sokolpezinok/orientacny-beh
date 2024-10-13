@@ -71,7 +71,7 @@ const RaceDetail = ({ content, handleUpdate }) => {
           </ReadMore>
         )}
         {detail.link && <Anchor href={detail.link} />}
-        {isEntryExpired(detail.entries) && <span className="text-sm text-rose-500">Vypršal minimálny termín prihlášok. Ak sa chceš prihlásiť, kontaktuj organizátorov.</span>}
+        {isEntryExpired(detail.entries) && <span className="block text-sm text-rose-500">Vypršal minimálny termín prihlášok. Ak sa chceš prihlásiť, kontaktuj organizátorov.</span>}
       </div>
       <Item>
         <Showcase>
