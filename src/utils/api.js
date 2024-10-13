@@ -36,6 +36,7 @@ class Api {
       method,
       headers,
       body: data && JSON.stringify(data),
+      cache: "no-store",
     });
 
     const length = response.headers.get("Content-Length");
