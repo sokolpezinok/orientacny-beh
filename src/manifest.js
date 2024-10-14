@@ -25,7 +25,7 @@
 // (c) KOB Sokol Pezinok
 
 const appName = "Orientačný beh";
-const appBuildVersion = `v3.02`;
+const appBuildVersion = `v3.03`;
 const appPackageName = "orienteering.app";
 
 //======================================//
