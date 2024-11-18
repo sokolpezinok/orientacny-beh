@@ -7,6 +7,12 @@ import { Storage } from "./storage";
  * @returns {boolean} - True if any entry is expired, otherwise false.
  */
 export const isEntryExpired = (entries) => {
+  // Entry is never expired if no date is present
+  // for compatibility reasons with web version
+  if (entries.length === 0) {
+    return false;
+  }
+
   // Converts each entry in the provided array to a Date object
   // and sets the time to the start of the day (midnight).
   const parsedEntries = entries.map((entry) => new Date(entry).setHours(0, 0, 0, 0));

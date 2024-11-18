@@ -201,15 +201,15 @@ export function Showcase({ children }) {
   return <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">{children}</div>;
 }
 Showcase.Item = ({ children, label, icon, src, onClick }) => {
-  // use weak compoarision to accept nullish values
+  // use weak comparison to accept nullish values
   if (!children) return;
 
   return (
     <div className="flex" onClick={onClick}>
       <IonIcon src={src} icon={icon} className="mr-4 hidden self-center text-3xl xs:block" color="primary" />
       <div className="flex flex-col self-center">
-        <h1>{children || "-"}</h1>
         <span className="text-sm">{label}</span>
+        <h1>{children || "-"}</h1>
       </div>
     </div>
   );
@@ -254,10 +254,10 @@ export const FatalError = ({ title = "", subtitle = "", reload = true }) => {
 };
 
 export const Spinner = ({ name = "circular" }) => {
-  const [current, setCurrent] = useState(false);
+  const [state, setState] = useState(false);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setCurrent(true), 2000);
+    const timeout = setTimeout(() => setState(true), 2000);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -265,7 +265,7 @@ export const Spinner = ({ name = "circular" }) => {
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
         <IonSpinner color="primary" name={name} />
-        <Drawer active={current}>
+        <Drawer active={state}>
           <p>Táto akcia trvá dlhšie, ako sme očakávali.</p>
           <p>Za chvíľu to bude ...</p>
         </Drawer>

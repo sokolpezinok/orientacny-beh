@@ -103,7 +103,7 @@ const RaceDetail = ({ content, handleUpdate }) => {
       </Item>
       {Storage.pull().policies.policy_mng_big && <ItemLink routerLink={`/tabs/races/${race_id}/notify`}>Napísať notifikáciu</ItemLink>}
       <ItemLink routerLink="#" onClick={handleSignin(`/tabs/races/${race_id}/sign`)}>
-        Prihlásiť sa
+        {relations[0].is_signed_in ? "Zmeniť / Odhlásiť sa" : "Prihlásiť sa"}
       </ItemLink>
       <IonAccordionGroup>
         <Accordion title="Moji členovia">
@@ -138,8 +138,8 @@ const RaceDetail = ({ content, handleUpdate }) => {
                     <IonIcon icon={home} />
                   </IonCol>
                 </IonRow>
-                {detail.everyone.map((child, index) => (
-                  <IonRow key={index}>
+                {detail.everyone.map((child) => (
+                  <IonRow key={child.user_id}>
                     <IonCol>{child.name}</IonCol>
                     <IonCol>{child.surname}</IonCol>
                     <IonCol>{child.category}</IonCol>

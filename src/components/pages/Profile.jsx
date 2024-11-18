@@ -62,10 +62,10 @@ const Profile = ({ content }) => {
         <Input disabled={userEditDisabled} label="Meno" name="name" value={content.name} required />
         <Input disabled={userEditDisabled} label="Priezvisko" name="surname" value={content.surname} required />
         <Select disabled={userEditDisabled} label="Pohlavie" name="gender" value={content.gender} required>
-          <IonSelectOption value="H">Mužské</IonSelectOption>
-          <IonSelectOption value="D">Ženské</IonSelectOption>
+          <IonSelectOption value="H">Muž</IonSelectOption>
+          <IonSelectOption value="D">Žena</IonSelectOption>
         </Select>
-        <Input disabled={userEditDisabled} label="Narodenie" name="birth_date" value={content.birth_date} type="date" required />
+        <Input disabled={userEditDisabled} label="Dátum narodenia" name="birth_date" value={content.birth_date} type="date" required />
         <Input disabled={userEditDisabled} label="Rodné číslo" name="birth_number" value={content.birth_number} type="number" required />
         <Select disabled={userEditDisabled} label="Národnosť" name="nationality" value={content.nationality} required>
           {countries.map(([code, name]) => (
@@ -82,7 +82,7 @@ const Profile = ({ content }) => {
         <Input label="Email" name="email" value={content.email} />
         <Input label="Adresa" name="address" value={content.address} />
         <Input label="Mesto" name="city" value={content.city} />
-        <Input label="PŠC" name="postal_code" value={content.postal_code} type="number" />
+        <Input label="PSČ" name="postal_code" value={content.postal_code} type="number" />
         <Input label="Mobil" name="phone" value={content.phone} type="tel" />
         <Input label="Domáci mobil" name="phone_home" value={content.phone_home} type="tel" />
         <Input label="Pracovný mobil" name="phone_work" value={content.phone_work} type="tel" />

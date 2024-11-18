@@ -40,6 +40,7 @@ export class Storage {
 
   // a name that is used for secure storage
   static profile = "profile";
+  static timeout = 3000;
 
   static pull() {
     return this.store.getRawState();
@@ -63,26 +64,35 @@ export class Storage {
     });
   }
 
+  static load_empty() {
+    this.push((s) => {
+      s.isLoading = false;
+    });
+  }
+
   static async load() {
-    const keys = await SecureStoragePlugin.keys();
+    const { value: keys } = await SecureStoragePlugin.keys();
 
-    if (keys.value.includes(this.profile)) {
-      const profile = await SecureStoragePlugin.get({ key: this.profile });
-
-      this.store.update((s) => {
-        // push values to store
-        Object.entries(JSON.parse(profile.value)).forEach(([key, val]) => {
-          s[key] = val;
-        });
-
-        s.isLoading = false;
-      });
-    } else {
-      // profile does not exists yet, create a profile via push
-      this.push((s) => {
-        s.isLoading = false;
-      });
+    if (!keys.includes(this.profile)) {
+      return this.load_empty();
     }
+
+    const profile = await Promise.race([new Promise((resolve) => setTimeout(resolve, this.timeout)), SecureStoragePlugin.get({ key: this.profile })]);
+
+    if (!profile) {
+      return this.load_empty();
+    }
+
+    const data = JSON.parse(profile.value);
+
+    this.store.update((s) => {
+      // push values to store
+      Object.entries(data).forEach(([key, value]) => {
+        s[key] = value;
+      });
+
+      s.isLoading = false;
+    });
   }
 
   static {
