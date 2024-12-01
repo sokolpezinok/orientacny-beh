@@ -1,10 +1,11 @@
 # Orientačný beh
 
-Aplikácia na zjednodušenia prihlasovania na preteky zo stránky https://members.eob.cz/.
+Aplikácia na zjednodušenie prihlasovania na preteky zo stránky:
+https://members.eob.cz/
 
 ## Gallery
 
-<img src="./images/1_list.png" width="45%"></img> <img src="./images/2_detail.png" width="45%"></img> <img src="./images/3_signin.png" width="45%"></img> <img src="./images/4_profile.png" width="45%"></img>
+<img src="./images/1_list.png" width="30%"></img> <img src="./images/2_detail.png" width="30%"></img> <img src="./images/3_notify.png" width="30%"></img>
 
 ## Inštalácia
 
