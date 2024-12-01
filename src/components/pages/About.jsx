@@ -14,7 +14,7 @@ const About = () => {
             <p>Ďakujeme všetkým, ktorí akýmkoľvek spôsobom prispeli na vývoj aplikácie Orientačného behu.</p>
             <div className="flex flex-wrap gap-2">
               <Anchor href="https://github.com/jurakin">Jurakin</Anchor>
-              <Anchor href="https://www.sokolpezinok.sk/">KOB Sokol Pezinok</Anchor>
+              <Anchor href="https://github.com/lukipuki">Lukáš Poláček</Anchor>
               <Anchor href="mailto:ondrej.honsch@gmail.com">Ondrej</Anchor>
             </div>
           </Accordion>
