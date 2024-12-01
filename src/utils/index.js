@@ -1,29 +1,43 @@
 import { Storage } from "./storage";
 
+export const parseDates = (dates) => {
+  // Converts each entry in the provided array to a Date object
+  // and sets the time to the start of the day (midnight).
+  return dates.map((date) => new Date(date).setHours(0, 0, 0, 0));
+};
+
+export const getFirstEntry = (entries) => {
+  return Math.min(...parseDates(entries));
+};
+
 /**
- * Checks if any entry in the provided array is expired.
- *
- * @param {Array} entries - Array of date strings.
- * @returns {boolean} - True if any entry is expired, otherwise false.
+ * Checks if first entry in the provided array is expired.
  */
-export const isEntryExpired = (entries) => {
-  // Entry is never expired if no date is present
+export const isFirstEntryExpired = (entries) => {
+  // entry is never expired if no date is present
   // for compatibility reasons with web version
   if (entries.length === 0) {
     return false;
   }
 
-  // Converts each entry in the provided array to a Date object
-  // and sets the time to the start of the day (midnight).
-  const parsedEntries = entries.map((entry) => new Date(entry).setHours(0, 0, 0, 0));
+  return getFirstEntry(entries) < new Date().setHours(0, 0, 0, 0);
+};
 
-  // Gets the current date with the time set to the start of the day.
-  const firstEntry = Math.min(...parsedEntries);
+export const getLastEntry = (entries) => {
+  return Math.max(...parseDates(entries));
+};
 
-  // Gets the current date with the time set to the start of the day.
-  const currentDate = new Date().setHours(0, 0, 0, 0);
+/**
+ * Checks if last entry in the provided array is expired.
+ */
+export const isLastEntryExpired = (entries) => {
+  // entry is never expired if no date is present
+  // for compatibility reasons with web version
+  if (entries.length === 0) {
+    return false;
+  }
 
-  return firstEntry < currentDate;
+  return getLastEntry(entries) < new Date().setHours(0, 0, 0, 0);
 };
 
 /**
@@ -33,14 +47,16 @@ export const isEntryExpired = (entries) => {
  * @param {function} func
  * @returns {Array}
  */
-export const sortAlphabetically = (array, func = null) =>
+export const sort = (array, func = null) =>
   array.sort((a, b) => {
     if (func !== null) {
       a = func(a);
       b = func(b);
     }
 
-    return a < b ? -1 : a < b ? 1 : 0;
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
   });
 
 export const unixTime = () => Math.floor(Date.now() / 1000);

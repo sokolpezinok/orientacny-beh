@@ -1,45 +1,57 @@
-import { IonIcon, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonIcon, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import classNames from "classnames";
-import { calendar, location } from "ionicons/icons";
+import { calendar, location, refresh } from "ionicons/icons";
 
-import { Item, SadFace } from "@/components/ui/Design";
-import { isEntryExpired } from "@/utils";
+import { Item, Refresher, SadFace } from "@/components/ui/Design";
+import { isLastEntryExpired } from "@/utils";
 import { RaceApi } from "@/utils/api";
-import { formatDate } from "@/utils/format";
+import { formatDates } from "@/utils/format";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={Races} Header={Header} updateData={RaceApi.list} errorText="Nepodarilo sa načítať preteky." />;
+export default () => <Content Render={Races} updateData={RaceApi.list} errorText="Nepodarilo sa načítať preteky." />;
 
-const Header = ({}) => (
+const Header = ({ handleUpdate }) => (
   <IonToolbar>
     <IonTitle>Preteky</IonTitle>
+    <IonButtons slot="end">
+      <IonButton onClick={handleUpdate}>
+        <IonIcon slot="icon-only" icon={refresh} />
+      </IonButton>
+    </IonButtons>
   </IonToolbar>
 );
 
-const Races = ({ content }) => {
+const Races = ({ content, handleUpdate }) => {
   if (content.length === 0) {
-    return <SadFace title="V najbližšej dobe nie sú naplánované preteky." subtitle="Môžeš si zabehať nesúťažne :)" />;
+    return (
+      <IonPage>
+        <Header handleUpdate={handleUpdate} />
+        <IonContent>
+          <Refresher handleUpdate={handleUpdate} />
+          <SadFace title="V najbližšej dobe nie sú naplánované preteky." subtitle="Môžeš si zabehať nesúťažne :)" />
+        </IonContent>
+      </IonPage>
+    );
   }
 
   return (
-    <>
-      {content.map((child) => (
-        <Item key={child.race_id} routerLink={`/tabs/races/${child.race_id}`}>
-          <h1 className={classNames("text-2xl font-bold", child.cancelled && "line-through")}>{child.name}</h1>
-          {isEntryExpired(child.entries) && <span className="text-rose-500">Vypršal minimálny termín prihlášok.</span>}
-          <ListItem icon={calendar}>{child.dates.map(formatDate).join(" - ")}</ListItem>
-          <ListItem icon={location}>{child.place}</ListItem>
-        </Item>
-      ))}
-    </>
-  );
-};
-
-const ListItem = ({ children, icon }) => {
-  return (
-    <p>
-      <IonIcon icon={icon} color="primary" className="align-text-top" />
-      <span className="ml-2">{children}</span>
-    </p>
+    <IonPage>
+      <Header handleUpdate={handleUpdate} />
+      <IonContent>
+        <Refresher handleUpdate={handleUpdate} />
+        {content.map((child) => (
+          <Item key={child.race_id} routerLink={`/tabs/races/${child.race_id}`}>
+            <h1 className={classNames("text-2xl font-bold", child.cancelled && "line-through")}>{child.name}</h1>
+            {isLastEntryExpired(child.entries) && <span className="text-rose-500">Prihlasovanie skončilo</span>}
+            <div className="grid grid-cols-[auto_1fr] gap-x-4">
+              <IonIcon icon={calendar} color="primary" className="self-center" />
+              {formatDates(child.dates)}
+              <IonIcon icon={location} color="primary" className="self-center" />
+              {child.place}
+            </div>
+          </Item>
+        ))}
+      </IonContent>
+    </IonPage>
   );
 };

@@ -24,7 +24,7 @@ const Settings = () => {
   return (
     <IonPage>
       <IonHeader>
-        <Header>Nastavenia</Header>
+        <Header title="Nastavenia" />
       </IonHeader>
       <IonContent>
         <ItemLink routerLink="/tabs/settings/profile">Profil</ItemLink>

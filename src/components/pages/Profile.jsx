@@ -1,4 +1,4 @@
-import { IonButton, IonIcon, IonSelectOption } from "@ionic/react";
+import { IonButton, IonContent, IonIcon, IonPage, IonSelectOption } from "@ionic/react";
 
 import { Header, Input, ItemGroup, List, PrimaryButton, Select, Toggle } from "@/components/ui/Design";
 import { UserApi } from "@/utils/api";
@@ -9,7 +9,7 @@ import { helpCircle } from "ionicons/icons";
 import { useRef } from "react";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={Profile} Header={() => <Header backHref="/tabs/settings">Profil</Header>} updateData={UserApi.data} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={Profile} updateData={UserApi.data} errorText="Nepodarilo sa načítať dáta." />;
 
 const Profile = ({ content }) => {
   const { smartModal, alertModal } = useModal();
@@ -51,78 +51,83 @@ const Profile = ({ content }) => {
     );
 
   return (
-    <form ref={ref}>
-      <ItemGroup title="Všeobecné">
-        {userEditDisabled && (
-          <IonButton onClick={handleExplainDisabled} fill="clear" color="danger" className="w-full normal-case">
-            <IonIcon slot="start" icon={helpCircle} />
-            Prečo nemôžem meniť niektoré nastavenia?
-          </IonButton>
-        )}
-        <Input disabled={userEditDisabled} label="Meno" name="name" value={content.name} required />
-        <Input disabled={userEditDisabled} label="Priezvisko" name="surname" value={content.surname} required />
-        <Select disabled={userEditDisabled} label="Pohlavie" name="gender" value={content.gender} required>
-          <IonSelectOption value="H">Muž</IonSelectOption>
-          <IonSelectOption value="D">Žena</IonSelectOption>
-        </Select>
-        <Input disabled={userEditDisabled} label="Dátum narodenia" name="birth_date" value={content.birth_date} type="date" required />
-        <Input disabled={userEditDisabled} label="Rodné číslo" name="birth_number" value={content.birth_number} type="number" required />
-        <Select disabled={userEditDisabled} label="Národnosť" name="nationality" value={content.nationality} required>
-          {countries.map(([code, name]) => (
-            <IonSelectOption key={code} value={code}>
-              {name}
-            </IonSelectOption>
-          ))}
-        </Select>
-        <Toggle disabled={true} name="is_hidden" checked={content.is_hidden}>
-          Skryté konto
-        </Toggle>
-      </ItemGroup>
-      <ItemGroup title="Kontakty">
-        <Input label="Email" name="email" value={content.email} />
-        <Input label="Adresa" name="address" value={content.address} />
-        <Input label="Mesto" name="city" value={content.city} />
-        <Input label="PSČ" name="postal_code" value={content.postal_code} type="number" />
-        <Input label="Mobil" name="phone" value={content.phone} type="tel" />
-        <Input label="Domáci mobil" name="phone_home" value={content.phone_home} type="tel" />
-        <Input label="Pracovný mobil" name="phone_work" value={content.phone_work} type="tel" />
-      </ItemGroup>
-      <ItemGroup title="Čip">
-        <Input label="Čip" name="chip_number" value={content.chip_number} type="number" required />
-        <Input disabled={userEditDisabled} label="Registračné číslo" name="registration_number" value={content.registration_number} type="number" required />
-      </ItemGroup>
-      <ItemGroup title="Licenie">
-        <Select label="Licencia OB" name="licence_ob" value={content.licence_ob}>
-          <IonSelectOption value="-">Žiadna</IonSelectOption>
-          <IonSelectOption value="E">E</IonSelectOption>
-          <IonSelectOption value="A">A</IonSelectOption>
-          <IonSelectOption value="B">B</IonSelectOption>
-          <IonSelectOption value="C">C</IonSelectOption>
-          <IonSelectOption value="D">D</IonSelectOption>
-          <IonSelectOption value="R">R</IonSelectOption>
-        </Select>
-        <Select label="Licencia LOB" name="licence_lob" value={content.licence_lob}>
-          <IonSelectOption value="-">Žiadna</IonSelectOption>
-          <IonSelectOption value="E">E</IonSelectOption>
-          <IonSelectOption value="A">A</IonSelectOption>
-          <IonSelectOption value="B">B</IonSelectOption>
-          <IonSelectOption value="C">C</IonSelectOption>
-          <IonSelectOption value="D">D</IonSelectOption>
-          <IonSelectOption value="R">R</IonSelectOption>
-        </Select>
-        <Select label="Licencia MTBO" name="licence_mtbo" value={content.licence_mtbo}>
-          <IonSelectOption value="-">Žiadna</IonSelectOption>
-          <IonSelectOption value="E">E</IonSelectOption>
-          <IonSelectOption value="A">A</IonSelectOption>
-          <IonSelectOption value="B">B</IonSelectOption>
-          <IonSelectOption value="C">C</IonSelectOption>
-          <IonSelectOption value="D">D</IonSelectOption>
-          <IonSelectOption value="R">R</IonSelectOption>
-        </Select>
-      </ItemGroup>
-      <List innerPadding>
-        <PrimaryButton onClick={handleSubmit}>Zmeniť</PrimaryButton>
-      </List>
-    </form>
+    <IonPage>
+      <Header backHref="/tabs/settings" title="Profil" />
+      <IonContent>
+        <form ref={ref}>
+          <ItemGroup title="Všeobecné">
+            {userEditDisabled && (
+              <IonButton onClick={handleExplainDisabled} fill="clear" color="danger" className="w-full normal-case">
+                <IonIcon slot="start" icon={helpCircle} />
+                Prečo nemôžem meniť niektoré nastavenia?
+              </IonButton>
+            )}
+            <Input disabled={userEditDisabled} label="Meno" name="name" value={content.name} required />
+            <Input disabled={userEditDisabled} label="Priezvisko" name="surname" value={content.surname} required />
+            <Select disabled={userEditDisabled} label="Pohlavie" name="gender" value={content.gender} required>
+              <IonSelectOption value="H">Muž</IonSelectOption>
+              <IonSelectOption value="D">Žena</IonSelectOption>
+            </Select>
+            <Input disabled={userEditDisabled} label="Dátum narodenia" name="birth_date" value={content.birth_date} type="date" required />
+            <Input disabled={userEditDisabled} label="Rodné číslo" name="birth_number" value={content.birth_number} type="number" required />
+            <Select disabled={userEditDisabled} label="Národnosť" name="nationality" value={content.nationality} required>
+              {countries.map(([code, name]) => (
+                <IonSelectOption key={code} value={code}>
+                  {name}
+                </IonSelectOption>
+              ))}
+            </Select>
+            <Toggle disabled={true} name="is_hidden" checked={content.is_hidden}>
+              Skryté konto
+            </Toggle>
+          </ItemGroup>
+          <ItemGroup title="Kontakty">
+            <Input label="Email" name="email" value={content.email} />
+            <Input label="Adresa" name="address" value={content.address} />
+            <Input label="Mesto" name="city" value={content.city} />
+            <Input label="PSČ" name="postal_code" value={content.postal_code} type="number" />
+            <Input label="Mobil" name="phone" value={content.phone} type="tel" />
+            <Input label="Domáci mobil" name="phone_home" value={content.phone_home} type="tel" />
+            <Input label="Pracovný mobil" name="phone_work" value={content.phone_work} type="tel" />
+          </ItemGroup>
+          <ItemGroup title="Čip">
+            <Input label="Čip" name="chip_number" value={content.chip_number} type="number" required />
+            <Input disabled={userEditDisabled} label="Registračné číslo" name="registration_number" value={content.registration_number} type="number" required />
+          </ItemGroup>
+          <ItemGroup title="Licenie">
+            <Select label="Licencia OB" name="licence_ob" value={content.licence_ob}>
+              <IonSelectOption value="-">Žiadna</IonSelectOption>
+              <IonSelectOption value="E">E</IonSelectOption>
+              <IonSelectOption value="A">A</IonSelectOption>
+              <IonSelectOption value="B">B</IonSelectOption>
+              <IonSelectOption value="C">C</IonSelectOption>
+              <IonSelectOption value="D">D</IonSelectOption>
+              <IonSelectOption value="R">R</IonSelectOption>
+            </Select>
+            <Select label="Licencia LOB" name="licence_lob" value={content.licence_lob}>
+              <IonSelectOption value="-">Žiadna</IonSelectOption>
+              <IonSelectOption value="E">E</IonSelectOption>
+              <IonSelectOption value="A">A</IonSelectOption>
+              <IonSelectOption value="B">B</IonSelectOption>
+              <IonSelectOption value="C">C</IonSelectOption>
+              <IonSelectOption value="D">D</IonSelectOption>
+              <IonSelectOption value="R">R</IonSelectOption>
+            </Select>
+            <Select label="Licencia MTBO" name="licence_mtbo" value={content.licence_mtbo}>
+              <IonSelectOption value="-">Žiadna</IonSelectOption>
+              <IonSelectOption value="E">E</IonSelectOption>
+              <IonSelectOption value="A">A</IonSelectOption>
+              <IonSelectOption value="B">B</IonSelectOption>
+              <IonSelectOption value="C">C</IonSelectOption>
+              <IonSelectOption value="D">D</IonSelectOption>
+              <IonSelectOption value="R">R</IonSelectOption>
+            </Select>
+          </ItemGroup>
+          <List innerPadding>
+            <PrimaryButton onClick={handleSubmit}>Zmeniť</PrimaryButton>
+          </List>
+        </form>
+      </IonContent>
+    </IonPage>
   );
 };

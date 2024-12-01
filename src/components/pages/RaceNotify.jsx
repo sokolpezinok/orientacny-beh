@@ -4,20 +4,11 @@ import { Header, Input, Item, ItemGroup, PrimaryButton, Textarea } from "@/compo
 import { RaceApi } from "@/utils/api";
 import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
+import { IonContent, IonPage } from "@ionic/react";
 import { useRef } from "react";
 import Content from "../controllers/Content";
 
-export default () => (
-  <Content
-    Render={RaceNotify}
-    Header={() => {
-      const { race_id } = useParams();
-      return <Header backHref={`/tabs/races/${race_id}`}>Napísať notifikáciu</Header>;
-    }}
-    updateData={({ race_id }) => RaceApi.detail(race_id)}
-    errorText="Nepodarilo sa načítať preteky."
-  />
-);
+export default () => <Content Render={RaceNotify} updateData={({ race_id }) => RaceApi.detail(race_id)} errorText="Nepodarilo sa načítať preteky." />;
 
 const RaceNotify = ({ content }) => {
   const detail = content;
@@ -43,15 +34,20 @@ const RaceNotify = ({ content }) => {
   }, "Nepodarilo sa poslať notifikáciu.");
 
   return (
-    <form ref={ref}>
-      <Item>
-        <h1 className="text-2xl font-bold">{detail.name}</h1>
-      </Item>
-      <ItemGroup title="Notifikácia" subtitle="Môžeš napísať notifikáciu. Členovia klubu, ktorí majú nainštalovanú našu mobilnú aplikáciu, dostanú tvoju správu okamžite.">
-        <Input label="Nadpis" name="title" value="Pripomienka" required />
-        <Textarea label="Obsah" name="body" value="Už len dnes sa dá prihlásiť. Nikto ďalší nechce prísť?" />
-        <PrimaryButton onClick={handleSubmit}>Poslať celému klubu</PrimaryButton>
-      </ItemGroup>
-    </form>
+    <IonPage>
+      <Header backHref={`/tabs/races/${race_id}`} title="Napísať notifikáciu" />
+      <IonContent>
+        <form ref={ref}>
+          <Item>
+            <h1 className="text-2xl font-bold">{detail.name}</h1>
+          </Item>
+          <ItemGroup title="Notifikácia" subtitle="Môžeš napísať notifikáciu. Členovia klubu, ktorí majú nainštalovanú našu mobilnú aplikáciu, dostanú tvoju správu okamžite.">
+            <Input label="Nadpis" name="title" value="Pripomienka" required />
+            <Textarea label="Obsah" name="body" value="Už len dnes sa dá prihlásiť. Nikto ďalší nechce prísť?" />
+            <PrimaryButton onClick={handleSubmit}>Poslať celému klubu</PrimaryButton>
+          </ItemGroup>
+        </form>
+      </IonContent>
+    </IonPage>
   );
 };

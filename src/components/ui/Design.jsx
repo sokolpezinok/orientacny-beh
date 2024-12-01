@@ -1,4 +1,21 @@
-import { IonAccordion, IonBackButton, IonButton, IonButtons, IonCheckbox, IonIcon, IonInput, IonItem, IonSelect, IonSpinner, IonTextarea, IonTitle, IonToggle, IonToolbar } from "@ionic/react";
+import {
+  IonAccordion,
+  IonBackButton,
+  IonButton,
+  IonButtons,
+  IonCheckbox,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonRefresher,
+  IonRefresherContent,
+  IonSelect,
+  IonSpinner,
+  IonTextarea,
+  IonTitle,
+  IonToggle,
+  IonToolbar,
+} from "@ionic/react";
 import classNames from "classnames";
 import { alertCircle, checkmark, chevronForward, close, openOutline, sad, warning } from "ionicons/icons";
 import { forwardRef, useEffect, useRef, useState } from "react";
@@ -64,7 +81,7 @@ export function ReadMore({ children }) {
   );
 }
 
-export function Header({ children, backHref }) {
+export function Header({ children, backHref, title }) {
   return (
     <IonToolbar>
       {backHref && (
@@ -72,7 +89,8 @@ export function Header({ children, backHref }) {
           <IonBackButton defaultHref={backHref} />
         </IonButtons>
       )}
-      <IonTitle>{children}</IonTitle>
+      <IonTitle>{title}</IonTitle>
+      {children}
     </IonToolbar>
   );
 }
@@ -188,30 +206,11 @@ export const Anchor = forwardRef(function ({ children, className, href, textOnly
   );
 });
 
-// export const Anchor = forwardRef(function ({ children, href, ...props }, ref) {
-//   return (
-//     <a ref={ref} target="_blank" href={href} {...props}>
-// {/* {<IonIcon className="mr-1 align-text-top" icon={openOutline} />} */}
-//       {children ?? href}
-//     </a>
-//   );
-// });
-
-export function Showcase({ children }) {
-  return <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">{children}</div>;
-}
-Showcase.Item = ({ children, label, icon, src, onClick }) => {
-  // use weak comparison to accept nullish values
-  if (!children) return;
-
+export const Refresher = ({ handleUpdate }) => {
   return (
-    <div className="flex" onClick={onClick}>
-      <IonIcon src={src} icon={icon} className="mr-4 hidden self-center text-3xl xs:block" color="primary" />
-      <div className="flex flex-col self-center">
-        <span className="text-sm">{label}</span>
-        <h1>{children || "-"}</h1>
-      </div>
-    </div>
+    <IonRefresher slot="fixed" onIonRefresh={(event) => handleUpdate().finally(event.detail.complete)}>
+      <IonRefresherContent />
+    </IonRefresher>
   );
 };
 
@@ -221,20 +220,21 @@ export const BooleanIcon = ({ value, ...props }) => {
 
 export const SmallWarning = ({ children }) => {
   return (
-    <div className="flex items-center gap-2">
-      <IonIcon icon={warning} className="text-primary" />
+    <div className="grid grid-cols-[auto_1fr] gap-4">
+      <IonIcon icon={warning} className="self-center text-2xl text-primary" />
       <p>{children}</p>
     </div>
   );
 };
 
-export const SadFace = ({ title = "", subtitle = "" }) => {
+export const SadFace = ({ children, title = "", subtitle = "" }) => {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
-        <IonIcon size="large" className="text-emerald-500" icon={sad} />
-        <h3 className="font-bold text-emerald-500">{title}</h3>
+        <IonIcon className="text-4xl text-primary" icon={sad} />
+        <h3 className="font-bold text-primary">{title}</h3>
         <p className="text-sm">{subtitle}</p>
+        {children}
       </div>
     </div>
   );
@@ -244,7 +244,7 @@ export const FatalError = ({ title = "", subtitle = "", reload = true }) => {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
-        <IonIcon size="large" className="text-rose-500" icon={alertCircle} />
+        <IonIcon className="text-4xl text-rose-500" icon={alertCircle} />
         <h3 className="font-bold text-rose-500">{title}</h3>
         <p className="text-sm">{subtitle}</p>
         {reload && <p className="text-sm">Ak chceš skúsiť znova, potiahni zhora nadol.</p>}

@@ -1,17 +1,17 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonIcon, IonModal, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
+import { IonBackButton, IonButton, IonButtons, IonContent, IonIcon, IonModal, IonPage, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
 import { eye, eyeOff } from "ionicons/icons";
 import { useRef, useState } from "react";
 import { Redirect, useHistory } from "react-router-dom";
 
-import { Checkbox, Header, Input, List, PrimaryButton, SecondaryButton, Select, SmallWarning } from "@/components/ui/Design";
+import { Checkbox, Input, List, PrimaryButton, SecondaryButton, Select, SmallWarning } from "@/components/ui/Design";
 import License from "@/components/ui/License";
-import { isTokenExpired, sortAlphabetically } from "@/utils";
+import { isTokenExpired, sort } from "@/utils";
 import { GeneralApi, SystemApi } from "@/utils/api";
 import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={Login} Header={() => <Header>Prihlásiť sa</Header>} updateData={GeneralApi.clubs} errorText="Nepodarilo sa načítať zoznam klubov." />;
+export default () => <Content Render={Login} updateData={GeneralApi.clubs} errorText="Nepodarilo sa načítať zoznam klubov." />;
 
 const Login = ({ content }) => {
   const isLoggedIn = Storage.useState((s) => s.isLoggedIn);
@@ -27,7 +27,7 @@ const Login = ({ content }) => {
   if (isLoggedIn) return <Redirect to="/tabs/" />;
 
   // sort clubs by fullname
-  content = sortAlphabetically(content, (value) => value.fullname.toLowerCase());
+  content = sort(content, (value) => value.fullname.toLowerCase());
 
   const handleSubmit = smartModal(async () => {
     const els = ref.current.elements;
@@ -57,56 +57,60 @@ const Login = ({ content }) => {
   }, "Nastal problém pri prihlasovaní.");
 
   return (
-    <div className="flex h-full items-center justify-center">
-      <div className="flex w-full max-w-xl flex-col gap-8 p-8 lg:max-w-6xl lg:flex-row">
-        <div className="flex items-center gap-8">
-          <img className="w-24" src="/favicon.png" />
-          <h1 className="text-3xl font-bold lg:text-4xl">Orientačný beh</h1>
-        </div>
-        <form ref={ref} className="flex-1">
-          <List>
-            {isTokenExpired() && Storage.pull().tokenExpiration !== 0 && <SmallWarning>Prístup do aplikácie vypršal. Prosím, prihlás sa znova.</SmallWarning>}
-            <Input name="username" type="text" label="Meno" required />
-            <div className="-mr-4 flex items-center">
-              <Input name="password" type={showPassword ? "text" : "password"} label="Heslo" required />
-              <IonButton fill="clear" slot="end" onClick={() => setShowPassword(!showPassword)}>
-                <IonIcon slot="icon-only" icon={showPassword ? eyeOff : eye} />
-              </IonButton>
+    <IonPage>
+      <IonContent>
+        <div className="flex h-full items-center justify-center">
+          <div className="flex w-full max-w-xl flex-col gap-8 p-8 lg:max-w-6xl lg:flex-row">
+            <div className="flex items-center gap-8">
+              <img className="w-24" src="/favicon.png" />
+              <h1 className="text-3xl font-bold lg:text-4xl">Orientačný beh</h1>
             </div>
-            <Select name="club" label="Klub" required>
-              {content.map((child, index) => (
-                <IonSelectOption key={child.clubname} value={index}>
-                  {child.fullname}
-                </IonSelectOption>
-              ))}
-            </Select>
-            {!hasAcceptedTerms && (
-              <>
+            <form ref={ref} className="flex-1">
+              <List>
+                {isTokenExpired() && Storage.pull().tokenExpiration !== 0 && <SmallWarning>Prístup do aplikácie vypršal. Prosím, prihlás sa znova.</SmallWarning>}
+                <Input name="username" type="text" label="Meno" required />
+                <div className="-mr-4 flex items-center">
+                  <Input name="password" type={showPassword ? "text" : "password"} label="Heslo" required />
+                  <IonButton fill="clear" slot="end" onClick={() => setShowPassword(!showPassword)}>
+                    <IonIcon slot="icon-only" icon={showPassword ? eyeOff : eye} />
+                  </IonButton>
+                </div>
+                <Select name="club" label="Klub" required>
+                  {content.map((child, index) => (
+                    <IonSelectOption key={child.clubname} value={index}>
+                      {child.fullname}
+                    </IonSelectOption>
+                  ))}
+                </Select>
+                {!hasAcceptedTerms && (
+                  <>
+                    <hr />
+                    <SecondaryButton onClick={() => setModalOpen(true)}>Licenčné podmienky</SecondaryButton>
+                    <Checkbox name="license" required>
+                      Súhlasím s licenčnými podmienkami
+                    </Checkbox>
+                  </>
+                )}
                 <hr />
-                <SecondaryButton onClick={() => setModalOpen(true)}>Licenčné podmienky</SecondaryButton>
-                <Checkbox name="license" required>
-                  Súhlasím s licenčnými podmienkami
-                </Checkbox>
-              </>
-            )}
-            <hr />
-            <PrimaryButton onClick={handleSubmit}>Prihlásiť sa</PrimaryButton>
-          </List>
-          <IonModal isOpen={modalOpen}>
-            <IonToolbar>
-              <IonButtons slot="start">
-                <IonBackButton defaultHref="#" onClick={() => setModalOpen(false)} />
-              </IonButtons>
-              <IonTitle>Licenčné podmienky</IonTitle>
-            </IonToolbar>
-            <IonContent>
-              <List innerPadding>
-                <License />
+                <PrimaryButton onClick={handleSubmit}>Prihlásiť sa</PrimaryButton>
               </List>
-            </IonContent>
-          </IonModal>
-        </form>
-      </div>
-    </div>
+              <IonModal isOpen={modalOpen}>
+                <IonToolbar>
+                  <IonButtons slot="start">
+                    <IonBackButton defaultHref="#" onClick={() => setModalOpen(false)} />
+                  </IonButtons>
+                  <IonTitle>Licenčné podmienky</IonTitle>
+                </IonToolbar>
+                <IonContent>
+                  <List innerPadding>
+                    <License />
+                  </List>
+                </IonContent>
+              </IonModal>
+            </form>
+          </div>
+        </div>
+      </IonContent>
+    </IonPage>
   );
 };

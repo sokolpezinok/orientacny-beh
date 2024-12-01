@@ -1,33 +1,46 @@
-export const formatDate = (date) => {
-  const format = "sk-SK";
+export const formatDate = (value) => {
+  const date = new Date(value);
 
-  const target_date = new Date(date);
-  const remaining_days = Math.ceil((target_date - Date.now()) / 86400000);
+  const remainingDays = Math.ceil((date - Date.now()) / 86400000);
+  const possibleWeekday = date.toLocaleDateString("sk-SK", { weekday: "long" });
 
-  let humanized = "";
-  if (remaining_days === -1) {
-    humanized = "včera";
-  } else if (remaining_days === 0) {
-    humanized = "dnes";
-  } else if (remaining_days === 1) {
-    humanized = "zajtra";
-  } else if (-7 < remaining_days && remaining_days < 7) {
-    humanized = (remaining_days < -1 ? "min. " : "") + target_date.toLocaleDateString(format, { weekday: "long" });
+  let weekday;
+
+  switch (true) {
+    case remainingDays === -1:
+      weekday = "včera";
+      break;
+    case remainingDays === 0:
+      weekday = "dnes";
+      break;
+    case remainingDays === 1:
+      weekday = "zajtra";
+      break;
+    case -7 < remainingDays && remainingDays < 0:
+      weekday = `min. ${possibleWeekday}`;
+      break;
+    case 0 < remainingDays && remainingDays < 7:
+      weekday = possibleWeekday;
+      break;
   }
 
-  let formated_date = target_date.toLocaleDateString(format);
+  let result = `${date.getDate()}. ${date.getMonth() + 1}.`;
 
-  return humanized ? `${formated_date} (${humanized})` : formated_date;
+  if (date.getFullYear() !== new Date().getFullYear()) {
+    result += " " + date.getFullYear();
+  }
+
+  if (weekday) {
+    result += ` (${weekday})`;
+  }
+
+  return result;
 };
-
+console.log(formatDate);
 export const formatDates = (dates) => {
   if (dates.length === 1) {
     return formatDate(dates[0]);
   }
 
-  // if (dates.length === 2) {
-  //   return <><p>od {formatDate(dates[0])}</p><p>do {formatDate(dates[1])}</p></>;
-  // }
-
-  return dates.map(formatDate).join(" - ");
+  return dates.sort().map(formatDate).join(" → ");
 };
