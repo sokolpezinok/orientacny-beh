@@ -1,6 +1,6 @@
 import { Drawer, Header, Input, ItemGroup, List, PrimaryButton, SmallWarning, Toggle } from "@/components/ui/Design";
+import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
-import { useModal } from "@/utils/modals";
 import { Notifications } from "@/utils/notify";
 import { Storage } from "@/utils/storage";
 import { IonCheckbox, IonContent, IonPage } from "@ionic/react";

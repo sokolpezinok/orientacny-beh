@@ -4,8 +4,8 @@ import { LocalNotifications } from "@capacitor/local-notifications";
 import { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
+import { useModal } from "@/components/ui/Modals";
 import { SystemApi } from "@/utils/api";
-import { useModal } from "@/utils/modals";
 import { Notifications, NotifyEvents } from "@/utils/notify";
 
 const NotifyListener = ({}) => {

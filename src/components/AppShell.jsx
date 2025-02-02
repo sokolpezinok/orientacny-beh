@@ -1,4 +1,4 @@
-import ModalContextProvider from "@/utils/modals";
+import ModalContextProvider from "@/components/ui/Modals";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";

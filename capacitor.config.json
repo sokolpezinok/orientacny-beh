@@ -1,0 +1,11 @@
+{
+  "appId": "orienteering.app",
+  "appName": "Orientačný beh",
+  "webDir": "dist",
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_notification",
+      "iconColor": "#f76d22"
+    }
+  }
+}

@@ -10,32 +10,47 @@ https://members.eob.cz/
 ## Inštalácia
 
 ```sh
-git clone https://github.com/sokolpezinok/orientacny-beh && cd orientacny-beh
-
+git clone https://github.com/sokolpezinok/orientacny-beh
+cd orientacny-beh
 npm install
-npm run build
 ```
 
-## Debug
+## Development
 
-- Web
+**Starts the Vite development server.**
 
 ```sh
 npm run dev
 ```
 
-Otvor `localhost:3000` vo svojom prehliadači. Zmeny v kóde sa automaticky prejavia na webe.
-
-- Android
+**Builds the production version using Vite.**
 
 ```sh
 npm run build
 ```
 
-Pripoj svoj android do počítača, povoľ `allow debugging` a spusť nasledovný príkaz. [Viac informácií](https://stackoverflow.com/a/71426608/14900791)
+**Previews the production build locally.**
 
 ```sh
-npm run android
+npm run preview
+```
+
+**Builds the project and runs it on an Android device/emulator.**
+
+```sh
+npm run build:android
+```
+
+**Builds the project for bundle size visualization.**
+
+```sh
+npm run build:visualize
+```
+
+**Syncs Capacitor and opens the Android project in Android Studio.**
+
+```sh
+npm run open:android
 ```
 
 ## Build
@@ -44,14 +59,14 @@ npm run android
 
 ```sh
 npm run build
-npm run open-android
+npm run open:android
 ```
 
-V Android Studio zvoľ `Build`->`Generate Signed Bundle / APK`.
+In Android Studio select `Build`->`Generate Signed Bundle / APK`.
 
-## Vývoj
+## Extensions & Environment
 
-Odporúčame používať [VS Code](https://code.visualstudio.com/) s nasledovnými rozšíreniami:
+We use [VS Code](https://code.visualstudio.com/) with following extensions:
 
 - [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 - [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
@@ -61,4 +76,4 @@ Odporúčame používať [VS Code](https://code.visualstudio.com/) s nasledovný
 
 ## Licencia
 
-Aplikácia `Orientačný beh` je pod licenciou **MIT License**.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

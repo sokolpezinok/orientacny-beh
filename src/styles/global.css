@@ -1,6 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "@fontsource-variable/inter";
+@import "@ionic/react/css/core.css";
+@import "@ionic/react/css/structure.css";
+@import "@ionic/react/css/padding.css";
+@import "@ionic/react/css/float-elements.css";
+@import "@ionic/react/css/text-alignment.css";
+@import "@ionic/react/css/flex-utils.css";
+/*
+TEST WITHOUT NORMALIZE
+@import "@ionic/react/css/normalize.css";
+ */
+
+@import "tailwindcss";
+@import "./theme.css";
+@import "./ionic.css";
 
 :root {
   --safe-area-top: env(safe-area-inset-top);
@@ -8,13 +20,14 @@
   --safe-area-left: env(safe-area-inset-left, 0);
   --safe-area-right: env(safe-area-inset-right, 0);
 
-  --ion-padding: 20px;
+  --ion-padding: 16px;
+  --ion-font-family: "Inter Variable", sans-serif;
 }
 
 html,
 body,
-#__next {
-  @apply h-full w-full;
+#root {
+  height: 100%;
 }
 
 .alert-wrapper {
@@ -28,16 +41,12 @@ ion-tab-button {
   --theme-selected: var(--theme-primary);
 }
 ion-tab-bar {
-  @apply border-t border-border;
+  @apply border-border border-t;
 }
 
 /* header */
 ion-header {
   @apply !shadow-none;
-}
-
-ion-toolbar {
-  --ion-text-color: var(--theme-bright);
 }
 
 /* a button */
@@ -46,10 +55,17 @@ ion-button {
   margin-inline: 0;
 }
 
+ion-title {
+  margin-left: 16px;
+}
+ion-buttons + ion-title {
+  margin-left: 0px;
+}
+
 /* typography */
 p,
 .alert-message {
-  @apply space-y-4 !text-typography-tint;
+  @apply !text-typography-tint space-y-4;
 }
 
 h1,
@@ -59,12 +75,12 @@ h2 {
 
 /* radio */
 .alert-radio-group {
-  @apply border-y !border-border;
+  @apply !border-border border-y;
 }
 
 /* add nice border, for some reason the border is missing only on last child */
 ion-accordion-group {
-  @apply border-b border-border;
+  @apply border-border border-b;
 }
 ion-accordion-group ion-accordion:last-child div[slot="content"] {
   @apply border-none;
@@ -82,5 +98,5 @@ a {
 
 /* divider */
 hr {
-  @apply my-2 border-t border-border;
+  @apply border-border my-2 border-t;
 }

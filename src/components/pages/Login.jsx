@@ -5,9 +5,9 @@ import { Redirect, useHistory } from "react-router-dom";
 
 import { Checkbox, Input, List, PrimaryButton, SecondaryButton, Select, SmallWarning } from "@/components/ui/Design";
 import License from "@/components/ui/License";
+import { useModal } from "@/components/ui/Modals";
 import { isTokenExpired, sort } from "@/utils";
 import { GeneralApi, SystemApi } from "@/utils/api";
-import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
 

@@ -1,4 +1,4 @@
-import { apiServer } from "@/manifest";
+import { apiServer } from "@/manifest.js";
 import { Storage } from "@/utils/storage";
 import { Device } from "@capacitor/device";
 import { isTokenExpired, unixTime } from ".";

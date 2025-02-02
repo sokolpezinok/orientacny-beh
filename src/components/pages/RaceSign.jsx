@@ -5,8 +5,8 @@ import { useHistory, useParams } from "react-router-dom";
 
 import Content from "@/components/controllers/Content";
 import { Drawer, Header, Input, Item, ItemGroup, List, PrimaryButton, Refresher, SecondaryButton, Select, Toggle } from "@/components/ui/Design";
+import { useModal } from "@/components/ui/Modals";
 import { RaceApi, RaceEnum } from "@/utils/api";
-import { useModal } from "@/utils/modals";
 
 export default () => <Content Render={RaceSign} updateData={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])} errorText="Nepodarilo sa načítať preteky." />;
 

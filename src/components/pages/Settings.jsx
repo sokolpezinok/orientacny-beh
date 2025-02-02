@@ -1,5 +1,5 @@
 import { Header, ItemLink } from "@/components/ui/Design";
-import { useModal } from "@/utils/modals";
+import { useModal } from "@/components/ui/Modals";
 import { Notifications } from "@/utils/notify";
 import { Storage } from "@/utils/storage";
 import { Capacitor } from "@capacitor/core";

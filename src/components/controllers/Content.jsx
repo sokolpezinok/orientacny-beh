@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { FatalError, Spinner } from "@/components/ui/Design";
-import { useModal } from "@/utils/modals";
+import { useModal } from "@/components/ui/Modals";
 
 const Content = ({ Render, updateData, errorText }) => {
   const params = useParams();

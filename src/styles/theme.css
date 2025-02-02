@@ -121,3 +121,15 @@
     --ion-color-step-950: #f9fafb;
   }
 }
+
+@theme {
+  --color-primary: var(--theme-primary);
+  --color-primary-shade: var(--theme-primary-shade);
+  --color-primary-tint: var(--theme-primary-tint);
+  --color-background: var(--theme-background);
+  --color-border: var(--theme-border);
+  --color-typography: var(--theme-typography);
+  --color-typography-tint: var(--theme-typography-tint);
+  --color-typography-shade: var(--theme-typography-shade);
+  --color-bright: var(--theme-bright);
+}

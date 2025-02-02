@@ -1,12 +1,16 @@
 {
   "name": "orientacny-beh",
-  "version": "2.0",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "open-android": "cap sync && cap open android",
-    "android": "next build && cap run android"
+    "dev": "vite",
+    "lint": "eslint .",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build:android": "vite build && cap run android",
+    "build:visualize": "vite build --mode visualize",
+    "open:android": "cap sync && cap open android"
   },
   "dependencies": {
     "@capacitor-firebase/messaging": "^6.1.0",
@@ -17,24 +21,33 @@
     "@capacitor/local-notifications": "^6.1.0",
     "@capacitor/share": "^6.0.2",
     "@capacitor/status-bar": "^6.0.1",
+    "@fontsource-variable/inter": "^5.1.1",
     "@ionic/react": "^7.1.0",
     "@ionic/react-router": "^7.1.0",
     "capacitor-secure-storage-plugin": "^0.10.0",
-    "classnames": "^2.3.2",
-    "firebase": "^10.14.1",
-    "next": "^14.2.7",
+    "firebase": "^11.2.0",
     "pullstate": "^1.25.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.2",
-    "autoprefixer": "^10.4.16",
-    "concurrently": "^8.2.1",
-    "native-run": "^1.7.3",
-    "postcss": "^8.4.31",
+    "@eslint/js": "^9.17.0",
+    "@tailwindcss/postcss": "^4.0.3",
+    "@tailwindcss/vite": "^4.0.3",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "classnames": "^2.3.2",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "globals": "^15.14.0",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
-    "tailwindcss": "^3.3.3"
+    "rollup-plugin-visualizer": "^5.14.0",
+    "tailwindcss": "^4.0.3",
+    "vite": "^6.0.5"
   }
 }

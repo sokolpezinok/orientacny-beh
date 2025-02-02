@@ -1,9 +1,9 @@
 import { IonButton, IonContent, IonIcon, IonPage, IonSelectOption } from "@ionic/react";
 
 import { Header, Input, ItemGroup, List, PrimaryButton, Select, Toggle } from "@/components/ui/Design";
+import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
 import countries from "@/utils/countries";
-import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
 import { helpCircle } from "ionicons/icons";
 import { useRef } from "react";

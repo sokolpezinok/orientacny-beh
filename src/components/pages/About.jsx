@@ -1,6 +1,6 @@
 import { Accordion, Anchor, Header, Item } from "@/components/ui/Design";
 import License from "@/components/ui/License";
-import { apiVersion, appBuildVersion } from "@/manifest";
+import { apiVersion, appBuildVersion } from "@/manifest.js";
 import { Storage } from "@/utils/storage";
 import { IonAccordionGroup, IonContent, IonPage } from "@ionic/react";
 

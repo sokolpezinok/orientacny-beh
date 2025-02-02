@@ -6,10 +6,10 @@ import { bus, calendar, home, location, refresh, shareSocial } from "ionicons/ic
 import { useHistory, useParams } from "react-router-dom";
 
 import { Accordion, Anchor, BooleanIcon, Header, Item, ItemLink, ReadMore, Refresher, SadFace, SecondaryButton } from "@/components/ui/Design";
+import { useModal } from "@/components/ui/Modals";
 import { getFirstEntry, getLastEntry, isFirstEntryExpired, isLastEntryExpired, sort } from "@/utils";
 import { RaceApi } from "@/utils/api";
 import { formatDate, formatDates } from "@/utils/format";
-import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
 

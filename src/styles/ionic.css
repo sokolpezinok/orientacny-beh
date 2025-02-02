@@ -11,6 +11,8 @@ http://ionicframework.com/docs/theming/ */
 
   --ion-border-color: var(--theme-border);
 
+  --ion-toolbar-color: var(--theme-bright);
+
   --ion-toolbar-background: var(--theme-primary);
   --ion-tab-bar-background: var(--theme-background);
   --ion-item-background: var(--theme-background);

@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
 
 import { Header, Input, Item, ItemGroup, PrimaryButton, Textarea } from "@/components/ui/Design";
+import { useModal } from "@/components/ui/Modals";
 import { RaceApi } from "@/utils/api";
-import { useModal } from "@/utils/modals";
 import { Storage } from "@/utils/storage";
 import { IonContent, IonPage } from "@ionic/react";
 import { useRef } from "react";

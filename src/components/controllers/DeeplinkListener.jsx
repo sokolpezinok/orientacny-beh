@@ -2,8 +2,8 @@ import { App } from "@capacitor/app";
 import { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
-import { apiDomain } from "@/manifest";
-import { useModal } from "@/utils/modals";
+import { useModal } from "@/components/ui/Modals";
+import { apiDomain } from "@/manifest.js";
 import { Storage } from "@/utils/storage";
 
 const DeeplinkListener = ({}) => {
