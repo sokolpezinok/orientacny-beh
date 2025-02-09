@@ -1,5 +1,13 @@
-export const plugins = [require("prettier-plugin-tailwindcss")];
-export const printWidth = 200;
-export const singleQuote = false;
-export const useTabs = false;
-export const tabWidth = 2;
+/**
+ * @see https://prettier.io/docs/en/configuration.html
+ * @type {import("prettier").Config}
+ */
+const config = {
+  plugins: ["prettier-plugin-tailwindcss"],
+  trailingComma: "es5",
+  printWidth: 200,
+  singleQuote: false,
+  useTabs: false,
+  tabWidth: 2,
+};
+export default config;

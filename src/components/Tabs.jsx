@@ -28,16 +28,16 @@ const Tabs = () => {
     <>
       <IonTabs>
         <IonRouterOutlet>
-          <Route path="/tabs/races" render={() => <Races />} exact={true} />
-          <Route path="/tabs/races/:race_id" render={() => <RaceDetail />} exact={true} />
-          <Route path="/tabs/races/:race_id/sign" render={() => <RaceSign />} exact={true} />
-          <Route path="/tabs/races/:race_id/sign/:user_id" render={() => <RaceSign />} exact={true} />
-          <Route path="/tabs/races/:race_id/notify" render={() => <RaceNotify />} exact={true} />
-          <Route path="/tabs/settings" render={() => <Settings />} exact={true} />
-          <Route path="/tabs/settings/profile" render={() => <Profile />} exact={true} />
-          <Route path="/tabs/settings/notify" render={() => <Notify />} exact={true} />
-          <Route path="/tabs/settings/about" render={() => <About />} exact={true} />
-          <Route path="/tabs" render={() => <Redirect to="/tabs/races" />} exact={true} />
+          <Route exact={true} path="/tabs/races" render={() => <Races />} />
+          <Route exact={true} path="/tabs/races/:race_id" render={() => <RaceDetail />} />
+          <Route exact={true} path="/tabs/races/:race_id/sign" render={() => <RaceSign />} />
+          <Route exact={true} path="/tabs/races/:race_id/sign/:user_id" render={() => <RaceSign />} />
+          <Route exact={true} path="/tabs/races/:race_id/notify" render={() => <RaceNotify />} />
+          <Route exact={true} path="/tabs/settings" render={() => <Settings />} />
+          <Route exact={true} path="/tabs/settings/profile" render={() => <Profile />} />
+          <Route exact={true} path="/tabs/settings/notify" render={() => <Notify />} />
+          <Route exact={true} path="/tabs/settings/about" render={() => <About />} />
+          <Route exact={true} path="/tabs" render={() => <Redirect to="/tabs/races" />} />
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           <IonTabButton tab="races" href="/tabs/races">

@@ -28,7 +28,8 @@
     "firebase": "^11.2.0",
     "pullstate": "^1.25.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-error-boundary": "^5.0.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.2",
@@ -44,8 +45,8 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
-    "prettier": "^2.8.8",
-    "prettier-plugin-tailwindcss": "^0.3.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "rollup-plugin-visualizer": "^5.14.0",
     "tailwindcss": "^4.0.3",
     "vite": "^6.0.5"

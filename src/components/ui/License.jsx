@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   return (
     <>
       <Anchor href="https://prihlasky.sokolpezinok.sk/legal/gdpr.html">Oznámenie o spracovaní osobných údajov</Anchor>
-      <pre className="mt-4">{license}</pre>
+      <pre className="mt-4 overflow-auto">{license}</pre>
     </>
   );
 };
