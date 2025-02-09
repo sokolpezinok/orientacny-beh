@@ -43,13 +43,13 @@ const Login = ({ content }) => {
     if (collected.password === "") throw "Nezabudni zadať heslo.";
     if (collected.club === undefined) throw "Nezabudni vybrať klub.";
     if (!collected.license) throw "Súhlas s licenčnými podmienkami je povinný.";
-
-    await SystemApi.login({ username: collected.username, password: collected.password, clubname: collected.club.clubname });
-
+    
     await Storage.push((s) => {
       s.club = collected.club;
       s.preferences.hasAcceptedTerms = true;
     });
+
+    await SystemApi.login({ username: collected.username, password: collected.password, clubname: collected.club.clubname });
 
     if (await confirmModal("Zapni si notifikácie", "Nezmeškaj prihlasovanie na preteky a dôležité správy. Svoje rozhodnutie môžeš kedykoľvek zmeniť v upozorneniach.")) {
       history.push("/tabs/settings/notify");

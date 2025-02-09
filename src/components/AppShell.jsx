@@ -2,16 +2,15 @@ import ModalContextProvider from "@/components/ui/Modals";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import React from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { Redirect, Route } from "react-router-dom";
-import { FatalError } from "./ui/Design";
-
 import Tabs from "./Tabs";
 import Login from "./pages/Login";
+import { FatalError } from "./ui/Design";
 
 setupIonicReact({});
 
-const matchColorMode = async (status) => {
+const matchColorMode = async () => {
   try {
     await StatusBar.setStyle({
       style: Style.Dark, // white text
@@ -28,40 +27,15 @@ window.matchMedia("(prefers-color-scheme: dark)").addListener(matchColorMode);
 // applies default color mode
 matchColorMode(window.matchMedia("(prefers-color-scheme: dark)"));
 
-export class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { error: null };
-  }
-
-  // implement error catching
-  static getDerivedStateFromError(error) {
-    return { error };
-  }
-
-  componentDidCatch(error, info) {
-    // Example "componentStack":
-    //   in ComponentThatThrows (created by App)
-    //   in ErrorBoundary (created by App)
-    //   in div (created by App)
-    //   in App
-    console.log(error, info.componentStack);
-  }
-
-  render() {
-    if (this.state.error !== null) {
-      return this.props.fallback(this.state.error);
-    }
-
-    return this.props.children;
-  }
+function Fallback({ error }) {
+  return <FatalError title="Neočakávaná chyba, kvôli ktorej aplikácia nemôže fungovať." subtitle={error?.message ? error.message : error + ""} reload={false} />;
 }
 
 const AppShell = () => {
   return (
     <IonApp>
       <ModalContextProvider>
-        <ErrorBoundary fallback={(error) => <FatalError title="Ups! Nastala chyba, ktorú musíme opraviť." subtitle={error + ""} reload={false} />}>
+        <ErrorBoundary FallbackComponent={Fallback}>
           <IonReactRouter>
             <IonRouterOutlet id="main">
               <Route path="/login" render={() => <Login />} exact={true} />

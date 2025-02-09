@@ -30,9 +30,9 @@ export function Item({ children, className, innerPadding, ...props }) {
 
 export function ItemGroup({ children, title, subtitle }) {
   return (
-    <div className="border-b border-border p-4">
+    <div className="border-border border-b p-4">
       <div className="mb-2">
-        <h3 className="font-semibold text-typography-shade">{title}</h3>
+        <h3 className="text-typography-shade font-semibold">{title}</h3>
         <p>{subtitle}</p>
       </div>
       {children}
@@ -47,7 +47,7 @@ export function Accordion({ children, title, subtitle }) {
         <h2>{title}</h2>
         <p>{subtitle}</p>
       </Item>
-      <div slot="content" className="border-b border-border px-4 pb-4">
+      <div slot="content" className="border-border border-b px-4 pb-4">
         {children}
       </div>
     </IonAccordion>
@@ -115,7 +115,7 @@ export function SecondaryButton({ children, type, className, ...props }) {
 
 export function InputLabel({ children, className, required, ...props }) {
   return (
-    <div className={classNames("font-medium uppercase tracking-wider text-typography-tint", className)} {...props}>
+    <div className={classNames("text-typography-tint font-medium tracking-wider uppercase", className)} {...props}>
       {children}
       {required && <span className="ml-1 text-rose-500">*</span>}
     </div>
@@ -198,7 +198,7 @@ export function ItemLink({ children, style, ...props }) {
 export const Anchor = forwardRef(function ({ children, className, href, textOnly, ...props }, ref) {
   return (
     (children || href) && (
-      <a ref={ref} href={href} target="_blank" className={classNames("cursor-pointer text-primary", textOnly && "no-underline", className)} {...props}>
+      <a ref={ref} href={href} target="_blank" className={classNames("text-primary cursor-pointer", textOnly && "no-underline", className)} {...props}>
         {textOnly || <IonIcon icon={openOutline} className="mr-1 align-text-bottom" />}
         {children || href}
       </a>
@@ -221,7 +221,7 @@ export const BooleanIcon = ({ value, ...props }) => {
 export const SmallWarning = ({ children }) => {
   return (
     <div className="grid grid-cols-[auto_1fr] gap-4">
-      <IonIcon icon={warning} className="self-center text-2xl text-primary" />
+      <IonIcon icon={warning} className="text-primary self-center text-2xl" />
       <p>{children}</p>
     </div>
   );
@@ -231,8 +231,8 @@ export const SadFace = ({ children, title = "", subtitle = "" }) => {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
-        <IonIcon className="text-4xl text-primary" icon={sad} />
-        <h3 className="font-bold text-primary">{title}</h3>
+        <IonIcon className="text-primary text-4xl" icon={sad} />
+        <h3 className="text-primary font-bold">{title}</h3>
         <p className="text-sm">{subtitle}</p>
         {children}
       </div>
@@ -240,13 +240,14 @@ export const SadFace = ({ children, title = "", subtitle = "" }) => {
   );
 };
 
-export const FatalError = ({ title = "", subtitle = "", reload = true }) => {
+export const FatalError = ({ children, title = "", subtitle = "", reload = true }) => {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
         <IonIcon className="text-4xl text-rose-500" icon={alertCircle} />
         <h3 className="font-bold text-rose-500">{title}</h3>
-        <p className="text-sm">{subtitle}</p>
+        {subtitle && <p className="text-sm">{subtitle}</p>}
+        {children && <div className="max-h-36 overflow-auto text-sm">{children}</div>}
         {reload && <p className="text-sm">Ak chceš skúsiť znova, potiahni zhora nadol.</p>}
       </div>
     </div>
