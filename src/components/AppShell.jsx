@@ -1,12 +1,12 @@
 import ModalContextProvider from "@/components/ui/Modals";
 import { StatusBar, Style } from "@capacitor/status-bar";
-import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
+import { IonApp, IonPage, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { ErrorBoundary } from "react-error-boundary";
 import { Redirect, Route } from "react-router-dom";
 import Tabs from "./Tabs";
 import Login from "./pages/Login";
-import { FatalError } from "./ui/Design";
+import { Error } from "./ui/Design";
 
 setupIonicReact({});
 
@@ -28,7 +28,11 @@ window.matchMedia("(prefers-color-scheme: dark)").addListener(matchColorMode);
 matchColorMode(window.matchMedia("(prefers-color-scheme: dark)"));
 
 function Fallback({ error }) {
-  return <FatalError title="Neočakávaná chyba, kvôli ktorej aplikácia nemôže fungovať." subtitle={error?.message ? error.message : error + ""} reload={false} />;
+  return (
+    <IonPage>
+      <Error title="Neočakávaná chyba, kvôli ktorej aplikácia nemôže fungovať." subtitle={error?.message ? error.message : error + ""} />;
+    </IonPage>
+  );
 }
 
 const AppShell = () => {
@@ -37,12 +41,12 @@ const AppShell = () => {
       <ModalContextProvider>
         <ErrorBoundary FallbackComponent={Fallback}>
           <IonReactRouter>
-            <IonRouterOutlet id="main">
-              <Route path="/login" render={() => <Login />} exact={true} />
-              <Route path="/" render={() => <Redirect to="/tabs" />} exact={true} />
+            <IonRouterOutlet>
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/" render={() => <Redirect to="/tabs" />} />
 
               {/* /tabs MUST NOT BE EXACT */}
-              <Route path="/tabs" render={() => <Tabs />} exact={false} />
+              <Route exact={false} path="/tabs" component={Tabs} />
             </IonRouterOutlet>
           </IonReactRouter>
         </ErrorBoundary>

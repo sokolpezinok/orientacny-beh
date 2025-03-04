@@ -7,6 +7,7 @@ import {
   IonIcon,
   IonInput,
   IonItem,
+  IonPage,
   IonRefresher,
   IonRefresherContent,
   IonSelect,
@@ -30,11 +31,13 @@ export function Item({ children, className, innerPadding, ...props }) {
 
 export function ItemGroup({ children, title, subtitle }) {
   return (
-    <div className="border-border border-b p-4">
-      <div className="mb-2">
-        <h3 className="text-typography-shade font-semibold">{title}</h3>
-        <p>{subtitle}</p>
-      </div>
+    <div className="border-outline-variant border-b p-4">
+      {(title || subtitle) && (
+        <div className="mb-2">
+          <h3 className="text-on-background font-semibold">{title}</h3>
+          <p>{subtitle}</p>
+        </div>
+      )}
       {children}
     </div>
   );
@@ -47,7 +50,7 @@ export function Accordion({ children, title, subtitle }) {
         <h2>{title}</h2>
         <p>{subtitle}</p>
       </Item>
-      <div slot="content" className="border-border border-b px-4 pb-4">
+      <div slot="content" className="border-outline-variant border-b px-4 pb-4">
         {children}
       </div>
     </IonAccordion>
@@ -56,7 +59,7 @@ export function Accordion({ children, title, subtitle }) {
 
 export function List({ children, innerPadding, topPadding, className, props }) {
   return (
-    <div className={classNames("flex flex-col gap-y-2", innerPadding && "p-4", topPadding && "pt-2", className)} {...props}>
+    <div className={classNames("flex flex-col gap-y-4", innerPadding && "p-4", topPadding && "pt-4", className)} {...props}>
       {children}
     </div>
   );
@@ -81,12 +84,12 @@ export function ReadMore({ children }) {
   );
 }
 
-export function Header({ children, backHref, title }) {
+export function Header({ children, defaultHref, title }) {
   return (
     <IonToolbar>
-      {backHref && (
+      {defaultHref && (
         <IonButtons slot="start">
-          <IonBackButton defaultHref={backHref} />
+          <IonBackButton defaultHref={defaultHref} />
         </IonButtons>
       )}
       <IonTitle>{title}</IonTitle>
@@ -95,19 +98,28 @@ export function Header({ children, backHref, title }) {
   );
 }
 
-export function PrimaryButton({ children, type, ...props }) {
+export function PrimaryButton({ children, type, className, ...props }) {
   // use w-full instead expand="full" to preserve round corners
   return (
-    <IonButton fill="solid" className="m-0 w-full" type={type ?? "button"} {...props}>
+    <IonButton fill="solid" className={classNames("m-0 w-full", className)} type={type ?? "button"} {...props}>
       {children}
     </IonButton>
   );
 }
 
-export function SecondaryButton({ children, type, className, ...props }) {
+export function Transparent({ children, type, className, ...props }) {
   // use w-full instead expand="full" to preserve round corners
   return (
-    <IonButton fill="clear" className="m-0 w-full" type={type ?? "button"} {...props}>
+    <IonButton fill="clear" className={classNames("m-0 w-full", className)} type={type ?? "button"} {...props}>
+      {children}
+    </IonButton>
+  );
+}
+
+export function OutlinedButton({ children, type, className, ...props }) {
+  // use w-full instead expand="full" to preserve round corners
+  return (
+    <IonButton fill="outline" className={classNames("m-0 w-full", className)} type={type ?? "button"} {...props}>
       {children}
     </IonButton>
   );
@@ -115,9 +127,9 @@ export function SecondaryButton({ children, type, className, ...props }) {
 
 export function InputLabel({ children, className, required, ...props }) {
   return (
-    <div className={classNames("text-typography-tint font-medium tracking-wider uppercase", className)} {...props}>
+    <div className={classNames("text-on-primary-container font-medium tracking-wider uppercase", className)} {...props}>
       {children}
-      {required && <span className="ml-1 text-rose-500">*</span>}
+      {required && <span className="text-error ml-1">*</span>}
     </div>
   );
 }
@@ -160,7 +172,7 @@ export function Toggle({ children, className, required, ...props }) {
     <IonToggle justify="space-between" labelPlacement="start" className={classNames("w-full", className)} required={required} {...props}>
       <div className="whitespace-break-spaces">
         {children}
-        {required && <span className="ml-1 text-rose-500">*</span>}
+        {required && <span className="text-error ml-1">*</span>}
       </div>
     </IonToggle>
   );
@@ -172,7 +184,7 @@ export function Checkbox({ children, className, required, ...props }) {
     <IonCheckbox justify="space-between" className={classNames("w-full", className)} required={required} {...props}>
       <div className="whitespace-break-spaces">
         {children}
-        {required && <span className="ml-1 text-rose-500">*</span>}
+        {required && <span className="text-error ml-1">*</span>}
       </div>
     </IonCheckbox>
   );
@@ -215,13 +227,13 @@ export const Refresher = ({ handleUpdate }) => {
 };
 
 export const BooleanIcon = ({ value, ...props }) => {
-  return <IonIcon className={value ? "text-emerald-500" : "text-rose-500"} icon={value ? checkmark : close} {...props} />;
+  return <IonIcon className={value ? "text-success" : "text-error"} icon={value ? checkmark : close} {...props} />;
 };
 
 export const SmallWarning = ({ children }) => {
   return (
-    <div className="grid grid-cols-[auto_1fr] gap-4">
-      <IonIcon icon={warning} className="text-primary self-center text-2xl" />
+    <div className="bg-primary-container grid grid-cols-[auto_1fr] gap-4 rounded-lg p-4">
+      <IonIcon icon={warning} className="text-on-primary-container self-center text-2xl" />
       <p>{children}</p>
     </div>
   );
@@ -240,12 +252,12 @@ export const SadFace = ({ children, title = "", subtitle = "" }) => {
   );
 };
 
-export const FatalError = ({ children, title = "", subtitle = "", reload = true }) => {
+export const Error = ({ children, title = "", subtitle = "", reload = false }) => {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
-        <IonIcon className="text-4xl text-rose-500" icon={alertCircle} />
-        <h3 className="font-bold text-rose-500">{title}</h3>
+        <IonIcon className="text-error text-4xl" icon={alertCircle} />
+        <h3 className="text-error font-bold">{title}</h3>
         {subtitle && <p className="text-sm">{subtitle}</p>}
         {children && <div className="max-h-36 overflow-auto text-sm">{children}</div>}
         {reload && <p className="text-sm">Ak chceš skúsiť znova, potiahni zhora nadol.</p>}
@@ -254,7 +266,7 @@ export const FatalError = ({ children, title = "", subtitle = "", reload = true 
   );
 };
 
-export const Spinner = ({ name = "circular" }) => {
+export const SpinnerPage = ({ name = "circular" }) => {
   const [state, setState] = useState(false);
 
   useEffect(() => {
@@ -263,14 +275,16 @@ export const Spinner = ({ name = "circular" }) => {
   }, []);
 
   return (
-    <div className="flex h-full w-full items-center justify-center">
-      <div className="text-center">
-        <IonSpinner color="primary" name={name} />
-        <Drawer active={state}>
-          <p>Táto akcia trvá dlhšie, ako sme očakávali.</p>
-          <p>Za chvíľu to bude ...</p>
-        </Drawer>
+    <IonPage>
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="text-center">
+          <IonSpinner color="primary" name={name} />
+          <Drawer active={state}>
+            <p>Táto akcia trvá dlhšie, ako sme očakávali.</p>
+            <p>Za chvíľu to bude ...</p>
+          </Drawer>
+        </div>
       </div>
-    </div>
+    </IonPage>
   );
 };

@@ -1,7 +1,8 @@
+import { IonPage } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { FatalError, Spinner } from "@/components/ui/Design";
+import { Error, Refresher, SpinnerPage } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 
 const Content = ({ Render, updateData, errorText }) => {
@@ -25,10 +26,15 @@ const Content = ({ Render, updateData, errorText }) => {
   }
 
   if (error === null) {
-    return <Spinner />;
+    return <SpinnerPage />;
   }
 
-  return <FatalError title={errorText} subtitle={error + ""} />;
+  return (
+    <IonPage>
+      <Refresher handleUpdate={handleUpdate} />
+      <Error title={errorText} subtitle={error + ""} reload />
+    </IonPage>
+  );
 };
 
 export default Content;

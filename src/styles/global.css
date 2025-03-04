@@ -8,7 +8,7 @@
 /*
 TEST WITHOUT NORMALIZE
 @import "@ionic/react/css/normalize.css";
- */
+*/
 
 @import "tailwindcss";
 @import "./theme.css";
@@ -20,8 +20,10 @@ TEST WITHOUT NORMALIZE
   --safe-area-left: env(safe-area-inset-left, 0);
   --safe-area-right: env(safe-area-inset-right, 0);
 
-  --ion-padding: 16px;
+  --padding: 16px;
   --ion-font-family: "Inter Variable", sans-serif;
+  --border-radius: 8px;
+  --border-width: 1px;
 }
 
 html,
@@ -30,73 +32,148 @@ body,
   height: 100%;
 }
 
+/*
+ * Ionic Components
+ */
 .alert-wrapper {
+  --ion-overlay-background-color: var(--color-surface-container);
   --width: 100%;
   --max-width: 768px;
 }
 
+.alert-radio-group {
+  border-color: var(--color-outline-variant) !important;
+}
+.alert-radio-icon {
+  border-color: var(--color-outline) !important;
+}
+.alert-radio-label {
+  color: var(--color-on-surface) !important;
+}
+button[aria-checked="true"] .alert-radio-icon {
+  border-color: var(--color-primary) !important;
+}
+
+/* full round buttons */
+ion-button.button-has-icon-only {
+  min-height: 56px;
+}
+
 /* tab navigation */
 ion-tab-button {
-  --color: var(--theme-typography);
-  --theme-selected: var(--theme-primary);
-}
-ion-tab-bar {
-  @apply border-border border-t;
+  --color: var(--color-outline);
+  --theme-selected: var(--color-primary);
 }
 
-/* header */
+ion-tab-bar {
+  @apply border-outline-variant border-t;
+}
+
 ion-header {
   @apply !shadow-none;
-}
-
-/* a button */
-ion-button {
-  --box-shadow: none;
-  margin-inline: 0;
 }
 
 ion-title {
   margin-left: 16px;
 }
+
+ion-button {
+  --box-shadow: none;
+  margin-inline: 0;
+}
+
 ion-buttons + ion-title {
   margin-left: 0px;
 }
 
-/* typography */
-p,
-.alert-message {
-  @apply !text-typography-tint space-y-4;
-}
-
-h1,
-h2 {
-  @apply text-typography;
-}
-
-/* radio */
-.alert-radio-group {
-  @apply !border-border border-y;
-}
-
-/* add nice border, for some reason the border is missing only on last child */
 ion-accordion-group {
-  @apply border-border border-b;
+  @apply border-outline-variant border-b;
 }
+
 ion-accordion-group ion-accordion:last-child div[slot="content"] {
   @apply border-none;
 }
 
-.has-focus div[slot="label"],
-.select-expanded div[slot="label"] {
-  @apply text-primary-tint;
+ion-item ion-icon,
+ion-select::part(icon) {
+  @apply text-outline;
 }
 
-/* anchor */
+ion-item {
+  --border-color: var(--color-outline-variant);
+}
+
+ion-checkbox {
+  --border-color: var(--color-outline);
+}
+
+ion-toggle {
+  --handle-background: var(--color-outline);
+  --track-background: var(--color-outline-variant);
+  --handle-background-checked: var(--color-primary);
+  --track-background-checked: var(--color-inverse-primary);
+}
+
+.has-focus div[slot="label"],
+.select-expanded div[slot="label"] {
+  @apply text-secondary;
+}
+
+.refresher-pulling-icon,
+.refresher-refreshing-icon {
+  @apply !bg-surface-container !border-none;
+}
+
+/*
+* HTML primitives
+ */
+
+h1 {
+  @apply text-primary;
+}
+h2,
+h3 {
+  @apply text-on-surface-variant;
+}
+p,
+.alert-message {
+  @apply !text-on-surface space-y-4;
+}
 a {
   @apply text-primary underline;
 }
-
-/* divider */
 hr {
-  @apply border-border my-2 border-t;
+  @apply border-outline-variant my-2 border-t;
+}
+br {
+  @apply mt-4 block;
+}
+
+/*
+ * A table
+ */
+
+table.table {
+  @apply w-full table-auto;
+}
+table.table tr {
+  @apply text-left;
+}
+table.table thead tr {
+  @apply text-primary;
+}
+table.table thead th {
+  @apply bg-background sticky top-0 z-10 py-2 pl-4 font-medium;
+}
+table.table tbody tr {
+  @apply bg-surface-container;
+}
+table.table tbody tr:nth-child(even) {
+  @apply bg-surface-container-high;
+}
+table.table tbody td {
+  @apply py-2 pl-4;
+}
+table.table td:last-child {
+  @apply px-4;
 }

@@ -1,4 +1,26 @@
 export const formatDate = (value) => {
+  const convert = new Date(value);
+
+  let result = `${convert.getDate()}. ${convert.getMonth() + 1}.`;
+
+  if (convert.getFullYear() !== new Date().getFullYear()) {
+    result += " " + convert.getFullYear();
+  }
+
+  return result;
+};
+
+export const formatTime = (value) => {
+  const convert = new Date(value);
+
+  return `${(convert.getHours() + "").padStart(2, "0")}:${(convert.getMinutes() + "").padStart(2, "0")}:${(convert.getSeconds() + "").padStart(2, "0")}`;
+};
+
+export const formatDatetime = (value) => {
+  return formatDate(value) + " " + formatTime(value);
+};
+
+export const lazyDate = (value) => {
   const date = new Date(value);
 
   const remainingDays = Math.ceil((date - Date.now()) / 86400000);
@@ -24,11 +46,7 @@ export const formatDate = (value) => {
       break;
   }
 
-  let result = `${date.getDate()}. ${date.getMonth() + 1}.`;
-
-  if (date.getFullYear() !== new Date().getFullYear()) {
-    result += " " + date.getFullYear();
-  }
+  let result = formatDate(value);
 
   if (weekday) {
     result += ` (${weekday})`;
@@ -36,11 +54,13 @@ export const formatDate = (value) => {
 
   return result;
 };
-console.log(formatDate);
-export const formatDates = (dates) => {
-  if (dates.length === 1) {
-    return formatDate(dates[0]);
+
+export const lazyDates = (values) => {
+  if (values.length === 1) {
+    return lazyDate(values[0]);
   }
 
-  return dates.sort().map(formatDate).join(" → ");
+  return values.sort().map(lazyDate).join(" → ");
 };
+
+export const stripTags = (string) => string && string.replace(/<\/?[^>]+(>|$)/g, "");

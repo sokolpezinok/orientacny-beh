@@ -1,13 +1,14 @@
+import { IonAccordionGroup, IonContent, IonPage } from "@ionic/react";
+
 import { Accordion, Anchor, Header, Item } from "@/components/ui/Design";
 import License from "@/components/ui/License";
-import { apiVersion, appBuildVersion } from "@/manifest.js";
+import { apiVersion, appBuildVersion, debug } from "@/manifest.js";
 import { Storage } from "@/utils/storage";
-import { IonAccordionGroup, IonContent, IonPage } from "@ionic/react";
 
 const About = () => {
   return (
     <IonPage>
-      <Header backHref="/tabs/settings" title="O aplikácii" />
+      <Header defaultHref="/tabs/settings" title="O aplikácii" />
       <IonContent>
         <IonAccordionGroup>
           <Accordion title="Contributors">
@@ -27,8 +28,15 @@ const About = () => {
           <p>{`${Storage.pull().club.fullname} (${Storage.pull().club.shortcut})`}</p>
         </Item>
         <Item>
+          <h2>Prihlásený používateľ</h2>
+          <p>{Storage.pull().userId}</p>
+        </Item>
+        <Item>
           <h2>Verzia</h2>
-          <p>{appBuildVersion}</p>
+          <p>
+            {appBuildVersion}
+            {debug && " (debug)"}
+          </p>
         </Item>
         <Item>
           <h2>API Verzia</h2>

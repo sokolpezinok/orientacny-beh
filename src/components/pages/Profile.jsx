@@ -52,7 +52,7 @@ const Profile = ({ content }) => {
 
   return (
     <IonPage>
-      <Header backHref="/tabs/settings" title="Profil" />
+      <Header defaultHref="/tabs/settings" title="Profil" />
       <IonContent>
         <form ref={ref}>
           <ItemGroup title="Všeobecné">

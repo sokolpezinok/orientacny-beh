@@ -82,7 +82,7 @@ const Notify = ({ content }) => {
     };
 
     return (
-      <div className={classNames("pl-4 pt-2", className)} {...props}>
+      <div className={classNames("pt-2 pl-4", className)} {...props}>
         {content.map((child, index) => (
           /* workaround to https://github.com/ionic-team/ionic-docs/issues/3459 */
           // <div key={child.id} className="flex items-center" onClick={handleChange(index)}>
@@ -101,7 +101,7 @@ const Notify = ({ content }) => {
 
   return (
     <IonPage>
-      <Header backHref="/tabs/settings" title="Upozornenia" />
+      <Header defaultHref="/tabs/settings" title="Upozornenia" />
       <IonContent>
         <form ref={ref}>
           <ItemGroup title="Spôsob posielania">
@@ -111,7 +111,7 @@ const Notify = ({ content }) => {
             </Drawer>
             <Drawer active={state.notify_type.find((child) => child.id === 2).value}>
               <Drawer active={!allowNotify}>
-                <span className="mb-2 font-medium text-rose-500">Notifikácie nie sú povolené na tomto zariadení.</span>
+                <span className="text-error font-medium">Notifikácie nie sú povolené na tomto zariadení.</span>
               </Drawer>
               <Toggle checked={allowNotify} onIonChange={handleNotify}>
                 Povoliť notifikácie na tomto zariadení.
@@ -120,6 +120,7 @@ const Notify = ({ content }) => {
           </ItemGroup>
           <ItemGroup title="Novinky">
             <SmallWarning>Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email.</SmallWarning>
+            <br />
             <Toggle name="send_news" checked={state.send_news}>
               Upozorniť ma na pridané novinky
             </Toggle>
@@ -131,9 +132,9 @@ const Notify = ({ content }) => {
             <Drawer active={state.send_races}>
               <List>
                 <Input name="days_before" value={state.days_before} label={`Koľko dní pred termínom ma upozorniť (${state.days_before_min} - ${state.days_before_max})`} type="number" required />
-                <span>Upozorniť ma na tieto typy pretekov:</span>
+                <p>Upozorniť ma na tieto typy pretekov:</p>
                 <BitflagCheckboxes content={state.race_types} name="race_types[]" />
-                <span>Upozorniť ma na preteky z tohto rebríčka:</span>
+                <p>Upozorniť ma na preteky z tohto rebríčka:</p>
                 <BitflagCheckboxes content={state.rankings} name="rankings[]" />
               </List>
             </Drawer>
@@ -148,6 +149,7 @@ const Notify = ({ content }) => {
           </ItemGroup>
           <ItemGroup title="Financie">
             <SmallWarning>Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email.</SmallWarning>
+            <br />
             <Toggle name="send_finances" checked={state.send_finances} onIonChange={handleChange("send_finances")}>
               Upozorniť ma na môj finančný stav
             </Toggle>
@@ -160,6 +162,7 @@ const Notify = ({ content }) => {
           </ItemGroup>
           <ItemGroup title="Pokročilé">
             <SmallWarning>Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email.</SmallWarning>
+            <br />
             <List>
               <Toggle name="send_internal_entry_expired" checked={state.send_internal_entry_expired} disabled={!Storage.pull().policies.policy_regs}>
                 Upozorniť ma, keď uplynul interný termín

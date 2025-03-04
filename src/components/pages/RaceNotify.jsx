@@ -11,8 +11,6 @@ import Content from "../controllers/Content";
 export default () => <Content Render={RaceNotify} updateData={({ race_id }) => RaceApi.detail(race_id)} errorText="Nepodarilo sa načítať preteky." />;
 
 const RaceNotify = ({ content }) => {
-  const detail = content;
-
   const { race_id } = useParams();
   const { smartModal, confirmModal } = useModal();
   const ref = useRef(null);
@@ -35,11 +33,11 @@ const RaceNotify = ({ content }) => {
 
   return (
     <IonPage>
-      <Header backHref={`/tabs/races/${race_id}`} title="Napísať notifikáciu" />
+      <Header defaultHref={`/tabs/races/${race_id}`} title="Napísať notifikáciu" />
       <IonContent>
         <form ref={ref}>
           <Item>
-            <h1 className="text-2xl font-bold">{detail.name}</h1>
+            <h1 className="text-2xl font-bold">{content.name}</h1>
           </Item>
           <ItemGroup title="Notifikácia" subtitle="Môžeš napísať notifikáciu. Členovia klubu, ktorí majú nainštalovanú našu mobilnú aplikáciu, dostanú tvoju správu okamžite.">
             <Input label="Nadpis" name="title" value="Pripomienka" required />

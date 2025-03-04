@@ -16,6 +16,8 @@ export class Storage {
     accessToken: null,
     tokenExpiration: 0,
 
+    userId: null,
+
     // policy of the user
     policies: {
       policy_adm: false,

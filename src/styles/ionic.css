@@ -3,44 +3,39 @@ http://ionicframework.com/docs/theming/ */
 
 /** Ionic CSS Variables **/
 :root {
-  --ion-background-color: var(--theme-background);
-  --ion-background-color-rgb: var(--theme-background-rgb);
-
-  --ion-text-color: var(--theme-typography);
-  --ion-text-color-rgb: var(--theme-typography-rgb);
-
-  --ion-border-color: var(--theme-border);
-
-  --ion-toolbar-color: var(--theme-bright);
-
+  --ion-border-color: var(--color-outline);
+  --ion-background-color: var(--color-surface);
+  --ion-text-color: var(--color-on-surface);
+  --ion-border-color: var(--color-border);
   --ion-toolbar-background: var(--theme-primary);
-  --ion-tab-bar-background: var(--theme-background);
-  --ion-item-background: var(--theme-background);
-  --ion-card-background: var(--theme-background);
+  --ion-toolbar-color: var(--theme-on-primary);
+  --ion-tab-bar-background: var(--color-background);
+  --ion-item-background: var(--color-background);
+  --ion-card-background: var(--color-background);
 
   /** primary **/
-  --ion-color-primary: var(--theme-primary);
-  --ion-color-primary-rgb: var(--theme-primary-rgb);
-  --ion-color-primary-contrast: var(--theme-bright);
-  --ion-color-primary-contrast-rgb: var(--theme-bright-rgb);
-  --ion-color-primary-shade: var(--theme-primary-shade);
-  --ion-color-primary-tint: var(--theme-primary-tint);
+  --ion-color-primary: var(--color-primary);
+  /* --ion-color-primary-rgb: var(--color-primary-rgb); */
+  --ion-color-primary-contrast: var(--color-on-primary);
+  /* --ion-color-primary-contrast-rgb: var(--color-bright-rgb); */
+  --ion-color-primary-shade: oklch(from var(--color-primary) calc(l - 0.1) c h);
+  --ion-color-primary-tint: oklch(from var(--color-primary) calc(l + 0.1) c h);
 
   /** secondary **/
-  --ion-color-secondary: #50c8ff;
-  --ion-color-secondary-rgb: 80, 200, 255;
-  --ion-color-secondary-contrast: #ffffff;
-  --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #46b0e0;
-  --ion-color-secondary-tint: #62ceff;
+  --ion-color-secondary: var(--color-secondary);
+  /* --ion-color-secondary-rgb: 80, 200, 255; */
+  --ion-color-secondary-contrast: var(--color-on-secondary);
+  /* --ion-color-secondary-contrast-rgb: 255, 255, 255; */
+  --ion-color-secondary-shade: oklch(from var(--ion-color-secondary) calc(l - 0.1) c h);
+  --ion-color-secondary-tint: oklch(from var(--ion-color-secondary) calc(l + 0.1) c h);
 
   /** tertiary **/
-  --ion-color-tertiary: #5260ff;
-  --ion-color-tertiary-rgb: 82, 96, 255;
-  --ion-color-tertiary-contrast: #ffffff;
-  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #4854e0;
-  --ion-color-tertiary-tint: #6370ff;
+  --ion-color-tertiary: var(--color-tertiary);
+  /* --ion-color-tertiary-rgb: 82, 96, 255; */
+  --ion-color-tertiary-contrast: var(--color-on-tertiary);
+  /* --ion-color-tertiary-contrast-rgb: 255, 255, 255; */
+  --ion-color-tertiary-shade: oklch(from var(--ion-color-tertiary) calc(l - 0.1) c h);
+  --ion-color-tertiary-tint: oklch(from var(--ion-color-tertiary) calc(l + 0.1) c h);
 
   /** success **/
   --ion-color-success: #2dd36f;
@@ -59,12 +54,12 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-warning-tint: #ffca22;
 
   /** danger **/
-  --ion-color-danger: #eb445a;
-  --ion-color-danger-rgb: 235, 68, 90;
-  --ion-color-danger-contrast: #ffffff;
-  --ion-color-danger-contrast-rgb: 255, 255, 255;
-  --ion-color-danger-shade: #cf3c4f;
-  --ion-color-danger-tint: #ed576b;
+  --ion-color-danger: var(--color-error);
+  /* --ion-color-danger-rgb: 235, 68, 90; */
+  --ion-color-danger-contrast: var(--color-on-error);
+  /* --ion-color-danger-contrast-rgb: 255, 255, 255; */
+  --ion-color-danger-shade: oklch(from var(--ion-color-danger) calc(l - 0.1) c h);
+  --ion-color-danger-tint: oklch(from var(--ion-color-danger) calc(l + 0.1) c h);
 
   /** dark **/
   --ion-color-dark: #222428;

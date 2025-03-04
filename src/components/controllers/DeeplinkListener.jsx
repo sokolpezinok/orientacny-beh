@@ -9,7 +9,7 @@ import { Storage } from "@/utils/storage";
 const DeeplinkListener = ({}) => {
   // listen for deeplink open
 
-  const history = useHistory();
+  const router = useHistory();
   const { smartModal } = useModal();
 
   const handleDeeplink = smartModal(async (event) => {
@@ -31,7 +31,7 @@ const DeeplinkListener = ({}) => {
 
     if (club !== Storage.pull().club.clubname) throw "Odkaz nie je z tvojho klubu.";
 
-    history.push(`/tabs/races/${race_id}`);
+    router.push(`/tabs/races/${race_id}`);
   }, "Nepodarilo sa otvoriť odkaz.");
 
   useEffect(() => {

@@ -11,7 +11,7 @@ import { Notifications, NotifyEvents } from "@/utils/notify";
 const NotifyListener = ({}) => {
   // listens for push notifications
 
-  const history = useHistory();
+  const router = useHistory();
   const { smartModal } = useModal();
 
   const handleNotifyActionPerformed = smartModal(async (event) => {
@@ -27,7 +27,7 @@ const NotifyListener = ({}) => {
       throw "Chyba v obsahu notifikácie. (value missing)";
     }
 
-    history.push(`/tabs/races/${value}`);
+    router.push(`/tabs/races/${value}`);
   }, "Nepodarilo sa otvoriť notifikáciu.");
 
   const handleNotifyReceived = smartModal(async (event) => {

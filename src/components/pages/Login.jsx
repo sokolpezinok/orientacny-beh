@@ -1,9 +1,9 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonIcon, IonModal, IonPage, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
+import { IonBackButton, IonButton, IonButtons, IonContent, IonIcon, IonModal, IonPage, IonSelectOption } from "@ionic/react";
 import { eye, eyeOff } from "ionicons/icons";
 import { useRef, useState } from "react";
 import { Redirect, useHistory } from "react-router-dom";
 
-import { Checkbox, Input, List, PrimaryButton, SecondaryButton, Select, SmallWarning } from "@/components/ui/Design";
+import { Checkbox, Header, Input, List, PrimaryButton, Select, SmallWarning, Transparent } from "@/components/ui/Design";
 import License from "@/components/ui/License";
 import { useModal } from "@/components/ui/Modals";
 import { isTokenExpired, sort } from "@/utils";
@@ -22,7 +22,7 @@ const Login = ({ content }) => {
 
   const ref = useRef(null);
   const { smartModal, confirmModal } = useModal();
-  const history = useHistory();
+  const router = useHistory();
 
   if (isLoggedIn) return <Redirect to="/tabs/" />;
 
@@ -43,16 +43,16 @@ const Login = ({ content }) => {
     if (collected.password === "") throw "Nezabudni zadať heslo.";
     if (collected.club === undefined) throw "Nezabudni vybrať klub.";
     if (!collected.license) throw "Súhlas s licenčnými podmienkami je povinný.";
-    
+
+    await SystemApi.login({ username: collected.username, password: collected.password, clubname: collected.club.clubname });
     await Storage.push((s) => {
       s.club = collected.club;
       s.preferences.hasAcceptedTerms = true;
+      s.isLoggedIn = true;
     });
 
-    await SystemApi.login({ username: collected.username, password: collected.password, clubname: collected.club.clubname });
-
     if (await confirmModal("Zapni si notifikácie", "Nezmeškaj prihlasovanie na preteky a dôležité správy. Svoje rozhodnutie môžeš kedykoľvek zmeniť v upozorneniach.")) {
-      history.push("/tabs/settings/notify");
+      router.push("/tabs/settings/notify");
     }
   }, "Nastal problém pri prihlasovaní.");
 
@@ -85,7 +85,7 @@ const Login = ({ content }) => {
                 {!hasAcceptedTerms && (
                   <>
                     <hr />
-                    <SecondaryButton onClick={() => setModalOpen(true)}>Licenčné podmienky</SecondaryButton>
+                    <Transparent onClick={() => setModalOpen(true)}>Licenčné podmienky</Transparent>
                     <Checkbox name="license" required>
                       Súhlasím s licenčnými podmienkami
                     </Checkbox>
@@ -95,12 +95,11 @@ const Login = ({ content }) => {
                 <PrimaryButton onClick={handleSubmit}>Prihlásiť sa</PrimaryButton>
               </List>
               <IonModal isOpen={modalOpen}>
-                <IonToolbar>
+                <Header title="Licenčné podmienky">
                   <IonButtons slot="start">
                     <IonBackButton defaultHref="#" onClick={() => setModalOpen(false)} />
                   </IonButtons>
-                  <IonTitle>Licenčné podmienky</IonTitle>
-                </IonToolbar>
+                </Header>
                 <IonContent>
                   <List innerPadding>
                     <License />

@@ -123,9 +123,18 @@ export class RaceApi {
     });
 }
 
+export class FinancesApi {
+  static overview = () => Api.get(`/finances`, { authorize: true });
+  static history = () => Api.get(`/finances/history`, { authorize: true });
+  static detail = (fin_id) => Api.get(`/finances/${fin_id}`, { authorize: true });
+  static claim_history = (fin_id) => Api.get(`/finances/${fin_id}/claim/history`, { authorize: true });
+  static claim_message = (fin_id, message) => Api.post(`/finances/${fin_id}/claim/message`, { data: { message }, authorize: true });
+  static claim_close = (fin_id) => Api.post(`/finances/${fin_id}/claim/close`, { authorize: true });
+}
+
 export class SystemApi {
   static login = async ({ username, password, clubname }) => {
-    const { access_token, expiration, policies } = await Api.post(`/system/login`, {
+    const { access_token, expiration, user_id, policies } = await Api.post(`/system/login`, {
       data: { username, password },
       server: `${apiServer}/${clubname}`,
     });
@@ -136,8 +145,8 @@ export class SystemApi {
     await Storage.push((s) => {
       s.accessToken = access_token;
       s.tokenExpiration = expiration;
+      s.userId = user_id;
       s.policies = policies;
-      s.isLoggedIn = true;
     });
   };
 
@@ -174,4 +183,10 @@ export class RaceEnum {
   static ACCOMMODATION_REQUIRED = 2;
 
   static isAccommodationSelectable = (number) => number == this.ACCOMMODATION_AVAILABLE;
+}
+
+export class FinancesEnum {
+  static CLAIM_UNOPENED = null;
+  static CLAIM_OPENED = 1;
+  static CLAIM_CLOSED = 0;
 }

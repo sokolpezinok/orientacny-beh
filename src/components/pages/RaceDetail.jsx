@@ -1,26 +1,28 @@
-import { category, group } from "@/utils/icons";
 import { Share } from "@capacitor/share";
-import { IonAccordionGroup, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage } from "@ionic/react";
+import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonSelectOption } from "@ionic/react";
 import classNames from "classnames";
 import { bus, calendar, home, location, refresh, shareSocial } from "ionicons/icons";
-import { useHistory, useParams } from "react-router-dom";
+import { useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 
-import { Accordion, Anchor, BooleanIcon, Header, Item, ItemLink, ReadMore, Refresher, SadFace, SecondaryButton } from "@/components/ui/Design";
+import { Anchor, BooleanIcon, Drawer, Header, Input, Item, ItemGroup, ItemLink, List, PrimaryButton, ReadMore, Refresher, SadFace, Select, Toggle, Transparent } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { getFirstEntry, getLastEntry, isFirstEntryExpired, isLastEntryExpired, sort } from "@/utils";
-import { RaceApi } from "@/utils/api";
-import { formatDate, formatDates } from "@/utils/format";
+import { RaceApi, RaceEnum } from "@/utils/api";
+import { lazyDate, lazyDates } from "@/utils/format";
+import { category, group } from "@/utils/icons";
 import { Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
 
 export default () => <Content Render={RaceDetail} updateData={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])} errorText="Nepodarilo sa načítať preteky." />;
 
-const RaceDetail = ({ content, handleUpdate }) => {
-  const [detail, relations] = content;
-
+const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
   const { race_id } = useParams();
-  const history = useHistory();
   const { smartModal, alertModal } = useModal();
+
+  const [select, setSelect] = useState(null);
+
+  const handleClose = () => setSelect(null);
 
   const handleShare = smartModal(async () => {
     const { value } = await Share.canShare();
@@ -44,15 +46,15 @@ const RaceDetail = ({ content, handleUpdate }) => {
       return "Prihlasovanie skončilo";
     }
 
-    const signedIn = relations[0].is_signed_in;
+    const signedIn = relations.find((child) => child.user_id == Storage.pull().userId).is_signed_in;
     const firstExpired = isFirstEntryExpired(detail.entries);
-    const currentEntry = <span className="text-primary">{formatDate(firstExpired ? getLastEntry(detail.entries) : getFirstEntry(detail.entries))}</span>;
+    const currentEntry = <span className="text-primary">{lazyDate(firstExpired ? getLastEntry(detail.entries) : getFirstEntry(detail.entries))}</span>;
 
     if (firstExpired && !signedIn) {
       return (
         <>
-          <span className="block">Vypršal prvý termín prihlásenia.</span>
-          <span className="block">Posledný termín: {currentEntry}</span>
+          <p>Vypršal prvý termín prihlásenia, budú účtované poplatky.</p>
+          <p>Posledný termín: {currentEntry}</p>
         </>
       );
     }
@@ -75,17 +77,13 @@ const RaceDetail = ({ content, handleUpdate }) => {
       return;
     }
 
-    if (user_id === null) {
-      return history.push(`/tabs/races/${race_id}/sign`);
-    }
-
-    return history.push(`/tabs/races/${race_id}/sign/${user_id}`);
+    setSelect(user_id || Storage.pull().userId);
   };
 
   return (
     <IonPage>
       <IonHeader>
-        <Header backHref="/tabs/races" title="Podrobnosti">
+        <Header defaultHref="/tabs/races" title="Podrobnosti">
           <IonButtons slot="primary">
             <IonButton onClick={handleUpdate}>
               <IonIcon slot="icon-only" icon={refresh} />
@@ -98,83 +96,208 @@ const RaceDetail = ({ content, handleUpdate }) => {
       </IonHeader>
       <IonContent>
         <Refresher handleUpdate={handleUpdate} />
-        <div className="px-4 pt-4">
-          <h1 className={classNames("text-2xl font-bold", detail.cancelled && "line-through")}>{detail.name}</h1>
-          {detail.note && (
-            <ReadMore>
-              <p>{detail.note}</p>
-            </ReadMore>
-          )}
-          {detail.link && <Anchor href={detail.link} />}
-        </div>
-        <Item>
-          <div className="grid grid-cols-[auto_1fr] gap-4 md:grid-cols-[auto_1fr_auto_1fr]">
-            <IonIcon icon={calendar} className="self-center text-2xl" color="primary" />
-            {formatDates(detail.dates)}
-            <IonIcon icon={location} className="self-center text-2xl" color="primary" />
-            {detail.place}
-            <IonIcon src={group} className="self-center text-2xl" color="primary" />
-            {detail.club}
-            <IonIcon src={category} className="self-center text-2xl" color="primary" />
-            {detail.type}
-            <IonIcon icon={bus} className="self-center text-2xl" color="primary" />
-            {detail.transport ? "Organizovaná doprava" : "Vlastná doprava"}
-            <IonIcon icon={home} className="self-center text-2xl" color="primary" />
-            {detail.accommodation ? "Organizované ubytovanie" : "Vlastné ubytovanie"}
-          </div>
-        </Item>
+        <ItemGroup>
+          <List>
+            <h2 className={classNames("text-2xl font-bold", detail.cancelled && "line-through")}>{detail.name}</h2>
+            {detail.note && (
+              <ReadMore>
+                <p>{detail.note}</p>
+              </ReadMore>
+            )}
+            {detail.link && <Anchor href={detail.link} />}
+            <div className="grid grid-cols-[auto_1fr] gap-4 md:grid-cols-[auto_1fr_auto_1fr]">
+              <IonIcon icon={calendar} className="self-center text-2xl" color="primary" />
+              {lazyDates(detail.dates)}
+              <IonIcon icon={location} className="self-center text-2xl" color="primary" />
+              {detail.place}
+              <IonIcon src={group} className="self-center text-2xl" color="primary" />
+              {detail.club}
+              <IonIcon src={category} className="self-center text-2xl" color="primary" />
+              {detail.type}
+              <IonIcon icon={bus} className="self-center text-2xl" color="primary" />
+              {detail.transport ? "Organizovaná doprava" : "Vlastná doprava"}
+              <IonIcon icon={home} className="self-center text-2xl" color="primary" />
+              {detail.accommodation ? "Organizované ubytovanie" : "Vlastné ubytovanie"}
+            </div>
+          </List>
+        </ItemGroup>
         {Storage.pull().policies.policy_mng_big && <ItemLink routerLink={`/tabs/races/${race_id}/notify`}>Napísať notifikáciu</ItemLink>}
         <ItemLink routerLink="#" onClick={() => handleSignin()}>
           {generateSignInLabel()}
         </ItemLink>
-        <IonAccordionGroup>
-          {relations.length > 1 && (
-            <Accordion title="Priradení členovia">
-              {relations.map((item) => (
-                <IonButton fill="clear" key={item.user_id} onClick={() => handleSignin(item.user_id)} className="w-full">
-                  <div className="w-full text-left font-normal normal-case leading-normal">
-                    <span>
-                      <h2 className="mr-4 inline-block">{`${item.name} ${item.surname} (${item.chip_number})`}</h2>
-                      <BooleanIcon value={item.is_signed_in} />
-                    </span>
-                    <p>{item.category ?? "-"}</p>
-                  </div>
-                </IonButton>
-              ))}
-            </Accordion>
-          )}
-          <Accordion title={`Prihlásení (${detail.everyone.length})`}>
-            {detail.everyone.length > 0 ? (
-              <div className="-mx-4 -mb-4 max-h-96 overflow-auto">
-                <table className="w-full table-auto">
-                  <thead className="border-b border-border text-left text-primary">
-                    <tr>
-                      <th className="sticky top-0 z-10 w-1/2 bg-background py-2 pl-4 font-medium">Meno</th>
-                      <th className="sticky top-0 z-10 w-1/2 bg-background py-2 pl-4 font-medium">Kategória</th>
-                      <th className="sticky top-0 z-10 bg-background py-2 pl-4 font-medium">{<IonIcon icon={bus} />}</th>
-                      <th className="sticky top-0 z-10 bg-background px-4 py-2 font-medium">{<IonIcon icon={home} />}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sort(detail.everyone, (child) => child.surname).map((child) => (
-                      <tr key={child.user_id} className="border-b border-border">
-                        <td className="py-2 pl-4">{`${child.name} ${child.surname}`}</td>
-                        <td className="py-2 pl-4">{child.category}</td>
-                        <td className="py-2 pl-4">{<BooleanIcon value={child.transport} />}</td>
-                        <td className="py-2 pl-4">{<BooleanIcon value={child.accommodation} />}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        <ItemGroup title="Spravovaní členovia">
+          {relations.map((child) => (
+            <IonButton fill="clear" key={child.user_id} onClick={() => handleSignin(child.user_id)} className="w-full">
+              <div className="w-full text-left leading-normal font-normal normal-case">
+                <p>
+                  {`${child.sort_name} (${child.chip_number})`}
+                  <BooleanIcon value={child.is_signed_in} />
+                </p>
+                <span>{child.category || "-"}</span>
               </div>
-            ) : (
-              <SadFace title="Zatiaľ sa nikto neprihlásil." subtitle="Môžeš sa prihlásiť ako prvý/-á :)">
-                <SecondaryButton onClick={() => handleSignin()}>Prihlásiť sa</SecondaryButton>
-              </SadFace>
+            </IonButton>
+          ))}
+        </ItemGroup>
+        <ItemGroup title="Všetci prihlásení">
+          {detail.everyone.length > 0 ? (
+            <div className="-mx-4 -mb-4">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th className="w-1/2">Meno</th>
+                    <th className="w-1/2">Kategória</th>
+                    <th>{<IonIcon icon={bus} />}</th>
+                    <th>{<IonIcon icon={home} />}</th>
+                    {/* <th /> */}
+                  </tr>
+                </thead>
+                <tbody>
+                  {sort(detail.everyone, (child) => child.surname).map((child) => (
+                    <tr key={child.user_id} className="ion-activatable relative">
+                      <td>{`${child.name} ${child.surname}`}</td>
+                      <td>{child.category}</td>
+                      <td>{<BooleanIcon value={child.transport} />}</td>
+                      <td>{<BooleanIcon value={child.accommodation} />}</td>
+                      {/* <td>{<IonRippleEffect />}</td> */}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <SadFace title="Zatiaľ sa nikto neprihlásil." subtitle="Môžeš sa prihlásiť ako prvý/-á :)">
+              <br />
+              <Transparent onClick={() => handleSignin()}>Prihlásiť sa</Transparent>
+            </SadFace>
+          )}
+        </ItemGroup>
+        <IonModal isOpen={select !== null} onDidDismiss={handleClose}>
+          <Header title="Prihlásiť sa">
+            <IonButtons slot="start">
+              <IonBackButton defaultHref="#" onClick={handleClose} />
+            </IonButtons>
+          </Header>
+          <IonContent>
+            <Item>
+              <Select label="Člen" value={select} onIonChange={(event) => setSelect(event.target.value)} required>
+                {relations.map((child) => (
+                  <IonSelectOption key={child.user_id} value={child.user_id}>
+                    {`${child.name} ${child.surname} (${child.chip_number})`}
+                  </IonSelectOption>
+                ))}
+              </Select>
+            </Item>
+            {select !== null && (
+              <RaceSignOf
+                detail={detail}
+                user={relations.find((child) => child.user_id == select)}
+                onClose={() => {
+                  handleClose();
+                  handleUpdate();
+                }}
+              />
             )}
-          </Accordion>
-        </IonAccordionGroup>
+          </IonContent>
+        </IonModal>
       </IonContent>
     </IonPage>
+  );
+};
+
+const RaceSignOf = ({ detail, user, onClose }) => {
+  const { smartModal } = useModal();
+  const ref = useRef(null);
+  const [sharedTransport, setSharedTransport] = useState(user.transport);
+
+  const handleSignin = smartModal(async () => {
+    const els = ref.current.elements;
+    const collected = {
+      category: els.category.value.trim(),
+      transport: els.transport.value === "on",
+      transport_shared: els.transport_shared?.value,
+      accommodation: els.accommodation.value === "on",
+      note: els.note.value.trim(),
+      note_internal: els.note_internal.value.trim(),
+    };
+
+    if (collected.category === "") throw "Nezabudni zadať kategóriu.";
+
+    await RaceApi.signin(detail.race_id, user.user_id, collected);
+
+    onClose();
+    return "Prihlásenie prebehlo úspešne.";
+  }, "Nepodarilo sa prihlásiť.");
+
+  const handleSignout = smartModal(async () => {
+    await RaceApi.signout(detail.race_id, user.user_id);
+
+    onClose();
+    return "Odhlásenie prebehlo úspešne.";
+  }, "Nepodarilo sa odhlásiť.");
+
+  return (
+    <form ref={ref}>
+      <ItemGroup title="Základné údaje">
+        {detail.categories.length === 0 ? (
+          <Input label="Kategória" name="category" value={user.category} required />
+        ) : (
+          <Select label="Kategória" name="category" value={user.category} required>
+            {detail.categories.map((child) => (
+              <IonSelectOption key={child} value={child}>
+                {child}
+              </IonSelectOption>
+            ))}
+          </Select>
+        )}
+      </ItemGroup>
+      <ItemGroup title="Doprava a ubytovanie">
+        {detail.transport == RaceEnum.TRANSPORT_SHARED ? (
+          <>
+            <Toggle name="transport" checked={sharedTransport} onIonChange={(event) => setSharedTransport(event.target.checked)}>
+              Chcem využiť zdielanú dopravu
+            </Toggle>
+            <Drawer active={sharedTransport} className="pl-4">
+              {/* "" = I will not go */}
+              <Select name="transport_shared" label="Zdielaná doprava" value={sharedTransport ? user.transport_shared || -1 : ""}>
+                <IonSelectOption value={-1}>Potrebujem miesto</IonSelectOption>
+                <IonSelectOption value={0}>Idem iba ja</IonSelectOption>
+                <IonSelectOption value={1}>Zoberiem 1 osobu</IonSelectOption>
+                <IonSelectOption value={2}>Zoberiem 2 osoby</IonSelectOption>
+                <IonSelectOption value={3}>Zoberiem 3 osoby</IonSelectOption>
+                <IonSelectOption value={4}>Zoberiem 4 osoby</IonSelectOption>
+                <IonSelectOption value={5}>Zoberiem 5 osôb</IonSelectOption>
+                <IonSelectOption value={6}>Zoberiem 6 osôb</IonSelectOption>
+                <IonSelectOption value={7}>Zoberiem 7 osôb</IonSelectOption>
+                <IonSelectOption value={8}>Zoberiem 8 osôb</IonSelectOption>
+              </Select>
+            </Drawer>
+          </>
+        ) : (
+          <Toggle name="transport" checked={RaceEnum.isTransportSelectable(detail.transport) ? user.transport : detail.transport} disabled={!RaceEnum.isTransportSelectable(detail.transport)}>
+            Chcem využiť spoločnú dopravu
+          </Toggle>
+        )}
+        <br />
+        <Toggle
+          name="accommodation"
+          checked={RaceEnum.isAccommodationSelectable(detail.accommodation) ? user.accommodation : detail.accommodation}
+          disabled={!RaceEnum.isAccommodationSelectable(detail.accommodation)}
+        >
+          Chcem využiť spoločné ubytovanie
+        </Toggle>
+      </ItemGroup>
+      <ItemGroup title="Poznámky">
+        <Input label="Poznámka (do prihlášky)" name="note" value={user.note} />
+        <Input label="Poznámka (interná)" name="note_internal" value={user.note_internal} />
+      </ItemGroup>
+      <ItemGroup>
+        <List>
+          <PrimaryButton onClick={handleSignin}>{user.is_signed_in ? "Zmeniť" : "Prihlásiť sa"}</PrimaryButton>
+          <Transparent disabled={!user.is_signed_in} onClick={handleSignout}>
+            Odhlásiť sa
+          </Transparent>
+        </List>
+      </ItemGroup>
+    </form>
   );
 };
