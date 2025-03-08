@@ -1,7 +1,10 @@
+import { Capacitor } from "@capacitor/core";
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react";
 import { settings, trailSign } from "ionicons/icons";
+import { useEffect } from "react";
 import { Redirect, Route } from "react-router-dom";
 
+import { SystemApi } from "@/utils/api";
 import { payments } from "@/utils/icons";
 import { Storage } from "@/utils/storage";
 import DeeplinkListener from "./controllers/DeeplinkListener";
@@ -23,6 +26,12 @@ export default () => {
   const isLoading = Storage.useState((s) => s.isLoading);
   const isLoggedIn = Storage.useState((s) => s.isLoggedIn);
   const allowNotify = Storage.useState((s) => s.preferences.allowNotify);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      SystemApi.heartbeat();
+    }
+  }, [isLoggedIn]);
 
   if (isLoading) return <SpinnerPage />;
   if (!isLoggedIn) return <Redirect to="/login" />;

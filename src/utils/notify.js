@@ -1,12 +1,12 @@
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { Capacitor } from "@capacitor/core";
 import { LocalNotifications } from "@capacitor/local-notifications";
-import { Storage } from "./storage";
 import { SystemApi } from "./api";
+import { Storage } from "./storage";
 
 export class Notifications {
   static checkSupport = () => {
-    if (!Capacitor.isNativePlatform()) {
+    if (!Capacitor.isNativePlatform) {
       throw "Funkcia nie je podporovaná pre tento typ zariadenia.";
     }
   };

@@ -1,10 +1,12 @@
-import { apiServer } from "@/manifest.js";
-import { Storage } from "@/utils/storage";
 import { Device } from "@capacitor/device";
+
+import { apiServer, appBuildVersion } from "@/manifest.js";
+import { Storage } from "@/utils/storage";
 import { isTokenExpired, unixTime } from ".";
 
-const getServer = () => `${apiServer}/${Storage.pull().club.clubname}`;
-const getDevice = async () => (await Device.getId()).identifier;
+const defaultServer = () => `${apiServer}/${Storage.pull().club.clubname}`;
+const getDeviceId = async () => (await Device.getId()).identifier || "";
+const getDeviceName = async () => (await Device.getInfo()).name || "";
 
 // server api packaged into a class
 class Api {
@@ -32,7 +34,7 @@ class Api {
     }
 
     // make a request
-    const response = await fetch((server || getServer()) + part, {
+    const response = await fetch((server || defaultServer()) + part, {
       method,
       headers,
       body: data && JSON.stringify(data),
@@ -98,7 +100,7 @@ export class UserApi {
 
 export class RaceApi {
   // returns url
-  static getRedirect = (race_id) => `${getServer()}/race/${race_id}/redirect`;
+  static getRedirect = (race_id) => `${defaultServer}/race/${race_id}/redirect`;
 
   // methods
   static list = () => Api.get(`/races`);
@@ -153,14 +155,21 @@ export class SystemApi {
   static fcm_token_update = async (token) => {
     return await Api.post(`/system/fcm_token/update`, {
       authorize: true,
-      data: { token, device: await getDevice() },
+      data: { token, device: await getDeviceId() },
     });
   };
 
   static fcm_token_delete = async () => {
     return await Api.post(`/system/fcm_token/delete`, {
       authorize: true,
-      data: { device: await getDevice() },
+      data: { device: await getDeviceId() },
+    });
+  };
+
+  static heartbeat = async () => {
+    return await Api.post(`/system/heartbeat`, {
+      authorize: true,
+      data: { device: await getDeviceId(), device_name: await getDeviceName(), app_version: appBuildVersion },
     });
   };
 }

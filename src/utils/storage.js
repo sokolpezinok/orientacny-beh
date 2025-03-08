@@ -40,6 +40,8 @@ export class Storage {
     },
   });
 
+  static userId;
+
   // a name that is used for secure storage
   static profile = "default";
 
@@ -94,6 +96,9 @@ export class Storage {
       alert("An error occurred while accessing storage, clearing storage. " + error);
       await this.load_clean();
     }
+
+    // commonly used keys
+    this.userId = this.pull().userId;
   }
 
   static {

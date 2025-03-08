@@ -48,7 +48,7 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
       return "Prihlasovanie skončilo";
     }
 
-    const iAmSignedIn = relations.find((child) => child.user_id == Storage.pull().userId).is_signed_in;
+    const iAmSignedIn = relations.find((child) => child.user_id == Storage.userId).is_signed_in;
     const firstExpired = isFirstEntryExpired(detail.entries);
     const currentEntry = <span className="text-primary">{lazyDate(firstExpired ? getLastEntry(detail.entries) : getFirstEntry(detail.entries))}</span>;
 
@@ -79,7 +79,7 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
       return;
     }
 
-    setSelect(user_id || Storage.pull().userId);
+    setSelect(user_id || Storage.userId);
   };
 
   return (

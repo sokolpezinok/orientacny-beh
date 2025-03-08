@@ -1,4 +1,4 @@
-import { IonPage } from "@ionic/react";
+import { IonContent, IonPage } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -31,8 +31,10 @@ const Content = ({ Render, updateData, errorText }) => {
 
   return (
     <IonPage>
-      <Refresher handleUpdate={handleUpdate} />
-      <Error title={errorText} subtitle={error + ""} reload />
+      <IonContent>
+        <Refresher handleUpdate={handleUpdate} />
+        <Error title={errorText} subtitle={error + ""} reload />
+      </IonContent>
     </IonPage>
   );
 };

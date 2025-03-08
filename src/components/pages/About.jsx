@@ -4,8 +4,18 @@ import { Accordion, Anchor, Header, Item } from "@/components/ui/Design";
 import License from "@/components/ui/License";
 import { apiVersion, appBuildVersion, debug } from "@/manifest.js";
 import { Storage } from "@/utils/storage";
+import { Device } from "@capacitor/device";
+import { useEffect, useState } from "react";
 
 const About = () => {
+  const [deviceId, setDeviceId] = useState("-");
+
+  useEffect(() => {
+    (async () => {
+      setDeviceId((await Device.getId()).identifier || "-");
+    })();
+  }, []);
+
   return (
     <IonPage>
       <Header defaultHref="/tabs/settings" title="O aplikácii" />
@@ -29,7 +39,7 @@ const About = () => {
         </Item>
         <Item>
           <h2>Prihlásený používateľ</h2>
-          <p>{Storage.pull().userId}</p>
+          <p>{Storage.userId}</p>
         </Item>
         <Item>
           <h2>Verzia</h2>
@@ -41,6 +51,10 @@ const About = () => {
         <Item>
           <h2>API Verzia</h2>
           <p>{`${apiVersion}`}</p>
+        </Item>
+        <Item>
+          <h2>Device ID</h2>
+          <p>{deviceId}</p>
         </Item>
       </IonContent>
     </IonPage>

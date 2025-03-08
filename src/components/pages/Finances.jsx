@@ -22,7 +22,7 @@ const MyHeader = ({ handleUpdate }) => (
 );
 
 const Finances = ({ content: [overview, history], handleUpdate }) => {
-  const [current, setCurrent] = useState(Storage.pull().userId);
+  const [current, setCurrent] = useState(Storage.userId);
 
   return (
     <IonPage>
