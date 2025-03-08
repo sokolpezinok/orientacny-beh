@@ -189,4 +189,7 @@ export class FinancesEnum {
   static CLAIM_UNOPENED = null;
   static CLAIM_OPENED = 1;
   static CLAIM_CLOSED = 0;
+
+  static STORNO_INACTIVE = null;
+  static STORNO_ACTIVE = 1;
 }

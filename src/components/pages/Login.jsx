@@ -3,7 +3,7 @@ import { eye, eyeOff } from "ionicons/icons";
 import { useRef, useState } from "react";
 import { Redirect, useHistory } from "react-router-dom";
 
-import { Checkbox, Header, Input, List, PrimaryButton, Select, SmallWarning, Transparent } from "@/components/ui/Design";
+import { Checkbox, Header, Input, PrimaryButton, Select, SmallWarning, Spacing, TransparentButton } from "@/components/ui/Design";
 import License from "@/components/ui/License";
 import { useModal } from "@/components/ui/Modals";
 import { isTokenExpired, sort } from "@/utils";
@@ -66,7 +66,7 @@ const Login = ({ content }) => {
               <h1 className="text-3xl font-bold lg:text-4xl">Orientačný beh</h1>
             </div>
             <form ref={ref} className="flex-1">
-              <List>
+              <Spacing>
                 {isTokenExpired() && Storage.pull().tokenExpiration !== 0 && <SmallWarning>Prístup do aplikácie vypršal. Prosím, prihlás sa znova.</SmallWarning>}
                 <Input name="username" type="text" label="Meno" required />
                 <div className="-mr-4 flex items-center">
@@ -85,7 +85,7 @@ const Login = ({ content }) => {
                 {!hasAcceptedTerms && (
                   <>
                     <hr />
-                    <Transparent onClick={() => setModalOpen(true)}>Licenčné podmienky</Transparent>
+                    <TransparentButton onClick={() => setModalOpen(true)}>Licenčné podmienky</TransparentButton>
                     <Checkbox name="license" required>
                       Súhlasím s licenčnými podmienkami
                     </Checkbox>
@@ -93,7 +93,7 @@ const Login = ({ content }) => {
                 )}
                 <hr />
                 <PrimaryButton onClick={handleSubmit}>Prihlásiť sa</PrimaryButton>
-              </List>
+              </Spacing>
               <IonModal isOpen={modalOpen}>
                 <Header title="Licenčné podmienky">
                   <IonButtons slot="start">
@@ -101,9 +101,9 @@ const Login = ({ content }) => {
                   </IonButtons>
                 </Header>
                 <IonContent>
-                  <List innerPadding>
+                  <Spacing innerPadding>
                     <License />
-                  </List>
+                  </Spacing>
                 </IonContent>
               </IonModal>
             </form>

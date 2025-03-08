@@ -5,7 +5,7 @@ import { bus, calendar, home, location, refresh, shareSocial } from "ionicons/ic
 import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { Anchor, BooleanIcon, Drawer, Header, Input, Item, ItemGroup, ItemLink, List, PrimaryButton, ReadMore, Refresher, SadFace, Select, Toggle, Transparent } from "@/components/ui/Design";
+import { Anchor, BooleanIcon, Drawer, Header, Input, Item, ItemGroup, ItemLink, PrimaryButton, ReadMore, Refresher, SadFace, Select, Spacing, Toggle, TransparentButton } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { getFirstEntry, getLastEntry, isFirstEntryExpired, isLastEntryExpired, sort } from "@/utils";
 import { RaceApi, RaceEnum } from "@/utils/api";
@@ -23,6 +23,8 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
   const [select, setSelect] = useState(null);
 
   const handleClose = () => setSelect(null);
+
+  const childrenSignedIn = relations.filter((child) => child.is_signed_in);
 
   const handleShare = smartModal(async () => {
     const { value } = await Share.canShare();
@@ -46,11 +48,11 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
       return "Prihlasovanie skončilo";
     }
 
-    const signedIn = relations.find((child) => child.user_id == Storage.pull().userId).is_signed_in;
+    const iAmSignedIn = relations.find((child) => child.user_id == Storage.pull().userId).is_signed_in;
     const firstExpired = isFirstEntryExpired(detail.entries);
     const currentEntry = <span className="text-primary">{lazyDate(firstExpired ? getLastEntry(detail.entries) : getFirstEntry(detail.entries))}</span>;
 
-    if (firstExpired && !signedIn) {
+    if (firstExpired && !iAmSignedIn) {
       return (
         <>
           <p>Vypršal prvý termín prihlásenia, budú účtované poplatky.</p>
@@ -61,7 +63,7 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
 
     return (
       <>
-        {signedIn ? "Zmeniť / Odhlásiť sa" : "Prihlásiť sa"} do {currentEntry}
+        {iAmSignedIn ? "Zmeniť / Odhlásiť sa" : "Prihlásiť sa"} do {currentEntry}
       </>
     );
   };
@@ -97,7 +99,7 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
       <IonContent>
         <Refresher handleUpdate={handleUpdate} />
         <ItemGroup>
-          <List>
+          <Spacing>
             <h2 className={classNames("text-2xl font-bold", detail.cancelled && "line-through")}>{detail.name}</h2>
             {detail.note && (
               <ReadMore>
@@ -119,20 +121,18 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
               <IonIcon icon={home} className="self-center text-2xl" color="primary" />
               {detail.accommodation ? "Organizované ubytovanie" : "Vlastné ubytovanie"}
             </div>
-          </List>
+          </Spacing>
         </ItemGroup>
         {Storage.pull().policies.policy_mng_big && <ItemLink routerLink={`/tabs/races/${race_id}/notify`}>Napísať notifikáciu</ItemLink>}
         <ItemLink routerLink="#" onClick={() => handleSignin()}>
           {generateSignInLabel()}
         </ItemLink>
-        <ItemGroup title="Spravovaní členovia">
-          {relations.map((child) => (
+        <ItemGroup title="Prihlásení členovia">
+          {childrenSignedIn.length === 0 && <span>(nikto z tvojich členov nie je prihlásený)</span>}
+          {childrenSignedIn.map((child) => (
             <IonButton fill="clear" key={child.user_id} onClick={() => handleSignin(child.user_id)} className="w-full">
               <div className="w-full text-left leading-normal font-normal normal-case">
-                <p>
-                  {`${child.sort_name} (${child.chip_number})`}
-                  <BooleanIcon value={child.is_signed_in} />
-                </p>
+                <p>{`${child.sort_name} (${child.chip_number})`}</p>
                 <span>{child.category || "-"}</span>
               </div>
             </IonButton>
@@ -167,7 +167,7 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
           ) : (
             <SadFace title="Zatiaľ sa nikto neprihlásil." subtitle="Môžeš sa prihlásiť ako prvý/-á :)">
               <br />
-              <Transparent onClick={() => handleSignin()}>Prihlásiť sa</Transparent>
+              <TransparentButton onClick={() => handleSignin()}>Prihlásiť sa</TransparentButton>
             </SadFace>
           )}
         </ItemGroup>
@@ -178,6 +178,7 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
             </IonButtons>
           </Header>
           <IonContent>
+            <Refresher handleUpdate={handleUpdate} />
             <Item>
               <Select label="Člen" value={select} onIonChange={(event) => setSelect(event.target.value)} required>
                 {relations.map((child) => (
@@ -291,12 +292,12 @@ const RaceSignOf = ({ detail, user, onClose }) => {
         <Input label="Poznámka (interná)" name="note_internal" value={user.note_internal} />
       </ItemGroup>
       <ItemGroup>
-        <List>
+        <Spacing>
           <PrimaryButton onClick={handleSignin}>{user.is_signed_in ? "Zmeniť" : "Prihlásiť sa"}</PrimaryButton>
-          <Transparent disabled={!user.is_signed_in} onClick={handleSignout}>
+          <TransparentButton disabled={!user.is_signed_in} onClick={handleSignout}>
             Odhlásiť sa
-          </Transparent>
-        </List>
+          </TransparentButton>
+        </Spacing>
       </ItemGroup>
     </form>
   );

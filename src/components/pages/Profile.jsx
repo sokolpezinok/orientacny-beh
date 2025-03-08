@@ -1,11 +1,10 @@
-import { IonButton, IonContent, IonIcon, IonPage, IonSelectOption } from "@ionic/react";
+import { IonContent, IonPage, IonSelectOption } from "@ionic/react";
 
-import { Header, Input, ItemGroup, List, PrimaryButton, Select, Toggle } from "@/components/ui/Design";
+import { Header, Input, ItemGroup, PrimaryButton, Select, SmallWarning, Spacing, Toggle } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
 import countries from "@/utils/countries";
 import { Storage } from "@/utils/storage";
-import { helpCircle } from "ionicons/icons";
 import { useRef } from "react";
 import Content from "../controllers/Content";
 
@@ -57,10 +56,14 @@ const Profile = ({ content }) => {
         <form ref={ref}>
           <ItemGroup title="Všeobecné">
             {userEditDisabled && (
-              <IonButton onClick={handleExplainDisabled} fill="clear" color="danger" className="w-full normal-case">
-                <IonIcon slot="start" icon={helpCircle} />
-                Prečo nemôžem meniť niektoré nastavenia?
-              </IonButton>
+              <>
+                <SmallWarning>
+                  <a className="!text-inherit" onClick={handleExplainDisabled}>
+                    Prečo nemôžem meniť niektoré nastavenia?
+                  </a>
+                </SmallWarning>
+                <br />
+              </>
             )}
             <Input disabled={userEditDisabled} label="Meno" name="name" value={content.name} required />
             <Input disabled={userEditDisabled} label="Priezvisko" name="surname" value={content.surname} required />
@@ -123,9 +126,9 @@ const Profile = ({ content }) => {
               <IonSelectOption value="R">R</IonSelectOption>
             </Select>
           </ItemGroup>
-          <List innerPadding>
+          <Spacing innerPadding>
             <PrimaryButton onClick={handleSubmit}>Zmeniť</PrimaryButton>
-          </List>
+          </Spacing>
         </form>
       </IonContent>
     </IonPage>

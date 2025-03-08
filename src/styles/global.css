@@ -61,6 +61,7 @@ ion-button.button-has-icon-only {
 
 /* tab navigation */
 ion-tab-button {
+  @apply font-medium;
   --color: var(--color-outline);
   --theme-selected: var(--color-primary);
 }
@@ -140,7 +141,7 @@ p,
   @apply !text-on-surface space-y-4;
 }
 a {
-  @apply text-primary underline;
+  @apply text-primary cursor-pointer underline;
 }
 hr {
   @apply border-outline-variant my-2 border-t;
@@ -154,26 +155,15 @@ br {
  */
 
 table.table {
-  @apply w-full table-auto;
-}
-table.table tr {
-  @apply text-left;
-}
-table.table thead tr {
-  @apply text-primary;
+  @apply bg-surface-container w-full table-auto text-left;
 }
 table.table thead th {
-  @apply bg-background sticky top-0 z-10 py-2 pl-4 font-medium;
+  @apply bg-background text-primary sticky top-0 z-10 font-medium;
 }
-table.table tbody tr {
-  @apply bg-surface-container;
+table.table tbody td,
+table.table thead th {
+  @apply border-outline-variant border-b px-4 py-2;
 }
-table.table tbody tr:nth-child(even) {
-  @apply bg-surface-container-high;
-}
-table.table tbody td {
-  @apply py-2 pl-4;
-}
-table.table td:last-child {
-  @apply px-4;
+table.table tbody tr:last-child td {
+  @apply border-none;
 }

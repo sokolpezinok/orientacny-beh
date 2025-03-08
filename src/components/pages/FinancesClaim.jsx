@@ -3,9 +3,9 @@ import { refresh } from "ionicons/icons";
 import { useRef } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
-import { Header, ItemGroup, List, PrimaryButton, Refresher, Textarea, Transparent } from "@/components/ui/Design";
-import { FinancesApi } from "@/utils/api";
-import { formatDatetime } from "@/utils/format";
+import { Header, ItemGroup, PrimaryButton, Refresher, SmallSuccess, SmallWarning, Spacing, Textarea, TransparentButton } from "@/components/ui/Design";
+import { FinancesApi, FinancesEnum } from "@/utils/api";
+import { formatDatetime, lazyDate } from "@/utils/format";
 import { Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
 import { useModal } from "../ui/Modals";
@@ -54,23 +54,34 @@ const FinancesClaim = ({ content: [detail, history], handleUpdate }) => {
       </Header>
       <IonContent>
         <Refresher handleUpdate={handleUpdate} />
+        <ItemGroup title="Udalosť">
+          <h3>Názov udalosti:</h3>
+          <p>{detail.race_name || "-"}</p>
+          <br />
+          <h3>Dátum udalosti:</h3>
+          <p>{detail.race_date ? lazyDate(detail.race_date) : "-"}</p>
+        </ItemGroup>
         <ItemGroup title="Poslať správu">
+          {detail.claim === FinancesEnum.CLAIM_OPENED && <SmallWarning>Reklamácia je otvorená.</SmallWarning>}
+          {detail.claim === FinancesEnum.CLAIM_CLOSED && <SmallSuccess>Reklamácia bola uzatvorená.</SmallSuccess>}
           <form ref={ref}>
             <Textarea name="message" label="Čo sa ti nepáči?" value={lastMessage} />
           </form>
           <br />
-          <List>
+          <Spacing>
             <PrimaryButton onClick={handleSend}>{isUpdate ? "Zmeniť" : "Poslať"}</PrimaryButton>
-            <Transparent onClick={handleClose}>Uzavrieť</Transparent>
-          </List>
+            <TransparentButton onClick={handleClose} disabled={detail.claim === FinancesEnum.CLAIM_CLOSED}>
+              Uzavrieť
+            </TransparentButton>
+          </Spacing>
         </ItemGroup>
         <ItemGroup title="Chat">
           {history.length === 0 && <p>(zatiaľ žiadna správa)</p>}
           {history.map((child, index) => (
             <div key={child.claim_id}>
-              <h4>
+              <h3>
                 <span className="text-primary">{child.sort_name}</span> {formatDatetime(child.date)}
-              </h4>
+              </h3>
               <p>{child.text}</p>
               {index + 1 !== history.length && <hr />}
             </div>

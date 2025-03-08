@@ -1,26 +1,25 @@
 import { IonButtons, IonContent } from "@ionic/react";
-import classNames from "classnames";
 import { useHistory } from "react-router-dom";
 
-import { Header, ItemGroup, PrimaryButton } from "@/components/ui/Design";
-import { FinancesApi } from "@/utils/api";
+import { ColoredValue, Header, ItemGroup, PrimaryButton, Refresher, SmallSuccess, SmallWarning, Spacing } from "@/components/ui/Design";
+import { FinancesApi, FinancesEnum } from "@/utils/api";
 import { lazyDate, stripTags } from "@/utils/format";
 import Content from "../controllers/Content";
 
 export default () => <Content Render={FinancesDetail} updateData={({ fin_id }) => FinancesApi.detail(fin_id)} errorText="Nepodarilo sa načítať dáta." />;
 
-const FinancesDetail = ({ content }) => {
+const FinancesDetail = ({ content, handleUpdate }) => {
   return (
     <>
       <Header title="Podrobnosti" defaultHref="/tabs/finances">
         <IonButtons slot="end"></IonButtons>
       </Header>
-      <FinancesDetailContent select={content} />
+      <FinancesDetailContent select={content} handleUpdate={handleUpdate} />
     </>
   );
 };
 
-export const FinancesDetailContent = ({ select, onClose }) => {
+export const FinancesDetailContent = ({ select, onClose, handleUpdate }) => {
   const router = useHistory();
 
   const handleClick = (event) => {
@@ -31,42 +30,53 @@ export const FinancesDetailContent = ({ select, onClose }) => {
   return (
     <>
       <IonContent>
+        <Refresher handleUpdate={handleUpdate} />
         {select !== null && (
           <>
-            <ItemGroup title="Transakcia">
-              <h4>Suma:</h4>
-              <ColoredValue value={select.amount} className="text-4xl" />
-              <hr />
-              <h4>Dátum:</h4>
-              <p>{lazyDate(select.date)}</p>
-              <hr />
-              <h4>Poznámka:</h4>
-              <p>{stripTags(select.note) || "-"}</p>
-              <hr />
-              <h4>Autor:</h4>
-              <p>{select.editor_sort_name}</p>
-            </ItemGroup>
-            <ItemGroup title="Udalosti">
-              <h4>Názov udalosti:</h4>
+            {select.storno === FinancesEnum.STORNO_ACTIVE && (
+              <ItemGroup title="Storno">
+                <SmallWarning>Táto transakcia bolo stornovaná.</SmallWarning>
+                <br />
+                <h3>Poznámka:</h3>
+                <p>{select.storno_note}</p>
+                <br />
+                <h3>Stornované členom:</h3>
+                <p>{select.storno_sort_name}</p>
+                <br />
+                <h3>Dátum:</h3>
+                <p>{lazyDate(select.storno_date)}</p>
+              </ItemGroup>
+            )}
+            <ItemGroup title="Udalosť">
+              <h3>Názov udalosti:</h3>
               <p>{select.race_name || "-"}</p>
-              <hr />
-              <h4>Dátum udalosti:</h4>
+              <br />
+              <h3>Dátum udalosti:</h3>
               <p>{select.race_date ? lazyDate(select.race_date) : "-"}</p>
             </ItemGroup>
+            <ItemGroup title="Transakcia">
+              <h3>Suma:</h3>
+              <ColoredValue value={select.amount} className="text-4xl" />
+              <br />
+              <h3>Dátum:</h3>
+              <p>{lazyDate(select.date)}</p>
+              <br />
+              <h3>Poznámka:</h3>
+              <p>{stripTags(select.note) || "-"}</p>
+              <br />
+              <h3>Autor:</h3>
+              <p>{select.editor_sort_name}</p>
+            </ItemGroup>
             <ItemGroup title="Reklamácia">
-              <PrimaryButton onClick={handleClick}>Reklamovať</PrimaryButton>
+              <Spacing>
+                {select.claim === FinancesEnum.CLAIM_OPENED && <SmallWarning>Reklamácia je otvorená.</SmallWarning>}
+                {select.claim === FinancesEnum.CLAIM_CLOSED && <SmallSuccess>Reklamácia bola uzatvorená.</SmallSuccess>}
+                <PrimaryButton onClick={handleClick}>Podrobnosti</PrimaryButton>
+              </Spacing>
             </ItemGroup>
           </>
         )}
       </IonContent>
     </>
-  );
-};
-
-const ColoredValue = ({ value, className, ...props }) => {
-  return (
-    <span className={classNames(value >= 0 ? "text-emerald-500" : "text-error", className)} {...props}>
-      {value}
-    </span>
   );
 };

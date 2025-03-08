@@ -1,4 +1,4 @@
-import { Drawer, Header, Input, ItemGroup, List, PrimaryButton, SmallWarning, Toggle } from "@/components/ui/Design";
+import { Drawer, Header, Input, ItemGroup, PrimaryButton, SmallWarning, Spacing, Toggle } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
 import { Notifications } from "@/utils/notify";
@@ -130,13 +130,13 @@ const Notify = ({ content }) => {
               Upozorniť ma na koniec termínu prihlášok
             </Toggle>
             <Drawer active={state.send_races}>
-              <List>
+              <Spacing>
                 <Input name="days_before" value={state.days_before} label={`Koľko dní pred termínom ma upozorniť (${state.days_before_min} - ${state.days_before_max})`} type="number" required />
                 <p>Upozorniť ma na tieto typy pretekov:</p>
                 <BitflagCheckboxes content={state.race_types} name="race_types[]" />
                 <p>Upozorniť ma na preteky z tohto rebríčka:</p>
                 <BitflagCheckboxes content={state.rankings} name="rankings[]" />
-              </List>
+              </Spacing>
             </Drawer>
           </ItemGroup>
           <ItemGroup title="Zmeny termínu">
@@ -163,18 +163,18 @@ const Notify = ({ content }) => {
           <ItemGroup title="Pokročilé">
             <SmallWarning>Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email.</SmallWarning>
             <br />
-            <List>
+            <Spacing>
               <Toggle name="send_internal_entry_expired" checked={state.send_internal_entry_expired} disabled={!Storage.pull().policies.policy_regs}>
                 Upozorniť ma, keď uplynul interný termín
               </Toggle>
               <Toggle name="send_member_minus" checked={state.send_member_minus} disabled={!Storage.pull().policies.policy_fin}>
                 Upozorniť ma na členov, ktorí sa na účte dostali do mínusu
               </Toggle>
-            </List>
+            </Spacing>
           </ItemGroup>
-          <List innerPadding>
+          <Spacing innerPadding>
             <PrimaryButton onClick={handleSubmit}>Zmeniť</PrimaryButton>
-          </List>
+          </Spacing>
         </form>
       </IonContent>
     </IonPage>

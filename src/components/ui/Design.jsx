@@ -18,7 +18,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import classNames from "classnames";
-import { alertCircle, checkmark, chevronForward, close, openOutline, sad, warning } from "ionicons/icons";
+import { alertCircle, checkmarkCircleOutline, chevronForward, closeCircleOutline, openOutline, sad, warning } from "ionicons/icons";
 import { forwardRef, useEffect, useRef, useState } from "react";
 
 export function Item({ children, className, innerPadding, ...props }) {
@@ -34,7 +34,7 @@ export function ItemGroup({ children, title, subtitle }) {
     <div className="border-outline-variant border-b p-4">
       {(title || subtitle) && (
         <div className="mb-2">
-          <h3 className="text-on-background font-semibold">{title}</h3>
+          <h4 className="text-on-background font-semibold">{title}</h4>
           <p>{subtitle}</p>
         </div>
       )}
@@ -57,7 +57,7 @@ export function Accordion({ children, title, subtitle }) {
   );
 }
 
-export function List({ children, innerPadding, topPadding, className, props }) {
+export function Spacing({ children, innerPadding, topPadding, className, props }) {
   return (
     <div className={classNames("flex flex-col gap-y-4", innerPadding && "p-4", topPadding && "pt-4", className)} {...props}>
       {children}
@@ -107,7 +107,7 @@ export function PrimaryButton({ children, type, className, ...props }) {
   );
 }
 
-export function Transparent({ children, type, className, ...props }) {
+export function TransparentButton({ children, type, className, ...props }) {
   // use w-full instead expand="full" to preserve round corners
   return (
     <IonButton fill="clear" className={classNames("m-0 w-full", className)} type={type ?? "button"} {...props}>
@@ -226,8 +226,8 @@ export const Refresher = ({ handleUpdate }) => {
   );
 };
 
-export const BooleanIcon = ({ value, ...props }) => {
-  return <IonIcon className={value ? "text-success" : "text-error"} icon={value ? checkmark : close} {...props} />;
+export const BooleanIcon = ({ value, className, ...props }) => {
+  return <IonIcon className={classNames("align-middle", value ? "text-success" : "text-error", className)} icon={value ? checkmarkCircleOutline : closeCircleOutline} {...props} />;
 };
 
 export const SmallWarning = ({ children }) => {
@@ -239,12 +239,38 @@ export const SmallWarning = ({ children }) => {
   );
 };
 
+export const SmallSuccess = ({ children }) => {
+  return (
+    <div className="bg-success-container grid grid-cols-[auto_1fr] gap-4 rounded-lg p-4">
+      <IonIcon icon={checkmarkCircleOutline} className="text-on-success-container self-center text-2xl" />
+      <p>{children}</p>
+    </div>
+  );
+};
+
+export const SmallError = ({ children }) => {
+  return (
+    <div className="bg-error-container grid grid-cols-[auto_1fr] gap-4 rounded-lg p-4">
+      <IonIcon icon={closeCircleOutline} className="text-on-error-container self-center text-2xl" />
+      <p>{children}</p>
+    </div>
+  );
+};
+
+export const ColoredValue = ({ value, className, ...props }) => {
+  return (
+    <span className={classNames(value >= 0 ? "text-success" : "text-error", className)} {...props}>
+      {value}
+    </span>
+  );
+};
+
 export const SadFace = ({ children, title = "", subtitle = "" }) => {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
         <IonIcon className="text-primary text-4xl" icon={sad} />
-        <h3 className="text-primary font-bold">{title}</h3>
+        <h4 className="text-primary font-bold">{title}</h4>
         <p className="text-sm">{subtitle}</p>
         {children}
       </div>
@@ -257,7 +283,7 @@ export const Error = ({ children, title = "", subtitle = "", reload = false }) =
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
         <IonIcon className="text-error text-4xl" icon={alertCircle} />
-        <h3 className="text-error font-bold">{title}</h3>
+        <h4 className="text-error font-bold">{title}</h4>
         {subtitle && <p className="text-sm">{subtitle}</p>}
         {children && <div className="max-h-36 overflow-auto text-sm">{children}</div>}
         {reload && <p className="text-sm">Ak chceš skúsiť znova, potiahni zhora nadol.</p>}

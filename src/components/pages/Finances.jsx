@@ -1,9 +1,8 @@
 import { IonBackButton, IonButton, IonButtons, IonContent, IonIcon, IonModal, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
-import classNames from "classnames";
 import { refresh } from "ionicons/icons";
 import { useState } from "react";
 
-import { Error, Header, Item, ItemGroup, Refresher, Select } from "@/components/ui/Design";
+import { ColoredValue, Error, Header, Item, ItemGroup, Refresher, Select } from "@/components/ui/Design";
 import { FinancesApi } from "@/utils/api";
 import { lazyDate, stripTags } from "@/utils/format";
 import { Storage } from "@/utils/storage";
@@ -39,13 +38,13 @@ const Finances = ({ content: [overview, history], handleUpdate }) => {
             ))}
           </Select>
         </Item>
-        <FinancesOf overview={overview.find((child) => child.user_id == current)} history={history.filter((child) => child.user_id == current)} />
+        <FinancesOf overview={overview.find((child) => child.user_id == current)} history={history.filter((child) => child.user_id == current)} handleUpdate={handleUpdate} />
       </IonContent>
     </IonPage>
   );
 };
 
-const FinancesOf = ({ overview, history }) => {
+const FinancesOf = ({ overview, history, handleUpdate }) => {
   const [select, setSelect] = useState(null);
 
   if (overview === undefined) {
@@ -91,16 +90,8 @@ const FinancesOf = ({ overview, history }) => {
             <IonBackButton onClick={handleClose} defaultHref="#" />
           </IonButtons>
         </Header>
-        <FinancesDetailContent select={select} onClose={handleClose} />
+        <FinancesDetailContent select={select} onClose={handleClose} handleUpdate={handleUpdate} />
       </IonModal>
     </>
-  );
-};
-
-const ColoredValue = ({ value, className, ...props }) => {
-  return (
-    <span className={classNames(value >= 0 ? "text-success" : "text-error", className)} {...props}>
-      {value}
-    </span>
   );
 };
