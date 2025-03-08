@@ -1,4 +1,3 @@
-import { Capacitor } from "@capacitor/core";
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react";
 import { settings, trailSign } from "ionicons/icons";
 import { useEffect } from "react";
