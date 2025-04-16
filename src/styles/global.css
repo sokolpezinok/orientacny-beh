@@ -1,12 +1,12 @@
 @import "@fontsource-variable/inter";
 @import "@ionic/react/css/core.css";
 @import "@ionic/react/css/structure.css";
+/*
+TEST: REMOVED THIS GARBAGE
 @import "@ionic/react/css/padding.css";
 @import "@ionic/react/css/float-elements.css";
 @import "@ionic/react/css/text-alignment.css";
 @import "@ionic/react/css/flex-utils.css";
-/*
-TEST WITHOUT NORMALIZE
 @import "@ionic/react/css/normalize.css";
 */
 
@@ -83,13 +83,19 @@ ion-button {
   margin-inline: 0;
 }
 
+ion-button[shape="circle"] {
+  --border-radius: 50%;
+  width: 56px;
+  height: 56px;
+}
+
 ion-buttons + ion-title {
   margin-left: 0px;
 }
 
-ion-accordion-group {
+/* ion-accordion-group {
   @apply border-outline-variant border-b;
-}
+} */
 
 ion-accordion-group ion-accordion:last-child div[slot="content"] {
   @apply border-none;
@@ -101,7 +107,8 @@ ion-select::part(icon) {
 }
 
 ion-item {
-  --border-color: var(--color-outline-variant);
+  /* --border-color: var(--color-outline-variant); */
+  --border-color: transparent;
 }
 
 ion-checkbox {
@@ -113,6 +120,19 @@ ion-toggle {
   --track-background: var(--color-outline-variant);
   --handle-background-checked: var(--color-primary);
   --track-background-checked: var(--color-inverse-primary);
+}
+
+ion-loading {
+  --background: var(--color-surface-container) !important;
+}
+
+ion-searchbar {
+  --icon-color: var(--color-on-surface) !important;
+  --cancel-button-color: var(--color-on-surface) !important;
+  --clear-button-color: var(--color-on-surface) !important;
+  --placeholder-color: var(--color-on-surface) !important;
+  --color: var(--color-on-surface) !important;
+  --box-shadow: none !important;
 }
 
 .has-focus div[slot="label"],
@@ -130,15 +150,21 @@ ion-toggle {
  */
 
 h1 {
-  @apply text-primary;
+  @apply text-primary text-3xl font-bold;
 }
-h2,
-h3 {
+h2 {
+  @apply text-on-surface text-2xl font-bold;
+}
+h4 {
   @apply text-on-surface-variant;
 }
 p,
 .alert-message {
   @apply !text-on-surface space-y-4;
+}
+small {
+  font-size: inherit;
+  @apply text-on-surface-variant;
 }
 a {
   @apply text-primary cursor-pointer underline;
@@ -162,7 +188,7 @@ table.table thead th {
 }
 table.table tbody td,
 table.table thead th {
-  @apply border-outline-variant border-b px-4 py-2;
+  @apply border-outline-variant border-b p-4;
 }
 table.table tbody tr:last-child td {
   @apply border-none;

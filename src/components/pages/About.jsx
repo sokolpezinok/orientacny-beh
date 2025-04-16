@@ -1,21 +1,11 @@
 import { IonAccordionGroup, IonContent, IonPage } from "@ionic/react";
 
-import { Accordion, Anchor, Header, Item } from "@/components/ui/Design";
+import { Accordion, Anchor, Header, ItemGroup } from "@/components/ui/Design";
 import License from "@/components/ui/License";
 import { apiVersion, appBuildVersion, debug } from "@/manifest.js";
 import { Storage } from "@/utils/storage";
-import { Device } from "@capacitor/device";
-import { useEffect, useState } from "react";
 
 const About = () => {
-  const [deviceId, setDeviceId] = useState("-");
-
-  useEffect(() => {
-    (async () => {
-      setDeviceId((await Device.getId()).identifier || "-");
-    })();
-  }, []);
-
   return (
     <IonPage>
       <Header defaultHref="/tabs/settings" title="O aplikácii" />
@@ -33,29 +23,16 @@ const About = () => {
             <License />
           </Accordion>
         </IonAccordionGroup>
-        <Item>
-          <h2>Prihlásený klub</h2>
-          <p>{`${Storage.pull().club.fullname} (${Storage.pull().club.shortcut})`}</p>
-        </Item>
-        <Item>
-          <h2>Prihlásený používateľ</h2>
-          <p>{Storage.userId}</p>
-        </Item>
-        <Item>
-          <h2>Verzia</h2>
-          <p>
-            {appBuildVersion}
-            {debug && " (debug)"}
-          </p>
-        </Item>
-        <Item>
-          <h2>API Verzia</h2>
-          <p>{`${apiVersion}`}</p>
-        </Item>
-        <Item>
-          <h2>Device ID</h2>
-          <p>{deviceId}</p>
-        </Item>
+        <ItemGroup title="Prihlásený klub">
+          {Storage.pull().club.fullname} (${Storage.pull().club.shortcut})
+        </ItemGroup>
+        <ItemGroup title="Prihlásený používateľ">{Storage.pull().userId}</ItemGroup>
+        <ItemGroup title="Verzia">
+          {appBuildVersion}
+          {debug && " (debug)"}
+        </ItemGroup>
+        <ItemGroup title="Verzia API">{apiVersion}</ItemGroup>
+        <ItemGroup title="Device ID">{Storage.pull().device}</ItemGroup>
       </IonContent>
     </IonPage>
   );

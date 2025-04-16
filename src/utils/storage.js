@@ -8,15 +8,15 @@ export class Storage {
 
     // user preferences
     preferences: {
-      allowNotify: false,
+      activeNotify: false,
       hasAcceptedTerms: false,
     },
 
     // access token
     accessToken: null,
-    tokenExpiration: 0,
 
     userId: null,
+    device: null,
 
     // policy of the user
     policies: {
@@ -39,8 +39,6 @@ export class Storage {
       emailadr: null,
     },
   });
-
-  static userId;
 
   // a name that is used for secure storage
   static profile = "default";
@@ -96,9 +94,6 @@ export class Storage {
       alert("An error occurred while accessing storage, clearing storage. " + error);
       await this.load_clean();
     }
-
-    // commonly used keys
-    this.userId = this.pull().userId;
   }
 
   static {

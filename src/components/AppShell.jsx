@@ -1,12 +1,13 @@
-import ModalContextProvider from "@/components/ui/Modals";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { IonApp, IonPage, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
+import { Suspense, useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Redirect, Route } from "react-router-dom";
 import Tabs from "./Tabs";
 import Login from "./pages/Login";
-import { Error } from "./ui/Design";
+import { Error, SpinnerPage } from "./ui/Design";
+import { useModal } from "./ui/Modals";
 
 setupIonicReact({});
 
@@ -36,10 +37,17 @@ function Fallback({ error }) {
 }
 
 const AppShell = () => {
+  const { alertModal } = useModal();
+
+  useEffect(() => {
+    // this is used in api.js where we can't use a hook
+    window.alert = alertModal;
+  }, []);
+
   return (
     <IonApp>
-      <ModalContextProvider>
-        <ErrorBoundary FallbackComponent={Fallback}>
+      <ErrorBoundary FallbackComponent={Fallback}>
+        <Suspense fallback={<SpinnerPage />}>
           <IonReactRouter>
             <IonRouterOutlet>
               <Route exact path="/login" component={Login} />
@@ -49,8 +57,8 @@ const AppShell = () => {
               <Route exact={false} path="/tabs" component={Tabs} />
             </IonRouterOutlet>
           </IonReactRouter>
-        </ErrorBoundary>
-      </ModalContextProvider>
+        </Suspense>
+      </ErrorBoundary>
     </IonApp>
   );
 };

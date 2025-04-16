@@ -1,32 +1,34 @@
 import { Share } from "@capacitor/share";
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonSelectOption } from "@ionic/react";
+import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
 import classNames from "classnames";
 import { bus, calendar, home, location, refresh, shareSocial } from "ionicons/icons";
 import { useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 import { Anchor, BooleanIcon, Drawer, Header, Input, Item, ItemGroup, ItemLink, PrimaryButton, ReadMore, Refresher, SadFace, Select, Spacing, Toggle, TransparentButton } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
-import { getFirstEntry, getLastEntry, isFirstEntryExpired, isLastEntryExpired, sort } from "@/utils";
+import { EntriesHelper, sort } from "@/utils";
 import { RaceApi, RaceEnum } from "@/utils/api";
 import { lazyDate, lazyDates } from "@/utils/format";
 import { category, group } from "@/utils/icons";
 import { Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={RaceDetail} updateData={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])} errorText="Nepodarilo sa načítať preteky." />;
+export default () => <Content Render={RaceDetail} fetchContent={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])} errorText="Nepodarilo sa načítať preteky." />;
 
-const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
-  const { race_id } = useParams();
-  const { smartModal, alertModal } = useModal();
-
+const RaceDetail = ({ content: [detail, relations], onUpdate }) => {
   const [select, setSelect] = useState(null);
+  const router = useHistory();
+  const { race_id } = useParams();
+  const { actionFeedbackModal, alertModal } = useModal();
 
   const handleClose = () => setSelect(null);
 
+  const isUserSignedIn = relations.find((child) => child.user_id == Storage.pull().userId).is_signed_in;
   const childrenSignedIn = relations.filter((child) => child.is_signed_in);
+  const entries = new EntriesHelper(detail.entries);
 
-  const handleShare = smartModal(async () => {
+  const handleShare = actionFeedbackModal(async () => {
     const { value } = await Share.canShare();
     if (!value) throw "Zdielanie nie je dostupné.";
 
@@ -44,27 +46,18 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
       return "Preteky sú zrušené";
     }
 
-    if (isLastEntryExpired(detail.entries)) {
+    if (entries.isExpired()) {
       return "Prihlasovanie skončilo";
     }
 
-    const iAmSignedIn = relations.find((child) => child.user_id == Storage.userId).is_signed_in;
-    const firstExpired = isFirstEntryExpired(detail.entries);
-    const currentEntry = <span className="text-primary">{lazyDate(firstExpired ? getLastEntry(detail.entries) : getFirstEntry(detail.entries))}</span>;
-
-    if (firstExpired && !iAmSignedIn) {
-      return (
-        <>
-          <p>Vypršal prvý termín prihlásenia, budú účtované poplatky.</p>
-          <p>Posledný termín: {currentEntry}</p>
-        </>
-      );
+    if (isUserSignedIn) {
+      return "Zmeniť / Odhlásiť sa";
     }
 
     return (
-      <>
-        {iAmSignedIn ? "Zmeniť / Odhlásiť sa" : "Prihlásiť sa"} do {currentEntry}
-      </>
+      <p>
+        Prihlásiť sa do <span className="text-primary">{lazyDate(entries.currentEntry())}</span> ({entries.currentEntryIndex()}. termín)
+      </p>
     );
   };
 
@@ -74,12 +67,12 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
       return;
     }
 
-    if (isLastEntryExpired(detail.entries)) {
+    if (entries.isExpired()) {
       alertModal("Prihlásenie skončilo", "Vypršal posledný možný termín na prihlásenie.");
       return;
     }
 
-    setSelect(user_id || Storage.userId);
+    setSelect(user_id || Storage.pull().userId);
   };
 
   return (
@@ -87,7 +80,7 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
       <IonHeader>
         <Header defaultHref="/tabs/races" title="Podrobnosti">
           <IonButtons slot="primary">
-            <IonButton onClick={handleUpdate}>
+            <IonButton onClick={onUpdate}>
               <IonIcon slot="icon-only" icon={refresh} />
             </IonButton>
             <IonButton onClick={handleShare}>
@@ -97,7 +90,7 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
         </Header>
       </IonHeader>
       <IonContent>
-        <Refresher handleUpdate={handleUpdate} />
+        <Refresher onUpdate={onUpdate} />
         <ItemGroup>
           <Spacing>
             <h2 className={classNames("text-2xl font-bold", detail.cancelled && "line-through")}>{detail.name}</h2>
@@ -148,17 +141,17 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
                     <th className="w-1/2">Kategória</th>
                     <th>{<IonIcon icon={bus} />}</th>
                     <th>{<IonIcon icon={home} />}</th>
-                    {/* <th /> */}
+                    <th />
                   </tr>
                 </thead>
                 <tbody>
                   {sort(detail.everyone, (child) => child.surname).map((child) => (
-                    <tr key={child.user_id} className="ion-activatable relative">
+                    <tr key={child.user_id} className="ion-activatable relative" onClick={() => router.push(`/tabs/users/${child.user_id}`)}>
                       <td>{`${child.name} ${child.surname}`}</td>
                       <td>{child.category}</td>
                       <td>{<BooleanIcon value={child.transport} />}</td>
                       <td>{<BooleanIcon value={child.accommodation} />}</td>
-                      {/* <td>{<IonRippleEffect />}</td> */}
+                      <td>{<IonRippleEffect />}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -178,7 +171,7 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
             </IonButtons>
           </Header>
           <IonContent>
-            <Refresher handleUpdate={handleUpdate} />
+            <Refresher onUpdate={onUpdate} />
             <Item>
               <Select label="Člen" value={select} onIonChange={(event) => setSelect(event.target.value)} required>
                 {relations.map((child) => (
@@ -194,7 +187,7 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
                 user={relations.find((child) => child.user_id == select)}
                 onClose={() => {
                   handleClose();
-                  handleUpdate();
+                  onUpdate();
                 }}
               />
             )}
@@ -206,11 +199,11 @@ const RaceDetail = ({ content: [detail, relations], handleUpdate }) => {
 };
 
 const RaceSignOf = ({ detail, user, onClose }) => {
-  const { smartModal } = useModal();
+  const { actionFeedbackModal } = useModal();
   const ref = useRef(null);
   const [sharedTransport, setSharedTransport] = useState(user.transport);
 
-  const handleSignin = smartModal(async () => {
+  const handleSignin = actionFeedbackModal(async () => {
     const els = ref.current.elements;
     const collected = {
       category: els.category.value.trim(),
@@ -229,7 +222,7 @@ const RaceSignOf = ({ detail, user, onClose }) => {
     return "Prihlásenie prebehlo úspešne.";
   }, "Nepodarilo sa prihlásiť.");
 
-  const handleSignout = smartModal(async () => {
+  const handleSignout = actionFeedbackModal(async () => {
     await RaceApi.signout(detail.race_id, user.user_id);
 
     onClose();

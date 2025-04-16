@@ -5,12 +5,6 @@ import { SystemApi } from "./api";
 import { Storage } from "./storage";
 
 export class Notifications {
-  static checkSupport = () => {
-    if (!Capacitor.isNativePlatform) {
-      throw "Funkcia nie je podporovaná pre tento typ zariadenia.";
-    }
-  };
-
   static requestPermissions = async () => {
     let status = await FirebaseMessaging.checkPermissions();
 
@@ -23,31 +17,39 @@ export class Notifications {
     }
   };
 
-  static register = async (state) => {
-    // state is already changed, no need to change
-    if (state === Storage.pull().preferences.allowNotify) {
+  static register = async () => {
+    if (!Capacitor.isNativePlatform()) {
       return;
     }
 
-    this.checkSupport();
+    await this.requestPermissions();
 
-    if (state) {
-      await this.requestPermissions();
+    const { token } = await FirebaseMessaging.getToken();
+    await FirebaseMessaging.subscribeToTopic({ topic: Storage.pull().club.clubname });
+    await SystemApi.fcm_token_update(token);
+    await Storage.push((s) => {
+      s.preferences.activeNotify = true;
+    });
+  };
 
-      const result = await FirebaseMessaging.getToken();
-      await FirebaseMessaging.subscribeToTopic({ topic: Storage.pull().club.clubname });
-      await SystemApi.fcm_token_update(result.token);
-      await Storage.push((s) => {
-        s.preferences.allowNotify = true;
-      });
-    } else {
-      await FirebaseMessaging.unsubscribeFromTopic({ topic: Storage.pull().club.clubname });
-      await FirebaseMessaging.deleteToken();
-      await SystemApi.fcm_token_delete();
-      await Storage.push((s) => {
-        s.preferences.allowNotify = false;
-      });
+  static unregister = async () => {
+    if (!Capacitor.isNativePlatform()) {
+      return;
     }
+
+    await FirebaseMessaging.unsubscribeFromTopic({ topic: Storage.pull().club.clubname });
+    await SystemApi.fcm_token_delete();
+    await Storage.push((s) => {
+      s.preferences.activeNotify = false;
+    });
+  };
+
+  static destroy = async () => {
+    if (!Capacitor.isNativePlatform()) {
+      return;
+    }
+
+    await FirebaseMessaging.deleteToken();
   };
 
   static notify = ({ id, data, title, body, ...options }) =>

@@ -33,7 +33,7 @@ export const debug = true;
 // do NOT add trailing slash at the end //
 //======================================//
 export const apiDomain = "members.eob.cz";
-export const apiVersion = 2;
+export const apiVersion = 3;
 export const apiServer = `https://members.eob.cz/${debug ? "api/debug" : "api"}/${apiVersion}`;
 
 // module.exports = {

@@ -1,24 +1,16 @@
 import { Header, ItemLink } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
-import { Notifications } from "@/utils/notify";
-import { Storage } from "@/utils/storage";
-import { Capacitor } from "@capacitor/core";
+import { SystemApi } from "@/utils/api";
 import { IonContent, IonHeader, IonPage } from "@ionic/react";
 
 const Settings = () => {
-  const { confirmModal, smartModal } = useModal();
+  const { confirmModal, actionFeedbackModal } = useModal();
 
-  const handleLogout = smartModal(async (event) => {
+  const handleLogout = actionFeedbackModal(async (event) => {
     const surety = await confirmModal("Naozaj sa chceš odhlásiť?");
     if (!surety) return event.preventDefault();
 
-    if (Capacitor.isNativePlatform()) {
-      await Notifications.register(false);
-    }
-
-    await Storage.push((s) => {
-      s.isLoggedIn = false;
-    });
+    await SystemApi.logout();
   }, "Nepodarilo sa ťa odhlásiť.");
 
   return (
@@ -29,6 +21,7 @@ const Settings = () => {
       <IonContent>
         <ItemLink routerLink="/tabs/settings/profile">Profil</ItemLink>
         <ItemLink routerLink="/tabs/settings/notify">Upozornenia</ItemLink>
+        <ItemLink routerLink="/tabs/settings/devices">Moje zariadenia</ItemLink>
         <ItemLink routerLink="#" onClick={handleLogout}>
           Odhlásiť sa
         </ItemLink>

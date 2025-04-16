@@ -1,65 +1,54 @@
-import { useIonAlert } from "@ionic/react";
-import { createContext, useContext } from "react";
+// import { loadingController } from "@ionic/core";
+import { useIonAlert, useIonLoading } from "@ionic/react";
 
-const ModalContext = createContext(null);
+const CancelButton = { text: "Cancel", role: false };
+const OKButton = { text: "OK", role: true };
 
-const ModalContextProvider = ({ children }) => {
-  const [presentAlert] = useIonAlert();
-
-  return <ModalContext.Provider value={presentAlert}>{children}</ModalContext.Provider>;
-};
-export default ModalContextProvider;
+const buttonDismissed = (event) => event.detail.role && event.detail.role !== "backdrop";
 
 export const useModal = () => {
-  const presentAlert = useContext(ModalContext);
+  const [presentAlert] = useIonAlert();
+  const [presentLoading, dismissLoading] = useIonLoading();
 
-  // buttons
-  const CancelButton = { text: "Cancel", role: false };
-  const OKButton = { text: "OK", role: true };
-
-  // wrappers
-  const modalWrapper = ({ header, message, ...options }) =>
-    new Promise((resolve) =>
-      presentAlert({
+  // wrapper
+  const modal = ({ header, message, ...options }) => {
+    return new Promise((onDidDismiss) => {
+      return presentAlert({
         header: header && header + "",
         message: message && message + "",
-        onDidDismiss: resolve,
+        // z-index of loader must be increased to avoid covering up occasional alerts
+        onWillPresent: (event) => (event.target.style.zIndex -= -20000),
+        onDidDismiss,
         ...options,
-      })
-    );
-  const buttonDismissed = (event) => event.detail.role && event.detail.role !== "backdrop";
-
-  // the modals
-  const alertModal = (header, message = null) => modalWrapper({ header: header || message, message: header && message, buttons: [OKButton] }).then(buttonDismissed);
-  const errorModal = (header, message = null) => modalWrapper({ header: header || message, message: header && message, buttons: [OKButton] }).then(buttonDismissed);
-  const confirmModal = (header, message = null) => modalWrapper({ header: header || message, message: header && message, buttons: [CancelButton, OKButton] }).then(buttonDismissed);
-
-  // smart modal that wraps async function
-  const smartModal = (func, errorHeader = null, alertHeader = null) => {
-    return (...args) =>
-      func(...args)
-        .then((value) => value && alertModal(alertHeader, value))
-        .catch((value) => value && errorModal(errorHeader, value));
+      });
+    });
   };
 
-  // smart modal that wraps sync function
-  const smartModalSync =
-    (func, errorHeader = null, alertHeader = null) =>
-    (...args) => {
-      try {
-        const value = func(...args);
-        return value && alertModal(value, alertHeader);
-      } catch (value) {
-        return value && errorModal(value, errorHeader);
-      }
-    };
+  // the modals
+  const alertModal = (header, message = null) => modal({ header: header || message, message: header && message, buttons: [OKButton] }).then(buttonDismissed);
+  const errorModal = (header, message = null) => modal({ header: header || message, message: header && message, buttons: [OKButton] }).then(buttonDismissed);
+  const confirmModal = (header, message = null) => modal({ header: header || message, message: header && message, buttons: [CancelButton, OKButton] }).then(buttonDismissed);
 
-  // return modals
+  // smart modal that wraps async function
+  const actionFeedbackModal = (func, errorHeader = null, alertHeader = null) => {
+    return async (...args) => {
+      await presentLoading();
+
+      try {
+        const value = await func(...args);
+        value && alertModal(alertHeader, value);
+      } catch (error) {
+        error && errorModal(errorHeader, error);
+      }
+
+      await dismissLoading();
+    };
+  };
+
   return {
     alertModal,
     errorModal,
     confirmModal,
-    smartModal,
-    smartModalSync,
+    actionFeedbackModal,
   };
 };

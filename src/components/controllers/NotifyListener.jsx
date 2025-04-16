@@ -12,9 +12,9 @@ const NotifyListener = ({}) => {
   // listens for push notifications
 
   const router = useHistory();
-  const { smartModal } = useModal();
+  const { actionFeedbackModal } = useModal();
 
-  const handleNotifyActionPerformed = smartModal(async (event) => {
+  const handleNotifyActionPerformed = actionFeedbackModal(async (event) => {
     const data = event?.notification?.data || event?.notification?.extra;
     const type = data?.event ?? NotifyEvents.BASIC;
     const value = data?.value;
@@ -30,7 +30,7 @@ const NotifyListener = ({}) => {
     router.push(`/tabs/races/${value}`);
   }, "Nepodarilo sa otvoriť notifikáciu.");
 
-  const handleNotifyReceived = smartModal(async (event) => {
+  const handleNotifyReceived = actionFeedbackModal(async (event) => {
     await Notifications.notify({
       title: event.notification.title,
       body: event.notification.body,
@@ -39,7 +39,7 @@ const NotifyListener = ({}) => {
     });
   }, "Nepodarilo sa prijať notifikáciu.");
 
-  const handleTokenReceived = smartModal(async (event) => {
+  const handleTokenReceived = actionFeedbackModal(async (event) => {
     await SystemApi.fcm_token_update(event.token);
   }, "Nepodarilo sa aktualizovať registračný token notifikácií.");
 
@@ -50,7 +50,7 @@ const NotifyListener = ({}) => {
       FirebaseMessaging.addListener("tokenReceived", handleTokenReceived);
       LocalNotifications.addListener("localNotificationActionPerformed", handleNotifyActionPerformed);
 
-      return smartModal(async () => {
+      return actionFeedbackModal(async () => {
         await FirebaseMessaging.removeAllListeners();
         await LocalNotifications.removeAllListeners();
       }, "Nastala chyba pri vypínaní notifikácií. Skús aplikáciu reštartovať.");

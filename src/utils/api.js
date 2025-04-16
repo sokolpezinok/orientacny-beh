@@ -2,24 +2,24 @@ import { Device } from "@capacitor/device";
 
 import { apiServer, appBuildVersion } from "@/manifest.js";
 import { Storage } from "@/utils/storage";
-import { isTokenExpired, unixTime } from ".";
+import { Notifications } from "./notify";
 
 const defaultServer = () => `${apiServer}/${Storage.pull().club.clubname}`;
-const getDeviceId = async () => (await Device.getId()).identifier || "";
-const getDeviceName = async () => (await Device.getInfo()).name || "";
+const deviceName = (await Device.getInfo()).name || "";
 
 // server api packaged into a class
 class Api {
-  static async fetch(part, method, { data = null, authorize = false, headers = {}, server = null } = {}) {
+  static async fetch(part, method, { data = null, auth = false, headers = {}, server = null, checks = true } = {}) {
     if (!window.navigator.onLine) {
       throw "Vyzerá to tak, že si offline. Skontroluj prosím pripojenie na internet.";
     }
 
-    if (isTokenExpired()) {
-      await Storage.push((s) => {
-        s.isLoggedIn = false;
-      });
-    }
+    // if (checks && isTokenExpired()) {
+    //   await Storage.push((s) => {
+    //     s.isLoggedIn = false;
+    //   });
+    //   throw "Prístup do aplikácie vypršal. Prihlás sa prosím znova.";
+    // }
 
     // these headers are required
     // DO NOT TOUCH
@@ -29,7 +29,7 @@ class Api {
       ...headers,
     };
 
-    if (authorize) {
+    if (auth) {
       headers.Authorization = "Bearer " + Storage.pull().accessToken;
     }
 
@@ -54,6 +54,14 @@ class Api {
         message += "\n\nChyba sa stala na serveri. Prosím, nahláste chybu administrátorom.";
       }
 
+      // reserved for going to login screen
+      if (response.status == 401) {
+        // this is used for displaying token related errors
+        alert("Prosím, prihlás sa znova.", message);
+        await SystemApi.logout();
+        return;
+      }
+
       throw message;
     }
 
@@ -63,115 +71,168 @@ class Api {
 
   static get = (part, options) => this.fetch(part, "GET", options);
   static post = (part, options) => this.fetch(part, "POST", options);
+  static delete = (part, options) => this.fetch(part, "DELETE", options);
 }
 
 export class GeneralApi {
   static clubs = () =>
     Api.get(`/clubs`, {
       server: apiServer,
+      // checks: false,
     });
 }
 
 export class UserApi {
-  static show = (user_id) => Api.get(`/user/${user_id}`);
+  static detail = (user_id) => Api.get(`/user/${user_id}`, { auth: true });
   static managing = (user_id) =>
     Api.get(`/user/${user_id}/managing`, {
-      authorize: true,
+      auth: true,
     });
-  static data = () =>
-    Api.get(`/user/`, {
-      authorize: true,
+  static profile = () =>
+    Api.get(`/user/profile`, {
+      auth: true,
     });
-  static data_update = (data) =>
-    Api.post(`/user/`, {
-      authorize: true,
+  static profile_update = (data) =>
+    Api.post(`/user/profile`, {
+      auth: true,
+      data,
+    });
+  static user_profile = (user_id) =>
+    Api.get(`/user/${user_id}/profile`, {
+      auth: true,
+    });
+  static user_profile_update = (user_id, data) =>
+    Api.post(`/user/${user_id}/profile`, {
+      auth: true,
       data,
     });
   static notify = () =>
     Api.get(`/user/notify`, {
-      authorize: true,
+      auth: true,
     });
   static notify_update = (data) =>
     Api.post(`/user/notify`, {
-      authorize: true,
+      auth: true,
       data,
     });
+  static list = () =>
+    Api.get(`/user/list`, {
+      auth: true,
+    });
+  static user_races = (user_id) =>
+    Api.get(`/user/${user_id}/races`, {
+      auth: true,
+    });
+  static user_devices = (user_id) =>
+    Api.get(`/user/${user_id}/devices`, {
+      auth: true,
+    });
+  static user_device = (device) => Api.get(`/user/device/${device}`, { auth: true });
+  static user_device_delete = (device) => Api.delete(`/user/device/${device}`, { auth: true });
+  static user_devices = (user_id) => Api.get(`/user/${user_id}/devices`, { auth: true });
+  static devices = () =>
+    Api.get(`/user/devices`, {
+      auth: true,
+    });
+  static user_notify = (user_id, { title, body, image }) =>
+    Api.post(`/user/${user_id}/notify`, {
+      auth: true,
+      data: { title, body, image },
+    });
+  static notify_everyone = () =>
+    Api.post(`/user/notify`, {
+      auth: true,
+      data: { title, body, image },
+    });
+  static statistics = () => Api.get(`/user/statistics`, { auth: true });
 }
 
 export class RaceApi {
   // returns url
-  static getRedirect = (race_id) => `${defaultServer}/race/${race_id}/redirect`;
+  static getRedirect = (race_id) => `${defaultServer()}/race/${race_id}/redirect`;
 
   // methods
   static list = () => Api.get(`/races`);
   static detail = (race_id) => Api.get(`/race/${race_id}`);
   static relations = (race_id) =>
     Api.get(`/race/${race_id}/relations`, {
-      authorize: true,
+      auth: true,
     });
   static signin = (race_id, user_id, data) =>
     Api.post(`/race/${race_id}/signin/${user_id}`, {
-      authorize: true,
+      auth: true,
       data,
     });
   static signout = (race_id, user_id) =>
     Api.post(`/race/${race_id}/signout/${user_id}`, {
-      authorize: true,
+      auth: true,
     });
   static notify = (race_id, { title, body, image }) =>
     Api.post(`/race/${race_id}/notify`, {
-      authorize: true,
+      auth: true,
       data: { title, body, image },
     });
 }
 
 export class FinancesApi {
-  static overview = () => Api.get(`/finances`, { authorize: true });
-  static history = () => Api.get(`/finances/history`, { authorize: true });
-  static detail = (fin_id) => Api.get(`/finances/${fin_id}`, { authorize: true });
-  static claim_history = (fin_id) => Api.get(`/finances/${fin_id}/claim/history`, { authorize: true });
-  static claim_message = (fin_id, message) => Api.post(`/finances/${fin_id}/claim/message`, { data: { message }, authorize: true });
-  static claim_close = (fin_id) => Api.post(`/finances/${fin_id}/claim/close`, { authorize: true });
+  static overview = () => Api.get(`/finances`, { auth: true });
+  static history = () => Api.get(`/finances/history`, { auth: true });
+  static detail = (fin_id) => Api.get(`/finances/${fin_id}`, { auth: true });
+  static claim_history = (fin_id) => Api.get(`/finances/${fin_id}/claim/history`, { auth: true });
+  static claim_message = (fin_id, message) => Api.post(`/finances/${fin_id}/claim/message`, { data: { message }, auth: true });
+  static claim_close = (fin_id) => Api.post(`/finances/${fin_id}/claim/close`, { auth: true });
+  static payment_update = (fin_id, data) => Api.post(`/finances/${fin_id}`, { auth: true, data });
+  static payments_import = (data) => Api.post(`/finances/import`, { auth: true, data });
 }
 
 export class SystemApi {
   static login = async ({ username, password, clubname }) => {
-    const { access_token, expiration, user_id, policies } = await Api.post(`/system/login`, {
-      data: { username, password },
+    const { access_token, device, user_id, policies } = await Api.post(`/system/login`, {
+      data: { username, password, app_version: appBuildVersion, device_name: deviceName },
       server: `${apiServer}/${clubname}`,
+      // checks: false,
     });
 
     if (!access_token) throw "Got invalid access token from server!";
-    if (expiration < unixTime()) throw "Invalid expiration time!" + expiration + " < " + Date.now();
 
     await Storage.push((s) => {
       s.accessToken = access_token;
-      s.tokenExpiration = expiration;
       s.userId = user_id;
+      s.device = device;
       s.policies = policies;
     });
   };
 
-  static fcm_token_update = async (token) => {
-    return await Api.post(`/system/fcm_token/update`, {
-      authorize: true,
-      data: { token, device: await getDeviceId() },
+  static logout = async () => {
+    await SystemApi.device_delete().catch((error) => console.warn(error));
+    await Notifications.destroy().catch((error) => console.warn(error));
+    await Storage.push((s) => {
+      s.isLoggedIn = false;
     });
   };
 
-  static fcm_token_delete = async () => {
-    return await Api.post(`/system/fcm_token/delete`, {
-      authorize: true,
-      data: { device: await getDeviceId() },
+  static fcm_token_update = (token) =>
+    Api.post(`/system/device/fcm_token`, {
+      auth: true,
+      data: { token },
     });
-  };
 
-  static heartbeat = async () => {
-    return await Api.post(`/system/heartbeat`, {
-      authorize: true,
-      data: { device: await getDeviceId(), device_name: await getDeviceName(), app_version: appBuildVersion },
+  static fcm_token_delete = (active) =>
+    Api.delete(`/system/device/fcm_token`, {
+      auth: true,
+      data: { active },
     });
-  };
+
+  static device_update = () =>
+    Api.post(`/system/device`, {
+      auth: true,
+      data: { device_name: deviceName, app_version: appBuildVersion },
+    });
+
+  static device_delete = () =>
+    Api.delete(`/system/device`, {
+      auth: true,
+    });
 }
 
 export class PolicyEnum {

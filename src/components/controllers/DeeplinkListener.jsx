@@ -10,9 +10,9 @@ const DeeplinkListener = ({}) => {
   // listen for deeplink open
 
   const router = useHistory();
-  const { smartModal } = useModal();
+  const { actionFeedbackModal } = useModal();
 
-  const handleDeeplink = smartModal(async (event) => {
+  const handleDeeplink = actionFeedbackModal(async (event) => {
     // expects url in format
     // https://members.eob.cz/api/spt/race/132
     // https://members.eob.cz/api/spt/race/132/redirect

@@ -1,34 +1,23 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonIcon, IonModal, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
-import { refresh } from "ionicons/icons";
+import { IonContent, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
 import { useState } from "react";
 
 import { ColoredValue, Error, Header, Item, ItemGroup, Refresher, Select } from "@/components/ui/Design";
 import { FinancesApi } from "@/utils/api";
 import { lazyDate, stripTags } from "@/utils/format";
 import { Storage } from "@/utils/storage";
-import Content from "../controllers/Content";
-import { FinancesDetailContent } from "./FinancesDetail";
+import Content, { Modal } from "../controllers/Content";
+import { FinancesDetail } from "./FinancesDetail";
 
-export default () => <Content Render={Finances} updateData={() => Promise.all([FinancesApi.overview(), FinancesApi.history()])} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={Finances} fetchContent={() => Promise.all([FinancesApi.overview(), FinancesApi.history()])} errorText="Nepodarilo sa načítať dáta." />;
 
-const MyHeader = ({ handleUpdate }) => (
-  <Header title="Financie">
-    <IonButtons slot="end">
-      <IonButton onClick={handleUpdate}>
-        <IonIcon slot="icon-only" icon={refresh} />
-      </IonButton>
-    </IonButtons>
-  </Header>
-);
-
-const Finances = ({ content: [overview, history], handleUpdate }) => {
-  const [current, setCurrent] = useState(Storage.userId);
+const Finances = ({ content: [overview, history], onUpdate }) => {
+  const [current, setCurrent] = useState(Storage.pull().userId);
 
   return (
     <IonPage>
-      <MyHeader handleUpdate={handleUpdate} />
+      <Header title="Financie" />
       <IonContent>
-        <Refresher handleUpdate={handleUpdate} />
+        <Refresher onUpdate={onUpdate} />
         <Item>
           <Select label="Člen" value={current} onIonChange={(event) => setCurrent(event.target.value)}>
             {overview.map((child) => (
@@ -38,13 +27,13 @@ const Finances = ({ content: [overview, history], handleUpdate }) => {
             ))}
           </Select>
         </Item>
-        <FinancesOf overview={overview.find((child) => child.user_id == current)} history={history.filter((child) => child.user_id == current)} handleUpdate={handleUpdate} />
+        <FinancesOf overview={overview.find((child) => child.user_id == current)} history={history.filter((child) => child.user_id == current)} onUpdate={onUpdate} />
       </IonContent>
     </IonPage>
   );
 };
 
-const FinancesOf = ({ overview, history, handleUpdate }) => {
+const FinancesOf = ({ overview, history, onUpdate }) => {
   const [select, setSelect] = useState(null);
 
   if (overview === undefined) {
@@ -84,14 +73,7 @@ const FinancesOf = ({ overview, history, handleUpdate }) => {
           </table>
         </div>
       </ItemGroup>
-      <IonModal isOpen={select !== null} onDidDismiss={handleClose}>
-        <Header title="Podrobnosti">
-          <IonButtons slot="start">
-            <IonBackButton onClick={handleClose} defaultHref="#" />
-          </IonButtons>
-        </Header>
-        <FinancesDetailContent select={select} onClose={handleClose} handleUpdate={handleUpdate} />
-      </IonModal>
+      <Modal Render={FinancesDetail} content={select} onClose={handleClose} onUpdate={onUpdate} />
     </>
   );
 };

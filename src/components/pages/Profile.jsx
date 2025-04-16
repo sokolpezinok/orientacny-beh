@@ -1,136 +1,134 @@
-import { IonContent, IonPage, IonSelectOption } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonIcon, IonPage, IonSelectOption } from "@ionic/react";
+import { save } from "ionicons/icons";
 
-import { Header, Input, ItemGroup, PrimaryButton, Select, SmallWarning, Spacing, Toggle } from "@/components/ui/Design";
+import { Header, Input, ItemGroup, Refresher, Select, SmallWarning, Toggle } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
 import countries from "@/utils/countries";
 import { Storage } from "@/utils/storage";
-import { useRef } from "react";
-import Content from "../controllers/Content";
+import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 
-export default () => <Content Render={Profile} updateData={UserApi.data} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={Profile} fetchContent={UserApi.profile} errorText="Nepodarilo sa načítať dáta." />;
 
-const Profile = ({ content }) => {
-  const { smartModal, alertModal } = useModal();
-  const ref = useRef(null);
+const Profile = ({ onUpdate, content }) => {
+  const { actionFeedbackModal } = useModal();
+  const formRef = useStatefulForm();
 
-  const userEditDisabled = !Storage.pull().policies.policy_mng_big;
-
-  const handleSubmit = smartModal(async () => {
-    const els = ref.current.elements;
-    const collected = {
-      name: els.name.value,
-      surname: els.surname.value,
-      email: els.email.value,
-      gender: els.gender.value,
-      birth_date: els.birth_date.value,
-      birth_number: els.birth_number.value,
-      nationality: els.nationality.value,
-      address: els.address.value,
-      city: els.city.value,
-      postal_code: els.postal_code.value,
-      phone: els.phone.value,
-      phone_home: els.phone_home.value,
-      phone_work: els.phone_work.value,
-      registration_number: els.registration_number.value,
-      chip_number: els.chip_number.value,
-      licence_ob: els.licence_ob.value,
-      licence_lob: els.licence_lob.value,
-      licence_mtbo: els.licence_mtbo.value,
-      is_hidden: els.is_hidden.checked,
-    };
-    await UserApi.data_update(collected);
+  const handleSubmit = actionFeedbackModal(async (data) => {
+    await UserApi.profile_update(data);
     return "Vaše údaje boli úspešne aktualizované.";
   }, "Nepodarilo sa aktualizovať údaje.");
 
+  return (
+    <IonPage>
+      <Header defaultHref="/tabs/settings" title="Profil">
+        <IonButtons slot="end">
+          <IonButton onClick={formRef.current?.submit}>
+            <IonIcon slot="icon-only" icon={save} />
+          </IonButton>
+        </IonButtons>
+      </Header>
+      <IonContent>
+        <Refresher onUpdate={onUpdate} />
+        <StatefulForm Render={ProfileForm} content={content} onSubmit={handleSubmit} />
+      </IonContent>
+    </IonPage>
+  );
+};
+
+export const ProfileForm = ({ store }) => {
+  const state = store.useState();
+
+  const handleChange = (event) => {
+    const { name, checked, value } = event.target;
+
+    store.update((s) => {
+      s[name] = checked ?? value;
+    });
+  };
+
+  const userEditDisabled = !Storage.pull().policies.policy_mng_big;
+
   const handleExplainDisabled = () =>
-    alertModal(
+    window.alert(
       "Prečo nemôžem meniť niektoré nastavenia?",
       "Niektoré nastavenia sú pre členov zablokované, aby sa predišlo problémom s prihlasovaním do pretekov a zabezpečila sa stabilita systému. Ak potrebuješ vykonať zmeny, prosím, obráť sa na administrátora."
     );
 
   return (
-    <IonPage>
-      <Header defaultHref="/tabs/settings" title="Profil" />
-      <IonContent>
-        <form ref={ref}>
-          <ItemGroup title="Všeobecné">
-            {userEditDisabled && (
-              <>
-                <SmallWarning>
-                  <a className="!text-inherit" onClick={handleExplainDisabled}>
-                    Prečo nemôžem meniť niektoré nastavenia?
-                  </a>
-                </SmallWarning>
-                <br />
-              </>
-            )}
-            <Input disabled={userEditDisabled} label="Meno" name="name" value={content.name} required />
-            <Input disabled={userEditDisabled} label="Priezvisko" name="surname" value={content.surname} required />
-            <Select disabled={userEditDisabled} label="Pohlavie" name="gender" value={content.gender} required>
-              <IonSelectOption value="H">Muž</IonSelectOption>
-              <IonSelectOption value="D">Žena</IonSelectOption>
-            </Select>
-            <Input disabled={userEditDisabled} label="Dátum narodenia" name="birth_date" value={content.birth_date} type="date" required />
-            <Input disabled={userEditDisabled} label="Rodné číslo" name="birth_number" value={content.birth_number} type="number" required />
-            <Select disabled={userEditDisabled} label="Národnosť" name="nationality" value={content.nationality} required>
-              {countries.map(([code, name]) => (
-                <IonSelectOption key={code} value={code}>
-                  {name}
-                </IonSelectOption>
-              ))}
-            </Select>
-            <Toggle disabled={true} name="is_hidden" checked={content.is_hidden}>
-              Skryté konto
-            </Toggle>
-          </ItemGroup>
-          <ItemGroup title="Kontakty">
-            <Input label="Email" name="email" value={content.email} />
-            <Input label="Adresa" name="address" value={content.address} />
-            <Input label="Mesto" name="city" value={content.city} />
-            <Input label="PSČ" name="postal_code" value={content.postal_code} type="number" />
-            <Input label="Mobil" name="phone" value={content.phone} type="tel" />
-            <Input label="Domáci mobil" name="phone_home" value={content.phone_home} type="tel" />
-            <Input label="Pracovný mobil" name="phone_work" value={content.phone_work} type="tel" />
-          </ItemGroup>
-          <ItemGroup title="Čip">
-            <Input label="Čip" name="chip_number" value={content.chip_number} type="number" required />
-            <Input disabled={userEditDisabled} label="Registračné číslo" name="registration_number" value={content.registration_number} type="number" required />
-          </ItemGroup>
-          <ItemGroup title="Licenie">
-            <Select label="Licencia OB" name="licence_ob" value={content.licence_ob}>
-              <IonSelectOption value="-">Žiadna</IonSelectOption>
-              <IonSelectOption value="E">E</IonSelectOption>
-              <IonSelectOption value="A">A</IonSelectOption>
-              <IonSelectOption value="B">B</IonSelectOption>
-              <IonSelectOption value="C">C</IonSelectOption>
-              <IonSelectOption value="D">D</IonSelectOption>
-              <IonSelectOption value="R">R</IonSelectOption>
-            </Select>
-            <Select label="Licencia LOB" name="licence_lob" value={content.licence_lob}>
-              <IonSelectOption value="-">Žiadna</IonSelectOption>
-              <IonSelectOption value="E">E</IonSelectOption>
-              <IonSelectOption value="A">A</IonSelectOption>
-              <IonSelectOption value="B">B</IonSelectOption>
-              <IonSelectOption value="C">C</IonSelectOption>
-              <IonSelectOption value="D">D</IonSelectOption>
-              <IonSelectOption value="R">R</IonSelectOption>
-            </Select>
-            <Select label="Licencia MTBO" name="licence_mtbo" value={content.licence_mtbo}>
-              <IonSelectOption value="-">Žiadna</IonSelectOption>
-              <IonSelectOption value="E">E</IonSelectOption>
-              <IonSelectOption value="A">A</IonSelectOption>
-              <IonSelectOption value="B">B</IonSelectOption>
-              <IonSelectOption value="C">C</IonSelectOption>
-              <IonSelectOption value="D">D</IonSelectOption>
-              <IonSelectOption value="R">R</IonSelectOption>
-            </Select>
-          </ItemGroup>
-          <Spacing innerPadding>
-            <PrimaryButton onClick={handleSubmit}>Zmeniť</PrimaryButton>
-          </Spacing>
-        </form>
-      </IonContent>
-    </IonPage>
+    <>
+      <ItemGroup title="Všeobecné">
+        {userEditDisabled && (
+          <>
+            <SmallWarning>
+              <a className="!text-inherit" onClick={handleExplainDisabled}>
+                Prečo nemôžem meniť niektoré nastavenia?
+              </a>
+            </SmallWarning>
+            <br />
+          </>
+        )}
+        <Input disabled={userEditDisabled} label="Meno" name="name" value={state.name} required onIonChange={handleChange} />
+        <Input disabled={userEditDisabled} label="Priezvisko" name="surname" value={state.surname} required onIonChange={handleChange} />
+        <Select disabled={userEditDisabled} label="Pohlavie" name="gender" value={state.gender} required onIonChange={handleChange}>
+          <IonSelectOption value="H">Muž</IonSelectOption>
+          <IonSelectOption value="D">Žena</IonSelectOption>
+        </Select>
+        <Input disabled={userEditDisabled} label="Dátum narodenia" name="birth_date" value={state.birth_date} type="date" required onIonChange={handleChange} />
+        <Input disabled={userEditDisabled} label="Rodné číslo" name="birth_number" value={state.birth_number} type="number" required onIonChange={handleChange} />
+        <Select disabled={userEditDisabled} label="Národnosť" name="nationality" value={state.nationality} required onIonChange={handleChange}>
+          {countries.map(([code, name]) => (
+            <IonSelectOption key={code} value={code}>
+              {name}
+            </IonSelectOption>
+          ))}
+        </Select>
+        <Toggle disabled={true} name="is_hidden" checked={state.is_hidden} onIonChange={handleChange}>
+          Skryté konto
+        </Toggle>
+      </ItemGroup>
+      <ItemGroup title="Kontakty">
+        <Input label="Email" name="email" value={state.email} onIonChange={handleChange} />
+        <Input label="Adresa" name="address" value={state.address} onIonChange={handleChange} />
+        <Input label="Mesto" name="city" value={state.city} onIonChange={handleChange} />
+        <Input label="PSČ" name="postal_code" value={state.postal_code} onIonChange={handleChange} />
+        <Input label="Mobil" name="phone" value={state.phone} onIonChange={handleChange} />
+        <Input label="Domáci mobil" name="phone_home" value={state.phone_home} onIonChange={handleChange} />
+        <Input label="Pracovný mobil" name="phone_work" value={state.phone_work} onIonChange={handleChange} />
+      </ItemGroup>
+      <ItemGroup title="Čip">
+        <Input label="Čip" name="chip_number" value={state.chip_number} onIonChange={handleChange} />
+        <Input disabled={userEditDisabled} label="Registračné číslo" name="registration_number" value={state.registration_number} onIonChange={handleChange} />
+      </ItemGroup>
+      <ItemGroup title="Licenie">
+        <Select label="Licencia OB" name="licence_ob" value={state.licence_ob} onIonChange={handleChange}>
+          <IonSelectOption value="-">Žiadna</IonSelectOption>
+          <IonSelectOption value="E">E</IonSelectOption>
+          <IonSelectOption value="A">A</IonSelectOption>
+          <IonSelectOption value="B">B</IonSelectOption>
+          <IonSelectOption value="C">C</IonSelectOption>
+          <IonSelectOption value="D">D</IonSelectOption>
+          <IonSelectOption value="R">R</IonSelectOption>
+        </Select>
+        <Select label="Licencia LOB" name="licence_lob" value={state.licence_lob} onIonChange={handleChange}>
+          <IonSelectOption value="-">Žiadna</IonSelectOption>
+          <IonSelectOption value="E">E</IonSelectOption>
+          <IonSelectOption value="A">A</IonSelectOption>
+          <IonSelectOption value="B">B</IonSelectOption>
+          <IonSelectOption value="C">C</IonSelectOption>
+          <IonSelectOption value="D">D</IonSelectOption>
+          <IonSelectOption value="R">R</IonSelectOption>
+        </Select>
+        <Select label="Licencia MTBO" name="licence_mtbo" value={state.licence_mtbo} onIonChange={handleChange}>
+          <IonSelectOption value="-">Žiadna</IonSelectOption>
+          <IonSelectOption value="E">E</IonSelectOption>
+          <IonSelectOption value="A">A</IonSelectOption>
+          <IonSelectOption value="B">B</IonSelectOption>
+          <IonSelectOption value="C">C</IonSelectOption>
+          <IonSelectOption value="D">D</IonSelectOption>
+          <IonSelectOption value="R">R</IonSelectOption>
+        </Select>
+      </ItemGroup>
+    </>
   );
 };

@@ -4,21 +4,24 @@ import {
   IonButton,
   IonButtons,
   IonCheckbox,
+  IonContent,
   IonIcon,
   IonInput,
   IonItem,
   IonPage,
   IonRefresher,
   IonRefresherContent,
+  IonRippleEffect,
   IonSelect,
   IonSpinner,
   IonTextarea,
   IonTitle,
   IonToggle,
   IonToolbar,
+  useIonToast,
 } from "@ionic/react";
 import classNames from "classnames";
-import { alertCircle, checkmarkCircleOutline, chevronForward, closeCircleOutline, openOutline, sad, warning } from "ionicons/icons";
+import { alertCircleOutline, checkmarkCircleOutline, chevronForward, clipboardOutline, closeCircleOutline, openOutline, sad } from "ionicons/icons";
 import { forwardRef, useEffect, useRef, useState } from "react";
 
 export function Item({ children, className, innerPadding, ...props }) {
@@ -29,9 +32,11 @@ export function Item({ children, className, innerPadding, ...props }) {
   );
 }
 
-export function ItemGroup({ children, title, subtitle }) {
+export function ItemGroup({ children, title, subtitle, className, ripple = false, ...props }) {
+  // <div className={classNames("p-4", border && "border-outline-variant border-b")}></div>
   return (
-    <div className="border-outline-variant border-b p-4">
+    <div className={classNames("p-4", ripple && "ion-activatable pointer relative", className)} {...props}>
+      {ripple && <IonRippleEffect />}
       {(title || subtitle) && (
         <div className="mb-2">
           <h4 className="text-on-background font-semibold">{title}</h4>
@@ -47,7 +52,7 @@ export function Accordion({ children, title, subtitle }) {
   return (
     <IonAccordion>
       <Item slot="header" innerPadding>
-        <h2>{title}</h2>
+        <h4 className="text-on-background font-semibold">{title}</h4>
         <p>{subtitle}</p>
       </Item>
       <div slot="content" className="border-outline-variant border-b px-4 pb-4">
@@ -218,22 +223,48 @@ export const Anchor = forwardRef(function ({ children, className, href, textOnly
   );
 });
 
-export const Refresher = ({ handleUpdate }) => {
+export const Refresher = ({ onUpdate }) => {
   return (
-    <IonRefresher slot="fixed" onIonRefresh={(event) => handleUpdate().finally(event.detail.complete)}>
+    <IonRefresher slot="fixed" onIonRefresh={(event) => onUpdate().finally(event.detail.complete)}>
       <IonRefresherContent />
     </IonRefresher>
   );
 };
 
+export const Copyable = ({ text }) => {
+  const [present] = useIonToast();
+
+  const handleClick = async () => {
+    try {
+      await window.navigator.clipboard.writeText(text);
+      present({
+        message: "Skopírované!",
+        duration: 1500,
+      });
+    } catch (error) {
+      present({
+        message: "Nepodarilo sa skopírovať!",
+        duration: 1500,
+      });
+    }
+  };
+
+  return (
+    <span className="inline-flex cursor-pointer" onClick={handleClick}>
+      <IonIcon icon={clipboardOutline} className="text-primary mr-2 self-center" />
+      {text}
+    </span>
+  );
+};
+
 export const BooleanIcon = ({ value, className, ...props }) => {
-  return <IonIcon className={classNames("align-middle", value ? "text-success" : "text-error", className)} icon={value ? checkmarkCircleOutline : closeCircleOutline} {...props} />;
+  return <IonIcon className={classNames("align-middle text-2xl", value ? "text-success" : "text-error", className)} icon={value ? checkmarkCircleOutline : closeCircleOutline} {...props} />;
 };
 
 export const SmallWarning = ({ children }) => {
   return (
     <div className="bg-primary-container grid grid-cols-[auto_1fr] gap-4 rounded-lg p-4">
-      <IonIcon icon={warning} className="text-on-primary-container self-center text-2xl" />
+      <IonIcon icon={alertCircleOutline} className="text-on-primary-container self-center text-2xl" />
       <p>{children}</p>
     </div>
   );
@@ -278,15 +309,14 @@ export const SadFace = ({ children, title = "", subtitle = "" }) => {
   );
 };
 
-export const Error = ({ children, title = "", subtitle = "", reload = false }) => {
+export const Error = ({ children, title = "", subtitle = "" }) => {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
-        <IonIcon className="text-error text-4xl" icon={alertCircle} />
+        <IonIcon className="text-error text-4xl" icon={alertCircleOutline} />
         <h4 className="text-error font-bold">{title}</h4>
         {subtitle && <p className="text-sm">{subtitle}</p>}
         {children && <div className="max-h-36 overflow-auto text-sm">{children}</div>}
-        {reload && <p className="text-sm">Ak chceš skúsiť znova, potiahni zhora nadol.</p>}
       </div>
     </div>
   );
@@ -302,15 +332,17 @@ export const SpinnerPage = ({ name = "circular" }) => {
 
   return (
     <IonPage>
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="text-center">
-          <IonSpinner color="primary" name={name} />
-          <Drawer active={state}>
-            <p>Táto akcia trvá dlhšie, ako sme očakávali.</p>
-            <p>Za chvíľu to bude ...</p>
-          </Drawer>
+      <IonContent>
+        <div className="flex h-full w-full items-center justify-center">
+          <div className="text-center">
+            <IonSpinner color="primary" name={name} />
+            <Drawer active={state}>
+              <p>Táto akcia trvá dlhšie, ako sme očakávali.</p>
+              <p>Za chvíľu to bude ...</p>
+            </Drawer>
+          </div>
         </div>
-      </div>
+      </IonContent>
     </IonPage>
   );
 };
