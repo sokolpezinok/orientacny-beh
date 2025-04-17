@@ -94,7 +94,7 @@ const Tabs = () => {
         <Route exact path="/tabs/users/statistics" component={UserStatistics} />
         <Route exact path="/tabs" render={() => <Redirect to="/tabs/races" />} />
       </IonRouterOutlet>
-      <IonTabBar slot="bottom">
+      <IonTabBar slot="bottom" id="ion-tab-bar">
         <IonTabButton tab="races" href="/tabs/races">
           <IonIcon icon={trailSign} />
           <IonLabel>Preteky</IonLabel>

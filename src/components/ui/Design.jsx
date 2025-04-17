@@ -18,11 +18,11 @@ import {
   IonTitle,
   IonToggle,
   IonToolbar,
-  useIonToast,
 } from "@ionic/react";
 import classNames from "classnames";
 import { alertCircleOutline, checkmarkCircleOutline, chevronForward, clipboardOutline, closeCircleOutline, openOutline, sad } from "ionicons/icons";
 import { forwardRef, useEffect, useRef, useState } from "react";
+import { useModal } from "./Modals";
 
 export function Item({ children, className, innerPadding, ...props }) {
   return (
@@ -232,20 +232,14 @@ export const Refresher = ({ onUpdate }) => {
 };
 
 export const Copyable = ({ text }) => {
-  const [present] = useIonToast();
+  const { toastModal } = useModal();
 
   const handleClick = async () => {
     try {
       await window.navigator.clipboard.writeText(text);
-      present({
-        message: "Skopírované!",
-        duration: 1500,
-      });
+      toastModal("Skopírované!");
     } catch (error) {
-      present({
-        message: "Nepodarilo sa skopírovať!",
-        duration: 1500,
-      });
+      toastModal("Nepodarilo sa skopírovať!");
     }
   };
 

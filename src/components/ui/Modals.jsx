@@ -1,5 +1,5 @@
 // import { loadingController } from "@ionic/core";
-import { useIonAlert, useIonLoading } from "@ionic/react";
+import { useIonAlert, useIonLoading, useIonToast } from "@ionic/react";
 
 const CancelButton = { text: "Cancel", role: false };
 const OKButton = { text: "OK", role: true };
@@ -9,6 +9,7 @@ const buttonDismissed = (event) => event.detail.role && event.detail.role !== "b
 export const useModal = () => {
   const [presentAlert] = useIonAlert();
   const [presentLoading, dismissLoading] = useIonLoading();
+  const [presentToast, dismissToast] = useIonToast();
 
   // wrapper
   const modal = ({ header, message, ...options }) => {
@@ -18,6 +19,19 @@ export const useModal = () => {
         message: message && message + "",
         // z-index of loader must be increased to avoid covering up occasional alerts
         onWillPresent: (event) => (event.target.style.zIndex -= -20000),
+        onDidDismiss,
+        ...options,
+      });
+    });
+  };
+
+  const toast = ({ message, ...options }) => {
+    return new Promise((onDidDismiss) => {
+      return presentToast({
+        message,
+        swipeGesture: "vertical",
+        positionAnchor: "ion-tab-bar",
+        position: "bottom",
         onDidDismiss,
         ...options,
       });
@@ -45,10 +59,13 @@ export const useModal = () => {
     };
   };
 
+  const toastModal = (message) => toast({ message, duration: 3000 });
+
   return {
     alertModal,
     errorModal,
     confirmModal,
     actionFeedbackModal,
+    toastModal,
   };
 };

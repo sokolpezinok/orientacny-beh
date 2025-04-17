@@ -34,7 +34,7 @@ export const debug = true;
 //======================================//
 export const apiDomain = "members.eob.cz";
 export const apiVersion = 3;
-export const apiServer = `https://members.eob.cz/${debug ? "api/debug" : "api"}/${apiVersion}`;
+export const apiServer = `https://members.eob.cz/api/${debug ? "debug/" : ""}${apiVersion}`;
 
 // module.exports = {
 //   // use CommonJS syntax for compatibility reasons with capacitor.config.ts

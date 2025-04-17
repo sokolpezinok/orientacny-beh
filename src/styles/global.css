@@ -135,6 +135,16 @@ ion-searchbar {
   --box-shadow: none !important;
 }
 
+ion-toast {
+  --background: var(--color-secondary-container);
+  --color: var(--color-on-secondary-container);
+}
+
+ion-modal {
+  /* make space for ion-tab-bar */
+  height: calc(100vh - 57px);
+}
+
 .has-focus div[slot="label"],
 .select-expanded div[slot="label"] {
   @apply text-secondary;
