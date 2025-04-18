@@ -1,7 +1,7 @@
 import { IonContent, IonIcon, IonPage } from "@ionic/react";
 import { calendar, location } from "ionicons/icons";
 
-import { Header, Item, Refresher, SadFace } from "@/components/ui/Design";
+import { Header, Item, ItemGroup, Refresher } from "@/components/ui/Design";
 import { EntriesHelper } from "@/utils";
 import { RaceApi } from "@/utils/api";
 import { lazyDates } from "@/utils/format";
@@ -16,8 +16,10 @@ const Races = ({ content, onUpdate }) => {
         <Header title="Preteky" />
         <IonContent>
           <Refresher onUpdate={onUpdate} />
-          <br />
-          <SadFace title="V najbližšej dobe nie sú naplánované preteky." subtitle="Môžeš si zabehať nesúťažne :)" />
+          <ItemGroup>
+            <p>V najbližšej dobe nie sú naplánované preteky.</p>
+            <p>Môžeš si zabehať nesúťažne ;)</p>
+          </ItemGroup>
         </IonContent>
       </IonPage>
     );

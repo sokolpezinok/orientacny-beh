@@ -41,14 +41,14 @@ export const DevicesContent = ({ content, onUpdate }) => {
   if (content.length === 0) {
     return (
       <ItemGroup>
-        <SmallError>Člen nemá na žiadnom zariadení aktivované notifikácie.</SmallError>
+        <SmallError title="Člen nemá na žiadnom zariadení aktivované notifikácie." />
       </ItemGroup>
     );
   }
 
   return content.map((child) => (
     <div className="flex items-center justify-between" key={child.device}>
-      <ItemGroup title={child.device_name || "(bez názvu)"}>
+      <ItemGroup title={child.device_name || child.device} subtitle={child.device === currentDevice && "Práve sa používa"}>
         <h4>Naposledy aktívne {formatDatetime(child.app_last_opened)}</h4>
         <h4>Notifikácie sú {child.fcm_status ? "aktivované" : "deaktivované"}</h4>
       </ItemGroup>

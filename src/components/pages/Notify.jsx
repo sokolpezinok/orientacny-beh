@@ -106,7 +106,7 @@ export const NotifyForm = ({ store }) => {
     <>
       <ItemGroup title="Toto zariadenie">
         <Drawer active={!state.notify_type.find((child) => child.id === 2).value && allowNotify}>
-          <SmallError>Ak chceš dostávať upozornenia, zaškrtni posielanie push notifikácii.</SmallError>
+          <SmallError title="Ak chceš dostávať upozornenia, zaškrtni posielanie push notifikácii." />
           <br />
         </Drawer>
         <Toggle checked={allowNotify} onIonChange={handleNotify}>
@@ -121,7 +121,7 @@ export const NotifyForm = ({ store }) => {
         </Drawer>
       </ItemGroup>
       <ItemGroup title="Novinky">
-        <SmallWarning>Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email.</SmallWarning>
+        <SmallWarning title="Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email." />
         <br />
         <Toggle name="send_news" checked={state.send_news} onIonChange={handleChange}>
           Upozorniť ma na pridané novinky
@@ -157,7 +157,7 @@ export const NotifyForm = ({ store }) => {
         </Drawer>
       </ItemGroup>
       <ItemGroup title="Financie">
-        <SmallWarning>Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email.</SmallWarning>
+        <SmallWarning title="Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email." />
         <br />
         <Toggle name="send_finances" checked={state.send_finances} onIonChange={handleChange}>
           Upozorniť ma na môj finančný stav
@@ -171,7 +171,7 @@ export const NotifyForm = ({ store }) => {
       </ItemGroup>
       {(Storage.pull().policies.policy_regs || Storage.pull().policies.policy_fin) && (
         <ItemGroup title="Pokročilé">
-          <SmallWarning>Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email.</SmallWarning>
+          <SmallWarning title="Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email." />
           <br />
           <Spacing>
             <Toggle name="send_internal_entry_expired" checked={state.send_internal_entry_expired} disabled={!Storage.pull().policies.policy_regs} onIonChange={handleChange}>

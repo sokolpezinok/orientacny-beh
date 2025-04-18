@@ -31,7 +31,7 @@ matchColorMode(window.matchMedia("(prefers-color-scheme: dark)"));
 function Fallback({ error }) {
   return (
     <IonPage>
-      <Error title="Neočakávaná chyba, kvôli ktorej aplikácia nemôže fungovať." subtitle={error?.message ? error.message : error + ""} />;
+      <Error title="Neočakávaná chyba, kvôli ktorej aplikácia nemôže fungovať." subtitle={error?.message ? error.message : error + ""} />
     </IonPage>
   );
 }

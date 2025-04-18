@@ -1,7 +1,6 @@
-// import { loadingController } from "@ionic/core";
 import { useIonAlert, useIonLoading, useIonToast } from "@ionic/react";
 
-const CancelButton = { text: "Cancel", role: false };
+const CancelButton = { text: "Zrušiť", role: false };
 const OKButton = { text: "OK", role: true };
 
 const buttonDismissed = (event) => event.detail.role && event.detail.role !== "backdrop";

@@ -10,7 +10,7 @@ import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 
 export default () => <Content Render={Profile} fetchContent={UserApi.profile} errorText="Nepodarilo sa načítať dáta." />;
 
-const Profile = ({ onUpdate, content }) => {
+const Profile = ({ content, onUpdate }) => {
   const { actionFeedbackModal } = useModal();
   const formRef = useStatefulForm();
 
@@ -97,8 +97,8 @@ export const ProfileForm = ({ store }) => {
         <Input label="Pracovný mobil" name="phone_work" value={state.phone_work} onIonChange={handleChange} />
       </ItemGroup>
       <ItemGroup title="Čip">
-        <Input label="Čip" name="chip_number" value={state.chip_number} onIonChange={handleChange} />
-        <Input disabled={userEditDisabled} label="Registračné číslo" name="registration_number" value={state.registration_number} onIonChange={handleChange} />
+        <Input label="Číslo čipu" name="si_chip" value={state.si_chip} onIonChange={handleChange} />
+        <Input disabled={userEditDisabled} label="Registračné číslo" name="reg" value={state.reg} onIonChange={handleChange} />
       </ItemGroup>
       <ItemGroup title="Licenie">
         <Select label="Licencia OB" name="licence_ob" value={state.licence_ob} onIonChange={handleChange}>
@@ -128,6 +128,9 @@ export const ProfileForm = ({ store }) => {
           <IonSelectOption value="D">D</IonSelectOption>
           <IonSelectOption value="R">R</IonSelectOption>
         </Select>
+      </ItemGroup>
+      <ItemGroup>
+        <small>ID člena: {state.user_id}</small>
       </ItemGroup>
     </>
   );

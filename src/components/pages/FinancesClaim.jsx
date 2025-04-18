@@ -3,7 +3,7 @@ import { useHistory, useParams } from "react-router-dom";
 
 import { Header, ItemGroup, PrimaryButton, Refresher, SmallSuccess, SmallWarning, Spacing, Textarea, TransparentButton } from "@/components/ui/Design";
 import { FinancesApi, FinancesEnum } from "@/utils/api";
-import { formatDatetime, lazyDate } from "@/utils/format";
+import { formatDatetime } from "@/utils/format";
 import { Storage } from "@/utils/storage";
 import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 import { useModal } from "../ui/Modals";
@@ -47,16 +47,13 @@ const FinancesClaim = ({ content: [detail, history], onUpdate }) => {
       </Header>
       <IonContent>
         <Refresher onUpdate={onUpdate} />
-        <ItemGroup title="Udalosť">
-          <h4>Názov udalosti:</h4>
-          <p>{detail.race_name || "-"}</p>
+        <ItemGroup>
+          <h2>{detail.race_name || `Transakcia #${fin_id}`}</h2>
           <br />
-          <h4>Dátum udalosti:</h4>
-          <p>{detail.race_date ? lazyDate(detail.race_date) : "-"}</p>
+          {detail.claim === FinancesEnum.CLAIM_OPENED && <SmallWarning title="Reklamácia je otvorená." />}
+          {detail.claim === FinancesEnum.CLAIM_CLOSED && <SmallSuccess title="Reklamácia bola uzatvorená." />}
         </ItemGroup>
         <ItemGroup title="Poslať správu">
-          {detail.claim === FinancesEnum.CLAIM_OPENED && <SmallWarning>Reklamácia je otvorená.</SmallWarning>}
-          {detail.claim === FinancesEnum.CLAIM_CLOSED && <SmallSuccess>Reklamácia bola uzatvorená.</SmallSuccess>}
           <StatefulForm Render={FinancesClaimForm} content={{ message: lastMessage }} onSubmit={handleSubmit} />
           <br />
           <Spacing>
@@ -66,15 +63,15 @@ const FinancesClaim = ({ content: [detail, history], onUpdate }) => {
             </TransparentButton>
           </Spacing>
         </ItemGroup>
+        <hr />
         <ItemGroup title="Chat">
           {history.length === 0 && <small>(zatiaľ žiadna správa)</small>}
-          {history.map((child, index) => (
-            <div key={child.claim_id}>
+          {history.map((child) => (
+            <div key={child.claim_id} className="mb-4">
               <h4>
                 <span className="text-primary">{child.sort_name}</span> {formatDatetime(child.date)}
               </h4>
               <p>{child.text}</p>
-              {index + 1 !== history.length && <hr />}
             </div>
           ))}
         </ItemGroup>

@@ -7,7 +7,7 @@ import Content from "../controllers/Content";
 
 export default () => <Content Render={UserNotify} fetchContent={UserApi.statistics} errorText="Nepodarilo sa načítať dáta." />;
 
-const UserNotify = ({ onUpdate, content }) => {
+const UserNotify = ({ content, onUpdate }) => {
   const router = useHistory();
 
   return (

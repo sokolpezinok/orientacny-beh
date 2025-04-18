@@ -5,7 +5,7 @@ import { bus, calendar, home, location, refresh, shareSocial } from "ionicons/ic
 import { useRef, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
-import { Anchor, BooleanIcon, Drawer, Header, Input, Item, ItemGroup, ItemLink, PrimaryButton, ReadMore, Refresher, SadFace, Select, Spacing, Toggle, TransparentButton } from "@/components/ui/Design";
+import { Anchor, BooleanIcon, Drawer, Header, Input, Item, ItemGroup, ItemLink, PrimaryButton, ReadMore, Refresher, Select, Spacing, Toggle, TransparentButton } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { EntriesHelper, sort } from "@/utils";
 import { RaceApi, RaceEnum } from "@/utils/api";
@@ -121,11 +121,11 @@ const RaceDetail = ({ content: [detail, relations], onUpdate }) => {
           {generateSignInLabel()}
         </ItemLink>
         <ItemGroup title="Prihlásení členovia">
-          {childrenSignedIn.length === 0 && <span>(nikto z tvojich členov nie je prihlásený)</span>}
+          {childrenSignedIn.length === 0 && <small>(nikto z tvojich členov nie je prihlásený)</small>}
           {childrenSignedIn.map((child) => (
             <IonButton fill="clear" key={child.user_id} onClick={() => handleSignin(child.user_id)} className="w-full">
               <div className="w-full text-left leading-normal font-normal normal-case">
-                <p>{`${child.sort_name} (${child.chip_number})`}</p>
+                <p>{`${child.sort_name} (${child.si_chip})`}</p>
                 <span>{child.category || "-"}</span>
               </div>
             </IonButton>
@@ -158,10 +158,11 @@ const RaceDetail = ({ content: [detail, relations], onUpdate }) => {
               </table>
             </div>
           ) : (
-            <SadFace title="Zatiaľ sa nikto neprihlásil." subtitle="Môžeš sa prihlásiť ako prvý/-á :)">
+            <div>
+              <small>Zatiaľ nikto nie je prihlasený.</small>
               <br />
               <TransparentButton onClick={() => handleSignin()}>Prihlásiť sa</TransparentButton>
-            </SadFace>
+            </div>
           )}
         </ItemGroup>
         <IonModal isOpen={select !== null} onDidDismiss={handleClose}>
@@ -176,7 +177,7 @@ const RaceDetail = ({ content: [detail, relations], onUpdate }) => {
               <Select label="Člen" value={select} onIonChange={(event) => setSelect(event.target.value)} required>
                 {relations.map((child) => (
                   <IonSelectOption key={child.user_id} value={child.user_id}>
-                    {`${child.name} ${child.surname} (${child.chip_number})`}
+                    {`${child.name} ${child.surname} (${child.si_chip})`}
                   </IonSelectOption>
                 ))}
               </Select>
@@ -286,7 +287,7 @@ const RaceSignOf = ({ detail, user, onClose }) => {
       </ItemGroup>
       <ItemGroup>
         <Spacing>
-          <PrimaryButton onClick={handleSignin}>{user.is_signed_in ? "Zmeniť" : "Prihlásiť sa"}</PrimaryButton>
+          <PrimaryButton onClick={() => handleSignin()}>{user.is_signed_in ? "Zmeniť" : "Prihlásiť sa"}</PrimaryButton>
           <TransparentButton disabled={!user.is_signed_in} onClick={handleSignout}>
             Odhlásiť sa
           </TransparentButton>

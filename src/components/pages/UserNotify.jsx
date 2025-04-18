@@ -47,7 +47,7 @@ const UserNotify = ({ content: [content, devices], onUpdate }) => {
         <StatelessForm onSubmit={handleSubmit}>
           <ItemGroup title="Vyber si zariadenie.">
             {devices.length === 0 ? (
-              <SmallError>Člen nemá na žiadnom zariadení aktivované notifikácie.</SmallError>
+              <SmallError title="Člen nemá na žiadnom zariadení aktivované notifikácie." />
             ) : (
               <Select name="device" value={null}>
                 <IonSelectOption value={null}>Všetky zariadenia</IonSelectOption>

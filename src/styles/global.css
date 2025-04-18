@@ -32,6 +32,10 @@ body,
   height: 100%;
 }
 
+* {
+  outline: none;
+}
+
 /*
  * Ionic Components
  */

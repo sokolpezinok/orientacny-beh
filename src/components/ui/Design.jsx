@@ -255,29 +255,38 @@ export const BooleanIcon = ({ value, className, ...props }) => {
   return <IonIcon className={classNames("align-middle text-2xl", value ? "text-success" : "text-error", className)} icon={value ? checkmarkCircleOutline : closeCircleOutline} {...props} />;
 };
 
-export const SmallWarning = ({ children }) => {
+export const SmallWarning = ({ children, title }) => {
   return (
-    <div className="bg-primary-container grid grid-cols-[auto_1fr] gap-4 rounded-lg p-4">
-      <IonIcon icon={alertCircleOutline} className="text-on-primary-container self-center text-2xl" />
-      <p>{children}</p>
+    <div className="bg-primary-container rounded-lg p-4">
+      <div className="flex gap-4">
+        <IonIcon icon={alertCircleOutline} className="text-on-primary-container text-2xl" />
+        <p>{title}</p>
+      </div>
+      {children && <div className="mt-4">{children}</div>}
     </div>
   );
 };
 
-export const SmallSuccess = ({ children }) => {
+export const SmallSuccess = ({ children, title }) => {
   return (
-    <div className="bg-success-container grid grid-cols-[auto_1fr] gap-4 rounded-lg p-4">
-      <IonIcon icon={checkmarkCircleOutline} className="text-on-success-container self-center text-2xl" />
-      <p>{children}</p>
+    <div className="bg-success-container rounded-lg p-4">
+      <div className="flex gap-4">
+        <IonIcon icon={checkmarkCircleOutline} className="text-on-success-container text-2xl" />
+        <p>{title}</p>
+      </div>
+      {children && <div className="mt-4">{children}</div>}
     </div>
   );
 };
 
-export const SmallError = ({ children }) => {
+export const SmallError = ({ children, title }) => {
   return (
-    <div className="bg-error-container grid grid-cols-[auto_1fr] gap-4 rounded-lg p-4">
-      <IonIcon icon={closeCircleOutline} className="text-on-error-container self-center text-2xl" />
-      <p>{children}</p>
+    <div className="bg-error-container rounded-lg p-4">
+      <div className="flex gap-4">
+        <IonIcon icon={closeCircleOutline} className="text-on-error-container text-2xl" />
+        <p>{title}</p>
+      </div>
+      {children && <div className="mt-4">{children}</div>}
     </div>
   );
 };
