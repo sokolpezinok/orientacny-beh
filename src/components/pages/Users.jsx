@@ -52,7 +52,7 @@ const Users = ({ content, onUpdate }) => {
         )}
       </Header>
       <div className="bg-background">
-        <IonSearchbar onIonInput={handleChange} onIonClear={handleClear} />
+        <IonSearchbar placeholder="Vyhľadaj podľa mena alebo čísla čipu" onIonInput={handleChange} onIonClear={handleClear} />
       </div>
       <IonContent>
         <Refresher onUpdate={onUpdate} />

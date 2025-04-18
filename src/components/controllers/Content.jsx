@@ -19,7 +19,7 @@ const Content = ({ Render, fetchContent, errorText }) => {
 
   const handleUpdate = async () => {
     if (formRef.current?.isDirty()) {
-      const surety = await confirmModal("Zmeny neboli uložené, naozaj chceš aktualizovať stránku?");
+      const surety = await confirmModal("Zmeny neboli uložené, zahodiť zmeny?");
 
       if (!surety) {
         return;
@@ -83,13 +83,17 @@ export const StatefulForm = ({ children, Render, content, onSubmit, props }) => 
   const { confirmModal } = useModal();
   const formRef = useStatefulForm();
 
-  const markAsNotDirty = () => {
+  const discardChanges = () => {
+    current.current.replace(initial.current);
+  };
+
+  const acceptChanges = () => {
     initial.current = current.current.getRawState();
   };
 
   const handleSubmit = () => {
-    markAsNotDirty();
     onSubmit(current.current.getRawState());
+    acceptChanges();
   };
 
   const isDirty = () => !isEqual(initial.current, current.current.getRawState());
@@ -100,36 +104,44 @@ export const StatefulForm = ({ children, Render, content, onSubmit, props }) => 
       current.current.replace(content);
     }
 
-    markAsNotDirty();
+    acceptChanges();
   }, [content]);
 
   useEffect(() => {
-    const removeListener = router.block(() => {
+    const removeListener = router.block((location) => {
       if (!isDirty()) {
         return true;
       }
 
-      // save before this page is destroyed
-      const state = current.current.getRawState();
+      // cache action as it can change after user response
+      const action = router.action;
 
-      confirmModal("Zmeny neboli uložené. Chceš ich uložiť?").then((value) => {
-        // no need to update initial state
-        if (value) {
-          onSubmit(state);
+      confirmModal("Zmeny neboli uložené, zahodiť zmeny?").then((value) => {
+        if (!value) {
+          return;
+        }
+
+        discardChanges();
+
+        // resume routing
+        if (action === "REPLACE") {
+          router.replace(location);
+        } else {
+          router.push(location);
         }
       });
 
-      // since modal is async, there is no way to wait for response in sync function
-      return true;
+      // always block route as the routing is now handled manually
+      return false;
     });
-
     return removeListener;
   }, []);
 
   useImperativeHandle(formRef, () => ({
     submit: handleSubmit,
     isDirty,
-    markAsNotDirty,
+    discardChanges,
+    acceptChanges,
   }));
 
   return (

@@ -43,14 +43,16 @@ export const useModal = () => {
   const errorModal = (header, message = null) => modal({ header: header || message, message: header && message, buttons: [OKButton] }).then(buttonDismissed);
   const confirmModal = (header, message = null) => modal({ header: header || message, message: header && message, buttons: [CancelButton, OKButton] }).then(buttonDismissed);
 
+  const toastModal = (message) => toast({ message, duration: 3000 });
+
   // smart modal that wraps async function
-  const actionFeedbackModal = (func, errorHeader = null, alertHeader = null) => {
+  const actionFeedbackModal = (func, errorHeader = null) => {
     return async (...args) => {
       await presentLoading();
 
       try {
         const value = await func(...args);
-        value && alertModal(alertHeader, value);
+        value && toastModal(value);
       } catch (error) {
         error && errorModal(errorHeader, error);
       }
@@ -58,8 +60,6 @@ export const useModal = () => {
       await dismissLoading();
     };
   };
-
-  const toastModal = (message) => toast({ message, duration: 3000 });
 
   return {
     alertModal,

@@ -38,7 +38,7 @@ const UserNotify = ({ onUpdate }) => {
       <Header defaultHref="/tabs/users" title="Napísať klubu notifikáciu" />
       <IonContent>
         <Refresher onUpdate={onUpdate} />
-        <ItemGroup title="Notifikácia" subtitle="Členovia tvojho klubu, ktorí majú povolene notifikácie, dostanú tvoju správu okamžite." />
+        <ItemGroup title="Notifikácia" subtitle="Členovia tvojho klubu, ktorí majú povolené notifikácie, dostanú správu okamžite." />
         <StatelessForm onSubmit={handleSubmit}>
           <UserNotifyForm />
           <ItemGroup>
