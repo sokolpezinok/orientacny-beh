@@ -1,4 +1,4 @@
-import { IonContent, IonModal, IonPage } from "@ionic/react";
+import { IonContent, IonPage } from "@ionic/react";
 import isEqual from "fast-deep-equal";
 import { Store } from "pullstate";
 import { createContext, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
@@ -8,13 +8,14 @@ import { Error, Refresher, SpinnerPage } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 
 const Content = ({ Render, fetchContent, errorText }) => {
-  const params = useParams();
-  const formRef = useRef(null);
-
-  const { errorModal, confirmModal, actionFeedbackModal } = useModal();
-
   const [content, setContent] = useState(null);
   const [error, setError] = useState(null);
+  const { errorModal, confirmModal } = useModal();
+  const params = useParams();
+  const location = useLocation();
+
+  const formRef = useRef(null);
+  const firstRender = useRef(true);
 
   const handleUpdate = async () => {
     if (formRef.current?.isDirty()) {
@@ -25,19 +26,27 @@ const Content = ({ Render, fetchContent, errorText }) => {
       }
     }
 
-    fetchContent(params)
-      .then((data) => setContent(data))
-      .catch((error) => (content === null ? setError(error) : errorModal(errorText, error)));
+    if (firstRender.current && location.state !== undefined) {
+      firstRender.current = false;
+      setContent(location.state);
+    } else {
+      fetchContent(params)
+        .then((data) => setContent(data))
+        .catch((error) => {
+          if (content === null) setError(error);
+          else errorModal(errorText, error);
+        });
+    }
   };
 
   useEffect(() => {
     handleUpdate();
-  }, [params]);
+  }, [JSON.stringify(params)]);
 
   if (content !== null) {
     return (
       <StatefulFormContext.Provider value={formRef}>
-        <Render formRef={formRef} content={content} error={error} onUpdate={handleUpdate} />;
+        <Render content={content} error={error} onUpdate={handleUpdate} />
       </StatefulFormContext.Provider>
     );
   }
@@ -60,20 +69,6 @@ const Content = ({ Render, fetchContent, errorText }) => {
 
 export default Content;
 
-export const Modal = ({ Render, content, onClose, onUpdate, props }) => {
-  const location = useLocation();
-
-  useEffect(() => {
-    onClose();
-  }, [location]);
-
-  return (
-    <IonModal isOpen={content !== null} onDidDismiss={onClose}>
-      {content !== null && <Render content={content} onUpdate={onUpdate} onClose={onClose} props={props} />}
-    </IonModal>
-  );
-};
-
 const StatefulFormContext = createContext(null);
 
 export const useStatefulForm = () => {
@@ -84,7 +79,7 @@ export const StatefulForm = ({ children, Render, content, onSubmit, props }) => 
   const current = useRef(new Store(content));
   const initial = useRef(null);
 
-  const history = useHistory();
+  const router = useHistory();
   const { confirmModal } = useModal();
   const formRef = useStatefulForm();
 
@@ -109,7 +104,7 @@ export const StatefulForm = ({ children, Render, content, onSubmit, props }) => 
   }, [content]);
 
   useEffect(() => {
-    const removeListener = history.block(() => {
+    const removeListener = router.block(() => {
       if (!isDirty()) {
         return true;
       }

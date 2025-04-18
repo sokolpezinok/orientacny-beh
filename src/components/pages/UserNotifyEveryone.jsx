@@ -8,8 +8,6 @@ import { Storage } from "@/utils/storage";
 import { StatelessForm } from "../controllers/Content";
 import { UserNotifyForm } from "./UserNotify";
 
-export default UserNotify;
-
 const UserNotify = ({ onUpdate }) => {
   const { user_id } = useParams();
   const { actionFeedbackModal, confirmModal } = useModal();
@@ -51,3 +49,5 @@ const UserNotify = ({ onUpdate }) => {
     </IonPage>
   );
 };
+
+export default UserNotify;

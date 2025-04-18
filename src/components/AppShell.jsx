@@ -52,8 +52,6 @@ const AppShell = () => {
             <IonRouterOutlet>
               <Route exact path="/login" component={Login} />
               <Route exact path="/" render={() => <Redirect to="/tabs" />} />
-
-              {/* /tabs MUST NOT BE EXACT */}
               <Route exact={false} path="/tabs" component={Tabs} />
             </IonRouterOutlet>
           </IonReactRouter>

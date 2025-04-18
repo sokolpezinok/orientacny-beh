@@ -8,7 +8,7 @@ import Content from "../controllers/Content";
 export default () => <Content Render={UserNotify} fetchContent={UserApi.statistics} errorText="Nepodarilo sa načítať dáta." />;
 
 const UserNotify = ({ onUpdate, content }) => {
-  const history = useHistory();
+  const router = useHistory();
 
   return (
     <IonPage>
@@ -27,7 +27,7 @@ const UserNotify = ({ onUpdate, content }) => {
           </thead>
           <tbody>
             {content.map((child) => (
-              <tr key={child.user_id} className="ion-activatable relative" onClick={() => history.push(`/tabs/users/${child.user_id}`)}>
+              <tr key={child.user_id} className="ion-activatable relative" onClick={() => router.push(`/tabs/users/${child.user_id}`)}>
                 <td>{child.name}</td>
                 <td>{child.surname}</td>
                 <td>{<BooleanIcon value={child.device_count > 0} />}</td>
