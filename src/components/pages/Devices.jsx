@@ -47,16 +47,16 @@ export const DevicesContent = ({ content, onUpdate }) => {
   }
 
   return content.map((child) => (
-    <div className="flex items-center justify-between" key={child.device}>
-      <ItemGroup title={child.device_name || child.device} subtitle={child.device === currentDevice && "Práve sa používa"}>
+    <div className="flex w-full items-center p-4" key={child.device}>
+      <div className="min-w-0 flex-1">
+        <h4 className="text-on-background overflow-hidden font-semibold text-ellipsis whitespace-nowrap">{child.device_name || child.device}</h4>
+        {child.device === currentDevice && <span className="text-on-surface-variant">Práve sa používa</span>}
         <h4>Naposledy aktívne {formatDatetime(child.app_last_opened)}</h4>
         <h4>Notifikácie sú {child.fcm_status ? "aktivované" : "deaktivované"}</h4>
-      </ItemGroup>
-      <ItemGroup>
-        <IonButton fill="transparent" shape="circle" className="text-error" onClick={() => handleDelete(child.device)} disabled={child.device === currentDevice}>
-          <IonIcon slot="icon-only" icon={trash} />
-        </IonButton>
-      </ItemGroup>
+      </div>
+      <IonButton fill="transparent" shape="circle" className="text-error" onClick={() => handleDelete(child.device)} disabled={child.device === currentDevice}>
+        <IonIcon slot="icon-only" icon={trash} />
+      </IonButton>
     </div>
   ));
 };

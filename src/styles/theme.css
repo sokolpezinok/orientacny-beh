@@ -55,6 +55,8 @@
   --theme-on-success: rgb(255 255 255);
   --theme-success-container: rgb(201, 238, 225);
   --theme-on-success-container: rgb(0, 38, 23);
+
+  --theme-edge: oklch(from var(--theme-background) calc(l - 0.1) c h);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -113,6 +115,8 @@
     --theme-on-success: rgb(1, 64, 42);
     --theme-success-container: rgb(1, 91, 61);
     --theme-on-success-container: rgb(204, 237, 220);
+
+    --theme-edge: oklch(from var(--theme-background) calc(l + 0.1) c h);
   }
 }
 
@@ -171,4 +175,6 @@
   --color-on-success: var(--theme-on-success);
   --color-success-container: var(--theme-success-container);
   --color-on-success-container: var(--theme-on-success-container);
+
+  --color-edge: var(--theme-edge);
 }

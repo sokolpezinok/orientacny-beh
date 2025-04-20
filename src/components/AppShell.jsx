@@ -1,13 +1,12 @@
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { IonApp, IonPage, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Redirect, Route } from "react-router-dom";
 import Tabs from "./Tabs";
 import Login from "./pages/Login";
 import { Error, SpinnerPage } from "./ui/Design";
-import { useModal } from "./ui/Modals";
 
 setupIonicReact({});
 
@@ -37,13 +36,6 @@ function Fallback({ error }) {
 }
 
 const AppShell = () => {
-  const { alertModal } = useModal();
-
-  useEffect(() => {
-    // this is used in api.js where we can't use a hook
-    window.alert = alertModal;
-  }, []);
-
   return (
     <IonApp>
       <ErrorBoundary FallbackComponent={Fallback}>

@@ -9,17 +9,10 @@ const deviceName = (await Device.getInfo()).name || "";
 
 // server api packaged into a class
 class Api {
-  static async fetch(part, method, { data = null, auth = false, headers = {}, server = null, checks = true } = {}) {
+  static async fetch(part, method, { data = null, auth = false, headers = {}, server = null } = {}) {
     if (!window.navigator.onLine) {
       throw "Vyzerá to tak, že si offline. Skontroluj prosím pripojenie na internet.";
     }
-
-    // if (checks && isTokenExpired()) {
-    //   await Storage.push((s) => {
-    //     s.isLoggedIn = false;
-    //   });
-    //   throw "Prístup do aplikácie vypršal. Prihlás sa prosím znova.";
-    // }
 
     // these headers are required
     // DO NOT TOUCH
@@ -54,10 +47,9 @@ class Api {
         message += "\n\nChyba sa stala na serveri. Prosím, nahláste chybu administrátorom.";
       }
 
-      // reserved for going to login screen
+      // reserved for going to login screen, probably token expired
       if (response.status == 401) {
-        // this is used for displaying token related errors
-        alert("Prosím, prihlás sa znova.", message);
+        alert("Prosím, prihlás sa znova.\n" + message);
         await SystemApi.logout();
         return;
       }
@@ -190,7 +182,6 @@ export class SystemApi {
     const { access_token, device, user_id, policies } = await Api.post(`/system/login`, {
       data: { username, password, app_version: appBuildVersion, device_name: deviceName },
       server: `${apiServer}/${clubname}`,
-      // checks: false,
     });
 
     if (!access_token) throw "Got invalid access token from server!";

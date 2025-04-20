@@ -1,7 +1,7 @@
 import { IonButton, IonButtons, IonContent, IonIcon, IonPage, IonSelectOption } from "@ionic/react";
-import { save } from "ionicons/icons";
+import { alertCircleOutline, save } from "ionicons/icons";
 
-import { Header, Input, ItemGroup, Refresher, Select, SmallWarning, Toggle } from "@/components/ui/Design";
+import { Header, Input, ItemGroup, Refresher, Select, Toggle } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
 import countries from "@/utils/countries";
@@ -38,6 +38,7 @@ const Profile = ({ content, onUpdate }) => {
 
 export const ProfileForm = ({ store }) => {
   const state = store.useState();
+  const { alertModal } = useModal();
 
   const handleChange = (event) => {
     const { name, checked, value } = event.target;
@@ -47,27 +48,27 @@ export const ProfileForm = ({ store }) => {
     });
   };
 
-  const userEditDisabled = !Storage.pull().policies.policy_mng_big;
+  const userEditDisabled = Storage.pull().policies.policy_mng_big;
 
   const handleExplainDisabled = () =>
-    window.alert(
+    alertModal(
       "Prečo nemôžem meniť niektoré nastavenia?",
       "Niektoré nastavenia sú pre členov zablokované, aby sa predišlo problémom s prihlasovaním do pretekov a zabezpečila sa stabilita systému. Ak potrebuješ vykonať zmeny, prosím, obráť sa na administrátora."
     );
 
   return (
     <>
+      {userEditDisabled && (
+        <ItemGroup>
+          <div className="bg-primary-container grid grid-cols-[auto_1fr] gap-4 rounded-lg p-4">
+            <IonIcon icon={alertCircleOutline} className="self-center text-2xl" />
+            <a className="!text-inherit" onClick={handleExplainDisabled}>
+              Prečo nemôžem meniť niektoré nastavenia?
+            </a>
+          </div>
+        </ItemGroup>
+      )}
       <ItemGroup title="Všeobecné">
-        {userEditDisabled && (
-          <>
-            <SmallWarning>
-              <a className="!text-inherit" onClick={handleExplainDisabled}>
-                Prečo nemôžem meniť niektoré nastavenia?
-              </a>
-            </SmallWarning>
-            <br />
-          </>
-        )}
         <Input disabled={userEditDisabled} label="Meno" name="name" value={state.name} required onIonChange={handleChange} />
         <Input disabled={userEditDisabled} label="Priezvisko" name="surname" value={state.surname} required onIonChange={handleChange} />
         <Select disabled={userEditDisabled} label="Pohlavie" name="gender" value={state.gender} required onIonChange={handleChange}>
@@ -100,7 +101,7 @@ export const ProfileForm = ({ store }) => {
         <Input label="Číslo čipu" name="si_chip" value={state.si_chip} onIonChange={handleChange} />
         <Input disabled={userEditDisabled} label="Registračné číslo" name="reg" value={state.reg} onIonChange={handleChange} />
       </ItemGroup>
-      <ItemGroup title="Licenie">
+      <ItemGroup title="Licencie">
         <Select label="Licencia OB" name="licence_ob" value={state.licence_ob} onIonChange={handleChange}>
           <IonSelectOption value="-">Žiadna</IonSelectOption>
           <IonSelectOption value="E">E</IonSelectOption>

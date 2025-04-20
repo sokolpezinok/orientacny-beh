@@ -232,7 +232,7 @@ const RaceSignOf = ({ detail, user, onClose }) => {
 
   return (
     <form ref={ref}>
-      <ItemGroup title="Základné údaje">
+      <ItemGroup>
         {detail.categories.length === 0 ? (
           <Input label="Kategória" name="category" value={user.category} required />
         ) : (

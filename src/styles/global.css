@@ -45,33 +45,22 @@ body,
   --max-width: 768px;
 }
 
-.alert-radio-group {
-  border-color: var(--color-outline-variant) !important;
-}
-.alert-radio-icon {
-  border-color: var(--color-outline) !important;
-}
-.alert-radio-label {
-  color: var(--color-on-surface) !important;
-}
-button[aria-checked="true"] .alert-radio-icon {
-  border-color: var(--color-primary) !important;
-}
-
-/* full round buttons */
-ion-button.button-has-icon-only {
-  min-height: 56px;
+ion-alert {
+  --ion-color-step-150: var(--color-outline-variant);
+  --ion-color-step-550: var(--color-outline);
+  --ion-color-step-850: var(--color-on-surface);
+  --ion-color-primary: var(--color-primary);
 }
 
 /* tab navigation */
 ion-tab-button {
   @apply font-medium;
-  --color: var(--color-outline);
+  --color: var(--color-on-surface-variant);
   --theme-selected: var(--color-primary);
 }
 
 ion-tab-bar {
-  @apply border-outline-variant border-t;
+  @apply border-edge border-t;
 }
 
 ion-header {
@@ -97,10 +86,6 @@ ion-buttons + ion-title {
   margin-left: 0px;
 }
 
-/* ion-accordion-group {
-  @apply border-outline-variant border-b;
-} */
-
 ion-accordion-group ion-accordion:last-child div[slot="content"] {
   @apply border-none;
 }
@@ -111,7 +96,6 @@ ion-select::part(icon) {
 }
 
 ion-item {
-  /* --border-color: var(--color-outline-variant); */
   --border-color: transparent;
 }
 
@@ -142,6 +126,16 @@ ion-searchbar {
 ion-toast {
   --background: var(--color-secondary-container);
   --color: var(--color-on-secondary-container);
+}
+
+ion-skeleton-text {
+  --background-rgb: 0, 0, 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  ion-skeleton-text {
+    --background-rgb: 255, 255, 255;
+  }
 }
 
 .has-focus div[slot="label"],
@@ -179,7 +173,7 @@ a {
   @apply text-primary cursor-pointer underline;
 }
 hr {
-  @apply border-outline-variant my-2 border-t;
+  @apply border-edge my-2 border-t;
 }
 br {
   @apply mt-4 block;
@@ -198,7 +192,4 @@ table.table thead th {
 table.table tbody td,
 table.table thead th {
   @apply border-outline-variant border-b p-4;
-}
-table.table tbody tr:last-child td {
-  @apply border-none;
 }

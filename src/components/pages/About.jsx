@@ -24,7 +24,7 @@ const About = () => {
           </Accordion>
         </IonAccordionGroup>
         <ItemGroup title="Prihlásený klub">
-          {Storage.pull().club.fullname} (${Storage.pull().club.shortcut})
+          {Storage.pull().club.fullname} ({Storage.pull().club.shortcut})
         </ItemGroup>
         <ItemGroup title="Prihlásený používateľ">{Storage.pull().userId}</ItemGroup>
         <ItemGroup title="Verzia">

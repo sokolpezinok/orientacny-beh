@@ -13,6 +13,7 @@ import {
   IonRefresherContent,
   IonRippleEffect,
   IonSelect,
+  IonSkeletonText,
   IonSpinner,
   IonTextarea,
   IonTitle,
@@ -20,7 +21,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import classNames from "classnames";
-import { alertCircleOutline, checkmarkCircleOutline, chevronForward, clipboardOutline, closeCircleOutline, openOutline, sad } from "ionicons/icons";
+import { alertCircleOutline, checkmarkCircleOutline, chevronForward, clipboardOutline, closeCircleOutline, openOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useModal } from "./Modals";
 
@@ -258,8 +259,8 @@ export const BooleanIcon = ({ value, className, ...props }) => {
 export const SmallWarning = ({ children, title }) => {
   return (
     <div className="bg-primary-container rounded-lg p-4">
-      <div className="flex gap-4">
-        <IonIcon icon={alertCircleOutline} className="text-on-primary-container text-2xl" />
+      <div className="grid grid-cols-[auto_1fr] gap-4">
+        <IonIcon icon={alertCircleOutline} className="text-on-primary-container self-center text-2xl" />
         <p>{title}</p>
       </div>
       {children && <div className="mt-4">{children}</div>}
@@ -270,8 +271,8 @@ export const SmallWarning = ({ children, title }) => {
 export const SmallSuccess = ({ children, title }) => {
   return (
     <div className="bg-success-container rounded-lg p-4">
-      <div className="flex gap-4">
-        <IonIcon icon={checkmarkCircleOutline} className="text-on-success-container text-2xl" />
+      <div className="grid grid-cols-[auto_1fr] gap-4">
+        <IonIcon icon={checkmarkCircleOutline} className="text-on-success-container self-center text-2xl" />
         <p>{title}</p>
       </div>
       {children && <div className="mt-4">{children}</div>}
@@ -282,8 +283,8 @@ export const SmallSuccess = ({ children, title }) => {
 export const SmallError = ({ children, title }) => {
   return (
     <div className="bg-error-container rounded-lg p-4">
-      <div className="flex gap-4">
-        <IonIcon icon={closeCircleOutline} className="text-on-error-container text-2xl" />
+      <div className="grid grid-cols-[auto_1fr] gap-4">
+        <IonIcon icon={closeCircleOutline} className="text-on-error-container self-center text-2xl" />
         <p>{title}</p>
       </div>
       {children && <div className="mt-4">{children}</div>}
@@ -296,19 +297,6 @@ export const ColoredValue = ({ value, className, ...props }) => {
     <span className={classNames(value >= 0 ? "text-success" : "text-error", className)} {...props}>
       {value}
     </span>
-  );
-};
-
-export const SadFace = ({ children, title = "", subtitle = "" }) => {
-  return (
-    <div className="flex h-full w-full items-center justify-center">
-      <div className="text-center">
-        <IonIcon className="text-primary text-4xl" icon={sad} />
-        <h4 className="text-primary font-bold">{title}</h4>
-        <p className="text-sm">{subtitle}</p>
-        {children}
-      </div>
-    </div>
   );
 };
 
@@ -340,10 +328,40 @@ export const SpinnerPage = ({ name = "circular" }) => {
           <div className="text-center">
             <IonSpinner color="primary" name={name} />
             <Drawer active={state}>
-              <p>Táto akcia trvá dlhšie, ako sme očakávali.</p>
+              <p>Táto akcia trvá dlhšie, ako sme očakávali.</p>
               <p>Za chvíľu to bude ...</p>
             </Drawer>
           </div>
+        </div>
+      </IonContent>
+    </IonPage>
+  );
+};
+
+export const SkeletonPage = ({}) => {
+  return (
+    <IonPage>
+      <IonToolbar>
+        <IonTitle>
+          <IonSkeletonText animated style={{ width: "40%" }} />
+        </IonTitle>
+      </IonToolbar>
+      <IonContent>
+        <div className="flex flex-col gap-4 p-4">
+          <IonSkeletonText animated />
+          <IonSkeletonText animated style={{ width: "60%" }} />
+          <br />
+          <IonSkeletonText animated style={{ width: "80%" }} />
+          <IonSkeletonText animated style={{ width: "70%" }} />
+          <IonSkeletonText animated style={{ width: "40%" }} />
+          <br />
+          <IonSkeletonText animated style={{ width: "80%" }} />
+          <IonSkeletonText animated style={{ width: "70%" }} />
+          <IonSkeletonText animated style={{ width: "40%" }} />
+          <br />
+          <IonSkeletonText animated style={{ width: "80%" }} />
+          <IonSkeletonText animated style={{ width: "70%" }} />
+          <IonSkeletonText animated style={{ width: "40%" }} />
         </div>
       </IonContent>
     </IonPage>

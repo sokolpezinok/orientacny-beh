@@ -4,7 +4,7 @@ import { Store } from "pullstate";
 import { createContext, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 
-import { Error, Refresher, SpinnerPage } from "@/components/ui/Design";
+import { Error, Refresher, SkeletonPage } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 
 const Content = ({ Render, fetchContent, errorText }) => {
@@ -52,7 +52,7 @@ const Content = ({ Render, fetchContent, errorText }) => {
   }
 
   if (error === null) {
-    return <SpinnerPage />;
+    return <SkeletonPage />;
   }
 
   return (
