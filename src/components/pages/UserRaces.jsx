@@ -1,13 +1,14 @@
 import { IonContent, IonPage } from "@ionic/react";
+import { memo } from "react";
+import { useParams } from "react-router-dom";
 
 import { Header, Item, ItemGroup, Refresher } from "@/components/ui/Design";
 import { UserApi } from "@/utils/api";
-import { useParams } from "react-router-dom";
 import Content from "../controllers/Content";
 
 export default () => <Content Render={UserRaces} fetchContent={({ user_id }) => UserApi.user_races(user_id)} errorText="Nepodarilo sa načítať dáta." />;
 
-const UserRaces = ({ content, onUpdate }) => {
+const UserRaces = memo(({ content, onUpdate }) => {
   const { user_id } = useParams();
 
   return (
@@ -19,7 +20,7 @@ const UserRaces = ({ content, onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 const UserRacesContent = ({ content }) => {
   if (content.length === 0) {

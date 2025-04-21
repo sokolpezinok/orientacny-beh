@@ -1,4 +1,5 @@
 import { IonBackButton, IonButtons, IonContent, IonPage } from "@ionic/react";
+import { memo } from "react";
 
 import { Copyable, Header, ItemGroup, ItemLink, Refresher } from "@/components/ui/Design";
 import { UserApi } from "@/utils/api";
@@ -7,7 +8,7 @@ import Content from "../controllers/Content";
 
 export default () => <Content Render={UserDetail} fetchContent={({ user_id }) => UserApi.detail(user_id)} errorText="Nepodarilo sa načítať dáta." />;
 
-export const UserDetail = ({ content, onUpdate }) => {
+export const UserDetail = memo(({ content, onUpdate }) => {
   return (
     <IonPage>
       <Header title="Podrobnosti">
@@ -40,4 +41,4 @@ export const UserDetail = ({ content, onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});

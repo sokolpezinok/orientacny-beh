@@ -1,5 +1,6 @@
 import { IonContent, IonIcon, IonPage } from "@ionic/react";
 import { calendar, location } from "ionicons/icons";
+import { memo } from "react";
 
 import { Header, Item, ItemGroup, Refresher } from "@/components/ui/Design";
 import { EntriesHelper } from "@/utils";
@@ -9,7 +10,7 @@ import Content from "../controllers/Content";
 
 export default () => <Content Render={Races} fetchContent={RaceApi.list} errorText="Nepodarilo sa načítať preteky." />;
 
-const Races = ({ content, onUpdate }) => {
+const Races = memo(({ content, onUpdate }) => {
   if (content.length === 0) {
     return (
       <IonPage>
@@ -45,4 +46,4 @@ const Races = ({ content, onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});

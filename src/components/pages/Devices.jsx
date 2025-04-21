@@ -1,5 +1,6 @@
 import { IonButton, IonContent, IonIcon, IonPage } from "@ionic/react";
 import { trash } from "ionicons/icons";
+import { memo } from "react";
 
 import { Header, ItemGroup, Refresher, SmallError } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
@@ -10,7 +11,7 @@ import Content from "../controllers/Content";
 
 export default () => <Content Render={Devices} fetchContent={UserApi.devices} errorText="Nepodarilo sa načítať dáta." />;
 
-const Devices = ({ onUpdate, content }) => {
+const Devices = memo(({ onUpdate, content }) => {
   return (
     <IonPage>
       <Header defaultHref="/tabs/settings" title="Moje zariadenia" />
@@ -20,7 +21,7 @@ const Devices = ({ onUpdate, content }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 export const DevicesContent = ({ content, onUpdate }) => {
   const { actionFeedbackModal, confirmModal } = useModal();

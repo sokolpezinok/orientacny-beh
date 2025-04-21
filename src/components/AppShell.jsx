@@ -4,8 +4,8 @@ import { IonReactRouter } from "@ionic/react-router";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Redirect, Route } from "react-router-dom";
-import Tabs from "./Tabs";
 import Login from "./pages/Login";
+import Tabs from "./Tabs";
 import { Error, SpinnerPage } from "./ui/Design";
 
 setupIonicReact({});

@@ -1,16 +1,16 @@
 import { IonContent, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
-import { useState } from "react";
+import { memo, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import { ColoredValue, Error, Header, Item, ItemGroup, Refresher, Select } from "@/components/ui/Design";
 import { FinancesApi } from "@/utils/api";
 import { lazyDate, stripTags } from "@/utils/format";
 import { Storage } from "@/utils/storage";
-import { useHistory } from "react-router-dom";
 import Content from "../controllers/Content";
 
 export default () => <Content Render={Finances} fetchContent={() => Promise.all([FinancesApi.overview(), FinancesApi.history()])} errorText="Nepodarilo sa načítať dáta." />;
 
-const Finances = ({ content: [overview, history], onUpdate }) => {
+const Finances = memo(({ content: [overview, history], onUpdate }) => {
   const [current, setCurrent] = useState(Storage.pull().userId);
 
   return (
@@ -31,7 +31,7 @@ const Finances = ({ content: [overview, history], onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 const FinancesOf = ({ overview, history }) => {
   const router = useHistory();
@@ -59,7 +59,7 @@ const FinancesOf = ({ overview, history }) => {
             </thead>
             <tbody>
               {history.map((child) => (
-                <tr key={child.fin_id} className="ion-activatable relative" onClick={() => router.push({ pathname: `/tabs/finances/${child.fin_id}`, state: child })}>
+                <tr key={child.fin_id} className="ion-activatable relative" onClick={() => router.push(`/tabs/finances/${child.fin_id}`, child)}>
                   <td>{lazyDate(child.date)}</td>
                   <td>{child.race_name || "-"}</td>
                   <td>{<ColoredValue value={child.amount} />}</td>

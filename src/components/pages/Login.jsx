@@ -1,5 +1,5 @@
 import { IonBackButton, IonButtons, IonContent, IonInputPasswordToggle, IonModal, IonPage, IonSelectOption } from "@ionic/react";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { Checkbox, Header, Input, PrimaryButton, Select, Spacing } from "@/components/ui/Design";
@@ -13,7 +13,7 @@ import Content, { StatelessForm } from "../controllers/Content";
 
 export default () => <Content Render={Login} fetchContent={GeneralApi.clubs} errorText="Nepodarilo sa načítať zoznam klubov." />;
 
-const Login = ({ content }) => {
+const Login = memo(({ content }) => {
   const [termsAccepted, setTermsAccepted] = useState(Storage.pull().preferences.hasAcceptedTerms);
   const [isOpen, setOpen] = useState(false);
 
@@ -112,4 +112,4 @@ const Login = ({ content }) => {
       </IonContent>
     </IonPage>
   );
-};
+});

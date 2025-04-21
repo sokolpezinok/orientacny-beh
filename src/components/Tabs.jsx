@@ -42,7 +42,7 @@ const UserRaces = Wrapper(() => import("./pages/UserRaces"));
 const Users = Wrapper(() => import("./pages/Users"));
 const UserStatistics = Wrapper(() => import("./pages/UserStatistics"));
 
-export default () => {
+export default memo(({}) => {
   const isLoading = Storage.useState((s) => s.isLoading);
   const isLoggedIn = Storage.useState((s) => s.isLoggedIn);
   const allowNotify = Storage.useState((s) => s.preferences.activeNotify);
@@ -67,9 +67,9 @@ export default () => {
       )}
     </>
   );
-};
+});
 
-const Tabs = () => {
+const Tabs = memo(({}) => {
   return (
     <IonTabs>
       <IonRouterOutlet>
@@ -114,4 +114,4 @@ const Tabs = () => {
       </IonTabBar>
     </IonTabs>
   );
-};
+});

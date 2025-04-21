@@ -1,5 +1,6 @@
 import { IonButton, IonButtons, IonContent, IonIcon, IonPage, IonSelectOption } from "@ionic/react";
 import { alertCircleOutline, save } from "ionicons/icons";
+import { memo } from "react";
 
 import { Header, Input, ItemGroup, Refresher, Select, Toggle } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
@@ -10,7 +11,7 @@ import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 
 export default () => <Content Render={Profile} fetchContent={UserApi.profile} errorText="Nepodarilo sa načítať dáta." />;
 
-const Profile = ({ content, onUpdate }) => {
+const Profile = memo(({ content, onUpdate }) => {
   const { actionFeedbackModal } = useModal();
   const formRef = useStatefulForm();
 
@@ -34,7 +35,7 @@ const Profile = ({ content, onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 export const ProfileForm = ({ store }) => {
   const state = store.useState();
@@ -48,7 +49,7 @@ export const ProfileForm = ({ store }) => {
     });
   };
 
-  const userEditDisabled = Storage.pull().policies.policy_mng_big;
+  const editDisabled = !Storage.pull().policies.policy_mng_big;
 
   const handleExplainDisabled = () =>
     alertModal(
@@ -58,7 +59,7 @@ export const ProfileForm = ({ store }) => {
 
   return (
     <>
-      {userEditDisabled && (
+      {editDisabled && (
         <ItemGroup>
           <div className="bg-primary-container grid grid-cols-[auto_1fr] gap-4 rounded-lg p-4">
             <IonIcon icon={alertCircleOutline} className="self-center text-2xl" />
@@ -68,23 +69,23 @@ export const ProfileForm = ({ store }) => {
           </div>
         </ItemGroup>
       )}
-      <ItemGroup title="Všeobecné">
-        <Input disabled={userEditDisabled} label="Meno" name="name" value={state.name} required onIonChange={handleChange} />
-        <Input disabled={userEditDisabled} label="Priezvisko" name="surname" value={state.surname} required onIonChange={handleChange} />
-        <Select disabled={userEditDisabled} label="Pohlavie" name="gender" value={state.gender} required onIonChange={handleChange}>
+      <ItemGroup title="Všeobecné" subtitle="Zadané meno a ďalšie údaje sa používajú na registráciu člena do centrálnej registrácie a na prihlasovanie na preteky.">
+        <Input disabled={editDisabled} label="Meno" name="name" value={state.name} required onIonChange={handleChange} />
+        <Input disabled={editDisabled} label="Priezvisko" name="surname" value={state.surname} required onIonChange={handleChange} />
+        <Select disabled={editDisabled} label="Pohlavie" name="gender" value={state.gender} required onIonChange={handleChange}>
           <IonSelectOption value="H">Muž</IonSelectOption>
           <IonSelectOption value="D">Žena</IonSelectOption>
         </Select>
-        <Input disabled={userEditDisabled} label="Dátum narodenia" name="birth_date" value={state.birth_date} type="date" required onIonChange={handleChange} />
-        <Input disabled={userEditDisabled} label="Rodné číslo" name="birth_number" value={state.birth_number} type="number" required onIonChange={handleChange} />
-        <Select disabled={userEditDisabled} label="Národnosť" name="nationality" value={state.nationality} required onIonChange={handleChange}>
+        <Input disabled={editDisabled} label="Dátum narodenia" name="birth_date" value={state.birth_date} type="date" required onIonChange={handleChange} />
+        <Input disabled={editDisabled} label="Rodné číslo" name="birth_number" value={state.birth_number} type="number" required onIonChange={handleChange} />
+        <Select disabled={editDisabled} label="Národnosť" name="nationality" value={state.nationality} required onIonChange={handleChange}>
           {countries.map(([code, name]) => (
             <IonSelectOption key={code} value={code}>
               {name}
             </IonSelectOption>
           ))}
         </Select>
-        <Toggle disabled={true} name="is_hidden" checked={state.is_hidden} onIonChange={handleChange}>
+        <Toggle disabled={editDisabled} name="is_hidden" checked={state.is_hidden} onIonChange={handleChange}>
           Skryté konto
         </Toggle>
       </ItemGroup>
@@ -99,7 +100,7 @@ export const ProfileForm = ({ store }) => {
       </ItemGroup>
       <ItemGroup title="Čip">
         <Input label="Číslo čipu" name="si_chip" value={state.si_chip} onIonChange={handleChange} />
-        <Input disabled={userEditDisabled} label="Registračné číslo" name="reg" value={state.reg} onIonChange={handleChange} />
+        <Input disabled={editDisabled} label="Registračné číslo" name="reg" value={state.reg} onIonChange={handleChange} />
       </ItemGroup>
       <ItemGroup title="Licencie">
         <Select label="Licencia OB" name="licence_ob" value={state.licence_ob} onIonChange={handleChange}>

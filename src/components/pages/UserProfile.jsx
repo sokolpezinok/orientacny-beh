@@ -1,5 +1,6 @@
 import { IonButton, IonButtons, IonContent, IonIcon, IonPage } from "@ionic/react";
 import { save } from "ionicons/icons";
+import { memo } from "react";
 import { useParams } from "react-router-dom";
 
 import { Header, Refresher } from "@/components/ui/Design";
@@ -10,7 +11,7 @@ import { ProfileForm } from "./Profile";
 
 export default () => <Content Render={UserProfile} fetchContent={({ user_id }) => UserApi.user_profile(user_id)} errorText="Nepodarilo sa načítať dáta." />;
 
-const UserProfile = ({ content, onUpdate }) => {
+const UserProfile = memo(({ content, onUpdate }) => {
   const { user_id } = useParams();
   const { actionFeedbackModal } = useModal();
   const formRef = useStatefulForm();
@@ -35,4 +36,4 @@ const UserProfile = ({ content, onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});

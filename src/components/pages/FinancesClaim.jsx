@@ -1,4 +1,5 @@
 import { IonBackButton, IonButtons, IonContent, IonPage } from "@ionic/react";
+import { memo } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
 import { Header, ItemGroup, PrimaryButton, Refresher, SmallSuccess, SmallWarning, Spacing, Textarea, TransparentButton } from "@/components/ui/Design";
@@ -12,7 +13,7 @@ export default () => (
   <Content Render={FinancesClaim} fetchContent={({ fin_id }) => Promise.all([FinancesApi.detail(fin_id), FinancesApi.claim_history(fin_id)])} errorText="Nepodarilo sa načítať dáta." />
 );
 
-const FinancesClaim = ({ content: [detail, history], onUpdate }) => {
+const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
   const { fin_id } = useParams();
   const { actionFeedbackModal } = useModal();
   const router = useHistory();
@@ -78,7 +79,7 @@ const FinancesClaim = ({ content: [detail, history], onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 const FinancesClaimForm = ({ store }) => {
   const state = store.useState();

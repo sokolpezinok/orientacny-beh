@@ -1,4 +1,5 @@
 import { IonBackButton, IonButtons, IonContent, IonPage } from "@ionic/react";
+import { memo } from "react";
 import { useHistory } from "react-router-dom";
 
 import { ColoredValue, Header, ItemGroup, PrimaryButton, Refresher, SmallSuccess, SmallWarning, Spacing } from "@/components/ui/Design";
@@ -8,7 +9,7 @@ import Content from "../controllers/Content";
 
 export default () => <Content Render={FinancesDetail} fetchContent={({ fin_id }) => FinancesApi.detail(fin_id)} errorText="Nepodarilo sa načítať dáta." />;
 
-export const FinancesDetail = ({ content, onUpdate }) => {
+export const FinancesDetail = memo(({ content, onUpdate }) => {
   const router = useHistory();
 
   const handleClick = (event) => {
@@ -76,7 +77,7 @@ export const FinancesDetail = ({ content, onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 export const FinancesDetailOld = ({ content, onUpdate }) => {
   const router = useHistory();

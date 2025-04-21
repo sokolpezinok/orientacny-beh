@@ -1,11 +1,12 @@
 import { IonAccordionGroup, IonContent, IonPage } from "@ionic/react";
+import { memo } from "react";
 
 import { Accordion, Anchor, Header, ItemGroup } from "@/components/ui/Design";
 import License from "@/components/ui/License";
 import { apiVersion, appBuildVersion, debug } from "@/manifest.js";
 import { Storage } from "@/utils/storage";
 
-const About = () => {
+const About = memo(({}) => {
   return (
     <IonPage>
       <Header defaultHref="/tabs/settings" title="O aplikácii" />
@@ -36,5 +37,5 @@ const About = () => {
       </IonContent>
     </IonPage>
   );
-};
+});
 export default About;

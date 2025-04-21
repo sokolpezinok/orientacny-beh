@@ -1,13 +1,13 @@
 import { IonContent, IonPage } from "@ionic/react";
 import isEqual from "fast-deep-equal";
 import { Store } from "pullstate";
-import { createContext, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { createContext, memo, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import { Error, Refresher, SkeletonPage } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 
-const Content = ({ Render, fetchContent, errorText }) => {
+const Content = memo(({ Render, fetchContent, errorText }) => {
   const [content, setContent] = useState(null);
   const [error, setError] = useState(null);
   const { errorModal, confirmModal } = useModal();
@@ -17,7 +17,9 @@ const Content = ({ Render, fetchContent, errorText }) => {
   const formRef = useRef(null);
   const firstRender = useRef(true);
 
-  const handleUpdate = async () => {
+  const paramsKey = useMemo(() => JSON.stringify(params), [params]);
+
+  const handleUpdate = useCallback(async () => {
     if (formRef.current?.isDirty()) {
       const surety = await confirmModal("Zmeny neboli uložené, zahodiť zmeny?");
 
@@ -29,24 +31,25 @@ const Content = ({ Render, fetchContent, errorText }) => {
     if (firstRender.current && location.state !== undefined) {
       firstRender.current = false;
       setContent(location.state);
-    } else {
-      fetchContent(params)
-        .then((data) => setContent(data))
-        .catch((error) => {
-          if (content === null) setError(error);
-          else errorModal(errorText, error);
-        });
+      return;
     }
-  };
+
+    fetchContent(params)
+      .then((data) => setContent(data))
+      .catch((error) => {
+        if (content === null) setError(error);
+        else errorModal(errorText, error);
+      });
+  }, [paramsKey, fetchContent, errorModal, confirmModal, errorText]);
 
   useEffect(() => {
     handleUpdate();
-  }, [JSON.stringify(params)]);
+  }, [paramsKey]);
 
   if (content !== null) {
     return (
       <StatefulFormContext.Provider value={formRef}>
-        <Render content={content} error={error} onUpdate={handleUpdate} />
+        <Render content={content} onUpdate={handleUpdate} />
       </StatefulFormContext.Provider>
     );
   }
@@ -65,7 +68,7 @@ const Content = ({ Render, fetchContent, errorText }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 export default Content;
 

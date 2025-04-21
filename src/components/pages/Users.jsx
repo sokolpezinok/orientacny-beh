@@ -1,17 +1,17 @@
 import { IonButton, IonButtons, IonContent, IonIcon, IonItem, IonPage, IonPopover, IonRippleEffect, IonSearchbar } from "@ionic/react";
 import { ellipsisVertical } from "ionicons/icons";
-import { useState } from "react";
+import { memo, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import { Header, Refresher } from "@/components/ui/Design";
 import { normalize } from "@/utils";
 import { UserApi } from "@/utils/api";
 import { Storage } from "@/utils/storage";
-import { useHistory } from "react-router-dom";
 import Content from "../controllers/Content";
 
 export default () => <Content Render={Users} fetchContent={UserApi.list} errorText="Nepodarilo sa načítať dáta." />;
 
-const Users = ({ content, onUpdate }) => {
+const Users = memo(({ content, onUpdate }) => {
   const [table, setTable] = useState(content);
   const router = useHistory();
 
@@ -67,7 +67,7 @@ const Users = ({ content, onUpdate }) => {
           </thead>
           <tbody>
             {table.map((child) => (
-              <tr key={child.user_id} className="ion-activatable relative" onClick={() => router.push({ pathname: `/tabs/users/${child.user_id}`, state: child })}>
+              <tr key={child.user_id} className="ion-activatable relative" onClick={() => router.push(`/tabs/users/${child.user_id}`, child)}>
                 <td>{child.name}</td>
                 <td>{child.surname}</td>
                 <td>{child.si_chip}</td>
@@ -79,4 +79,4 @@ const Users = ({ content, onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});

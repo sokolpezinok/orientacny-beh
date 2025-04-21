@@ -1,4 +1,5 @@
 import { IonContent, IonPage } from "@ionic/react";
+import { memo } from "react";
 import { useParams } from "react-router-dom";
 
 import { Header, ItemGroup, PrimaryButton, Refresher } from "@/components/ui/Design";
@@ -8,7 +9,7 @@ import { Storage } from "@/utils/storage";
 import { StatelessForm } from "../controllers/Content";
 import { UserNotifyForm } from "./UserNotify";
 
-const UserNotify = ({ onUpdate }) => {
+const UserNotify = memo(({ onUpdate }) => {
   const { user_id } = useParams();
   const { actionFeedbackModal, confirmModal } = useModal();
 
@@ -48,6 +49,6 @@ const UserNotify = ({ onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 export default UserNotify;

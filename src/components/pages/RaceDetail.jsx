@@ -2,7 +2,7 @@ import { Share } from "@capacitor/share";
 import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
 import classNames from "classnames";
 import { bus, calendar, home, location, refresh, shareSocial } from "ionicons/icons";
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
 import { Anchor, BooleanIcon, Drawer, Header, Input, Item, ItemGroup, ItemLink, PrimaryButton, ReadMore, Refresher, Select, Spacing, Toggle, TransparentButton } from "@/components/ui/Design";
@@ -16,7 +16,7 @@ import Content from "../controllers/Content";
 
 export default () => <Content Render={RaceDetail} fetchContent={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])} errorText="Nepodarilo sa načítať preteky." />;
 
-const RaceDetail = ({ content: [detail, relations], onUpdate }) => {
+const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
   const [select, setSelect] = useState(null);
   const router = useHistory();
   const { race_id } = useParams();
@@ -197,7 +197,7 @@ const RaceDetail = ({ content: [detail, relations], onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 const RaceSignOf = ({ detail, user, onClose }) => {
   const { actionFeedbackModal } = useModal();

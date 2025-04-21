@@ -1,13 +1,14 @@
 import { IonContent, IonPage, IonRippleEffect } from "@ionic/react";
+import { memo } from "react";
+import { useHistory } from "react-router-dom";
 
 import { BooleanIcon, Header, Refresher } from "@/components/ui/Design";
 import { UserApi } from "@/utils/api";
-import { useHistory } from "react-router-dom";
 import Content from "../controllers/Content";
 
 export default () => <Content Render={UserNotify} fetchContent={UserApi.statistics} errorText="Nepodarilo sa načítať dáta." />;
 
-const UserNotify = ({ content, onUpdate }) => {
+const UserNotify = memo(({ content, onUpdate }) => {
   const router = useHistory();
 
   return (
@@ -40,4 +41,4 @@ const UserNotify = ({ content, onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});

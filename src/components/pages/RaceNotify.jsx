@@ -1,4 +1,5 @@
 import { IonContent, IonPage } from "@ionic/react";
+import { memo } from "react";
 import { useParams } from "react-router-dom";
 
 import { Header, Input, ItemGroup, PrimaryButton, Textarea } from "@/components/ui/Design";
@@ -10,7 +11,7 @@ import Content, { StatelessForm } from "../controllers/Content";
 
 export default () => <Content Render={RaceNotify} fetchContent={({ race_id }) => RaceApi.detail(race_id)} errorText="Nepodarilo sa načítať preteky." />;
 
-const RaceNotify = ({ content }) => {
+const RaceNotify = memo(({ content }) => {
   const { race_id } = useParams();
   const { actionFeedbackModal, confirmModal } = useModal();
 
@@ -58,4 +59,4 @@ const RaceNotify = ({ content }) => {
       </IonContent>
     </IonPage>
   );
-};
+});

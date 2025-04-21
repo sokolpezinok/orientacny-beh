@@ -1,4 +1,5 @@
 import { IonContent, IonPage, IonSelectOption } from "@ionic/react";
+import { memo } from "react";
 import { useParams } from "react-router-dom";
 
 import { Header, Input, ItemGroup, PrimaryButton, Refresher, Select, SmallError, Textarea } from "@/components/ui/Design";
@@ -8,7 +9,7 @@ import Content, { StatelessForm } from "../controllers/Content";
 
 export default () => <Content Render={UserNotify} fetchContent={({ user_id }) => Promise.all([UserApi.detail(user_id), UserApi.user_devices(user_id)])} errorText="Nepodarilo sa načítať dáta." />;
 
-const UserNotify = ({ content: [content, devices], onUpdate }) => {
+const UserNotify = memo(({ content: [content, devices], onUpdate }) => {
   const { user_id } = useParams();
   const { actionFeedbackModal, confirmModal } = useModal();
 
@@ -69,7 +70,7 @@ const UserNotify = ({ content: [content, devices], onUpdate }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 export const UserNotifyForm = ({}) => {
   return (

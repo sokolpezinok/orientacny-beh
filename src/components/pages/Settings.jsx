@@ -1,9 +1,11 @@
+import { IonContent, IonHeader, IonPage } from "@ionic/react";
+import { memo } from "react";
+
 import { Header, ItemLink } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { SystemApi } from "@/utils/api";
-import { IonContent, IonHeader, IonPage } from "@ionic/react";
 
-const Settings = () => {
+const Settings = memo(({}) => {
   const { confirmModal, actionFeedbackModal } = useModal();
 
   const handleLogout = actionFeedbackModal(async (event) => {
@@ -29,6 +31,6 @@ const Settings = () => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 export default Settings;

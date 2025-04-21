@@ -1,5 +1,6 @@
 import { IonButton, IonButtons, IonCheckbox, IonContent, IonIcon, IonPage } from "@ionic/react";
 import { save } from "ionicons/icons";
+import { memo } from "react";
 
 import { Drawer, Header, Input, ItemGroup, SmallError, SmallWarning, Spacing, Toggle } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
@@ -10,7 +11,7 @@ import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 
 export default () => <Content Render={Notify} fetchContent={UserApi.notify} errorText="Nepodarilo sa načítať dáta." />;
 
-const Notify = ({ content }) => {
+const Notify = memo(({ content }) => {
   const { actionFeedbackModal } = useModal();
   const formRef = useStatefulForm();
 
@@ -46,7 +47,7 @@ const Notify = ({ content }) => {
       </IonContent>
     </IonPage>
   );
-};
+});
 
 export const NotifyForm = ({ store }) => {
   const state = store.useState();
