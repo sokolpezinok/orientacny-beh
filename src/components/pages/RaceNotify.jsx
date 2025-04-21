@@ -32,7 +32,7 @@ const RaceNotify = memo(({ content }) => {
       return;
     }
 
-    await RaceApi.notify(race_id, collected);
+    await RaceApi.notify(race_id, data);
     return "Notifikácia bola úspešne odoslaná.";
   }, "Nepodarilo sa poslať notifikáciu.");
 

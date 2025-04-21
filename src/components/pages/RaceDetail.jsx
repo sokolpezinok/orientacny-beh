@@ -5,7 +5,7 @@ import { bus, calendar, home, location, refresh, shareSocial } from "ionicons/ic
 import { memo, useRef, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
-import { Anchor, BooleanIcon, Drawer, Header, Input, Item, ItemGroup, ItemLink, PrimaryButton, ReadMore, Refresher, Select, Spacing, Toggle, TransparentButton } from "@/components/ui/Design";
+import { Anchor, BooleanIcon, Drawer, Header, Input, ItemGroup, ItemLink, PrimaryButton, ReadMore, Refresher, Select, SmallWarning, Spacing, Toggle, TransparentButton } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { EntriesHelper, sort } from "@/utils";
 import { RaceApi, RaceEnum } from "@/utils/api";
@@ -173,7 +173,14 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
           </Header>
           <IonContent>
             <Refresher onUpdate={onUpdate} />
-            <Item>
+            {entries.currentEntryIndex() >= 2 && (
+              <ItemGroup>
+                <SmallWarning title={`Práve prebieha ${entries.currentEntryIndex()}. termín prihlášok. Poplatok za prihlášku môže byť drahší. Pre ďalšie informácie si pozri propozície.`}>
+                  {detail.link && <Anchor href={detail.link} />}
+                </SmallWarning>
+              </ItemGroup>
+            )}
+            <ItemGroup>
               <Select label="Člen" value={select} onIonChange={(event) => setSelect(event.target.value)} required>
                 {relations.map((child) => (
                   <IonSelectOption key={child.user_id} value={child.user_id}>
@@ -181,7 +188,7 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
                   </IonSelectOption>
                 ))}
               </Select>
-            </Item>
+            </ItemGroup>
             {select !== null && (
               <RaceSignOf
                 detail={detail}
