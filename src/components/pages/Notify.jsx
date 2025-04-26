@@ -6,7 +6,7 @@ import { Drawer, Header, Input, ItemGroup, SmallError, SmallWarning, Spacing, To
 import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
 import { Notifications } from "@/utils/notify";
-import { Storage } from "@/utils/storage";
+import { Session, Storage } from "@/utils/storage";
 import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 
 export default () => <Content Render={Notify} fetchContent={UserApi.notify} errorText="Nepodarilo sa načítať dáta." />;
@@ -170,15 +170,15 @@ export const NotifyForm = ({ store }) => {
           </Drawer>
         </Drawer>
       </ItemGroup>
-      {(Storage.pull().policies.policy_regs || Storage.pull().policies.policy_fin) && (
+      {(Session.pull().policies.regs || Session.pull().policies.fin) && (
         <ItemGroup title="Pokročilé">
           <SmallWarning title="Upozornenia na túto sekciu je zatiaľ možné posielať iba cez email." />
           <br />
           <Spacing>
-            <Toggle name="send_internal_entry_expired" checked={state.send_internal_entry_expired} disabled={!Storage.pull().policies.policy_regs} onIonChange={handleChange}>
+            <Toggle name="send_internal_entry_expired" checked={state.send_internal_entry_expired} disabled={!Session.pull().policies.regs} onIonChange={handleChange}>
               Upozorniť ma, keď uplynul interný termín
             </Toggle>
-            <Toggle name="send_member_minus" checked={state.send_member_minus} disabled={!Storage.pull().policies.policy_fin} onIonChange={handleChange}>
+            <Toggle name="send_member_minus" checked={state.send_member_minus} disabled={!Session.pull().policies.fin} onIonChange={handleChange}>
               Upozorniť ma na členov, ktorí sa na účte dostali do mínusu
             </Toggle>
           </Spacing>

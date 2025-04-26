@@ -1,3 +1,5 @@
+import { Session } from "./storage";
+
 export const parseDates = (dates) => {
   // converts into date and removes time part.
   return dates.map((date) => new Date(date).setHours(0, 0, 0, 0));
@@ -41,4 +43,4 @@ export const sort = (array, func = null) =>
 
 export const unixTime = () => Math.floor(Date.now() / 1000);
 
-// export const isTokenExpired = () => Storage.pull().tokenExpiration < unixTime();
+export const doesManageUser = (user_id) => Session.pull().policies.mng_small && Session.pull().managingIds.includes(user_id);

@@ -1,9 +1,9 @@
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import { Store } from "pullstate";
+import { UserApi } from "./api";
 
 export class Storage {
   static store = new Store({
-    isLoading: true,
     isLoggedIn: false,
 
     // user preferences
@@ -17,16 +17,6 @@ export class Storage {
 
     userId: null,
     device: null,
-
-    // policy of the user
-    policies: {
-      policy_adm: false,
-      policy_news: false,
-      policy_regs: false,
-      policy_fin: false,
-      policy_mng_small: false,
-      policy_mng_big: false,
-    },
 
     // club info data
     club: {
@@ -57,7 +47,7 @@ export class Storage {
   }
 
   static async save() {
-    const { isLoading, ...profile } = this.pull();
+    const profile = this.pull();
 
     await SecureStoragePlugin.set({
       key: this.profile,
@@ -65,25 +55,24 @@ export class Storage {
     });
   }
 
-  static async load_clean() {
-    await SecureStoragePlugin.clear();
-
-    this.push((s) => {
-      s.isLoading = false;
-    });
+  static load_clean() {
+    return SecureStoragePlugin.clear();
   }
 
   static async load_from_storage() {
     const profile = await SecureStoragePlugin.get({ key: this.profile });
-    const data = JSON.parse(profile.value);
+    const { isLoggedIn, ...data } = JSON.parse(profile.value);
 
     this.store.update((s) => {
       // push values to store
       for (const [key, value] of Object.entries(data)) {
         s[key] = value;
       }
+    });
 
-      s.isLoading = false;
+    // only after everything is setup
+    this.store.update((s) => {
+      s.isLoggedIn = isLoggedIn;
     });
   }
 
@@ -91,13 +80,61 @@ export class Storage {
     try {
       await this.load_from_storage();
     } catch (error) {
-      alert("An error occurred while accessing storage, clearing storage. " + error);
+      alert("Nepodarilo sa načítať dáta z úložiska, reštartujem, ospravedlnujeme sa za opätovné prihlásenie.\n" + error);
       await this.load_clean();
     }
   }
+}
 
-  static {
-    // load profile into pull state store
-    this.load();
+export class Session {
+  static store = new Store({
+    appLoading: true,
+
+    // user permissions
+    policies: {
+      adm: false,
+      adm_small: false,
+      news: false,
+      regs: false,
+      fin: false,
+      mng_small: false,
+      mng_big: false,
+    },
+
+    managingIds: [],
+  });
+
+  static pull() {
+    return this.store.getRawState();
+  }
+
+  static useState(func) {
+    return this.store.useState(func);
+  }
+
+  static push(func) {
+    return this.store.update(func);
+  }
+
+  static async load() {
+    try {
+      const [policies, managing] = await Promise.all([UserApi.my_policies(), UserApi.my_managing()]);
+
+      Session.push((s) => {
+        s.policies = {
+          adm: policies.policy_adm,
+          adm_small: policies.policy_sadm,
+          news: policies.policy_news,
+          regs: policies.policy_regs,
+          fin: policies.policy_fin,
+          mng_big: policies.policy_mng_big,
+          mng_small: policies.policy_mng_small,
+        };
+        s.managingIds = managing.map((child) => child.user_id);
+        s.appLoading = false;
+      });
+    } catch (error) {
+      alert("Nepodarilo sa načítať dáta zo serveru. Skontroluj pripojenie na internet.\n" + error);
+    }
   }
 }

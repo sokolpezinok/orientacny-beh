@@ -80,6 +80,8 @@ export class UserApi {
     Api.get(`/user/${user_id}/managing`, {
       auth: true,
     });
+  static my_policies = () => Api.get(`/user/policies`, { auth: true });
+  static my_managing = () => Api.get(`/user/managing`, { auth: true });
   static profile = () =>
     Api.get(`/user/profile`, {
       auth: true,
@@ -179,7 +181,7 @@ export class FinancesApi {
 
 export class SystemApi {
   static login = async ({ username, password, clubname }) => {
-    const { access_token, device, user_id, policies } = await Api.post(`/system/login`, {
+    const { access_token, device, user_id } = await Api.post(`/system/login`, {
       data: { username, password, app_version: appBuildVersion, device_name: deviceName },
       server: `${apiServer}/${clubname}`,
     });
@@ -190,7 +192,6 @@ export class SystemApi {
       s.accessToken = access_token;
       s.userId = user_id;
       s.device = device;
-      s.policies = policies;
     });
   };
 

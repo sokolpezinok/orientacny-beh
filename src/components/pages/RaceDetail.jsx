@@ -11,7 +11,7 @@ import { EntriesHelper, sort } from "@/utils";
 import { RaceApi, RaceEnum } from "@/utils/api";
 import { lazyDate, lazyDates } from "@/utils/format";
 import { category, group } from "@/utils/icons";
-import { Storage } from "@/utils/storage";
+import { Session, Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
 
 export default () => <Content Render={RaceDetail} fetchContent={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])} errorText="Nepodarilo sa načítať preteky." />;
@@ -116,7 +116,7 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
             </div>
           </Spacing>
         </ItemGroup>
-        {Storage.pull().policies.policy_mng_big && <ItemLink routerLink={`/tabs/races/${race_id}/notify`}>Napísať notifikáciu</ItemLink>}
+        {Session.pull().policies.mng_big && <ItemLink routerLink={`/tabs/races/${race_id}/notify`}>Napísať notifikáciu</ItemLink>}
         <ItemLink routerLink="#" onClick={() => handleSignin()}>
           {generateSignInLabel()}
         </ItemLink>

@@ -5,7 +5,7 @@ import { Redirect, Route } from "react-router-dom";
 
 import { SystemApi } from "@/utils/api";
 import { payments } from "@/utils/icons";
-import { Storage } from "@/utils/storage";
+import { Session, Storage } from "@/utils/storage";
 import DeeplinkListener from "./controllers/DeeplinkListener";
 import NotifyListener from "./controllers/NotifyListener";
 import { SpinnerPage } from "./ui/Design";
@@ -43,17 +43,23 @@ const Users = Wrapper(() => import("./pages/Users"));
 const UserStatistics = Wrapper(() => import("./pages/UserStatistics"));
 
 export default memo(({}) => {
-  const isLoading = Storage.useState((s) => s.isLoading);
+  const appLoading = Session.useState((s) => s.appLoading);
   const isLoggedIn = Storage.useState((s) => s.isLoggedIn);
   const allowNotify = Storage.useState((s) => s.preferences.activeNotify);
 
   useEffect(() => {
     if (isLoggedIn) {
       SystemApi.device_update();
+      // only after Storage.load() was called
+      Session.load();
     }
   }, [isLoggedIn]);
 
-  if (isLoading) return <SpinnerPage />;
+  useEffect(() => {
+    Storage.load();
+  }, []);
+
+  if (appLoading) return <SpinnerPage />;
   if (!isLoggedIn) return <Redirect to="/login" />;
 
   return (

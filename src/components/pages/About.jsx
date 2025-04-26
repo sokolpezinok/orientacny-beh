@@ -1,12 +1,15 @@
 import { IonAccordionGroup, IonContent, IonPage } from "@ionic/react";
 import { memo } from "react";
 
-import { Accordion, Anchor, Header, ItemGroup } from "@/components/ui/Design";
+import { Accordion, Anchor, BooleanIcon, Header, ItemGroup } from "@/components/ui/Design";
 import License from "@/components/ui/License";
 import { apiVersion, appBuildVersion, debug } from "@/manifest.js";
-import { Storage } from "@/utils/storage";
+import { Session, Storage } from "@/utils/storage";
 
 const About = memo(({}) => {
+  const storage = Storage.pull();
+  const session = Session.pull();
+
   return (
     <IonPage>
       <Header defaultHref="/tabs/settings" title="O aplikácii" />
@@ -24,16 +27,48 @@ const About = memo(({}) => {
             <License />
           </Accordion>
         </IonAccordionGroup>
+        <hr />
         <ItemGroup title="Prihlásený klub">
-          {Storage.pull().club.fullname} ({Storage.pull().club.shortcut})
+          {storage.club.fullname} ({storage.club.shortcut})
         </ItemGroup>
-        <ItemGroup title="Prihlásený používateľ">{Storage.pull().userId}</ItemGroup>
+        <ItemGroup title="Prihlásený používateľ">{storage.userId}</ItemGroup>
+        <ItemGroup title="ID zariadenia">{storage.device}</ItemGroup>
+        <ItemGroup title="Prístup">
+          <h4>
+            <BooleanIcon value={session.policies.adm} />
+            <span className="ml-2">Admin</span>
+          </h4>
+          <h4>
+            <BooleanIcon value={session.policies.adm_small} />
+            <span className="ml-2">Small Admin</span>
+          </h4>
+          <h4>
+            <BooleanIcon value={session.policies.regs} />
+            <span className="ml-2">Registrátor</span>
+          </h4>
+          <h4>
+            <BooleanIcon value={session.policies.news} />
+            <span className="ml-2">Noninkár</span>
+          </h4>
+          <h4>
+            <BooleanIcon value={session.policies.fin} />
+            <span className="ml-2">Finančník</span>
+          </h4>
+          <h4>
+            <BooleanIcon value={session.policies.mng_big} />
+            <span className="ml-2">Tréner</span>
+          </h4>
+          <h4>
+            <BooleanIcon value={session.policies.mng_small} />
+            <span className="ml-2">Rodič</span>
+          </h4>
+        </ItemGroup>
+        <hr />
         <ItemGroup title="Verzia">
           {appBuildVersion}
           {debug && " (debug)"}
         </ItemGroup>
         <ItemGroup title="Verzia API">{apiVersion}</ItemGroup>
-        <ItemGroup title="Device ID">{Storage.pull().device}</ItemGroup>
       </IonContent>
     </IonPage>
   );

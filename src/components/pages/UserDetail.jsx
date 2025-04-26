@@ -2,13 +2,16 @@ import { IonBackButton, IonButtons, IonContent, IonPage } from "@ionic/react";
 import { memo } from "react";
 
 import { Copyable, Header, ItemGroup, ItemLink, Refresher } from "@/components/ui/Design";
+import { doesManageUser } from "@/utils";
 import { UserApi } from "@/utils/api";
-import { Storage } from "@/utils/storage";
+import { Session } from "@/utils/storage";
 import Content from "../controllers/Content";
 
 export default () => <Content Render={UserDetail} fetchContent={({ user_id }) => UserApi.detail(user_id)} errorText="Nepodarilo sa načítať dáta." />;
 
 export const UserDetail = memo(({ content, onUpdate }) => {
+  const advancedOptions = Session.pull().policies.adm_small || Session.pull().policies.mng_big;
+
   return (
     <IonPage>
       <Header title="Podrobnosti">
@@ -31,10 +34,10 @@ export const UserDetail = memo(({ content, onUpdate }) => {
           <Copyable text={content.si_chip || "-"} />
         </ItemGroup>
         <ItemLink routerLink={`/tabs/users/${content.user_id}/races`}>Preteky člena</ItemLink>
-        {Storage.pull().policies.policy_mng_big && (
+        {(advancedOptions || doesManageUser(content.user_id)) && <ItemLink routerLink={`/tabs/users/${content.user_id}/profile`}>Profil</ItemLink>}
+        {advancedOptions && (
           <>
             <ItemLink routerLink={`/tabs/users/${content.user_id}/notify`}>Poslať notifikáciu</ItemLink>
-            <ItemLink routerLink={`/tabs/users/${content.user_id}/profile`}>Profil</ItemLink>
             <ItemLink routerLink={`/tabs/users/${content.user_id}/devices`}>Zariadenia</ItemLink>
           </>
         )}

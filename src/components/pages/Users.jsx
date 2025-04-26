@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import { Header, Refresher } from "@/components/ui/Design";
 import { normalize } from "@/utils";
 import { UserApi } from "@/utils/api";
-import { Storage } from "@/utils/storage";
+import { Session } from "@/utils/storage";
 import Content from "../controllers/Content";
 
 export default () => <Content Render={Users} fetchContent={UserApi.list} errorText="Nepodarilo sa načítať dáta." />;
@@ -37,7 +37,7 @@ const Users = memo(({ content, onUpdate }) => {
   return (
     <IonPage>
       <Header title="Členovia">
-        {Storage.pull().policies.policy_mng_big && (
+        {Session.pull().policies.mng_big && (
           <IonButtons slot="end">
             <IonButton id="ellipsis">
               <IonIcon slot="icon-only" icon={ellipsisVertical} />
