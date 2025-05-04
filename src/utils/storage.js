@@ -80,9 +80,19 @@ export class Storage {
     try {
       await this.load_from_storage();
     } catch (error) {
-      alert("Nepodarilo sa načítať dáta z úložiska, reštartujem, ospravedlnujeme sa za opätovné prihlásenie.\n" + error);
-      await this.load_clean();
+      console.error(error);
+      try {
+        alert("Nepodarilo sa načítať dáta z úložiska, reštartujem, ospravedlňujeme sa za opätovné prihlásenie.\n" + error);
+        await this.load_clean();
+      } catch (error) {
+        console.error(error);
+        alert("Ospravedlňujeme sa, došlo k neočakávanej chybe. Skúste vymazať úložisko aplikácie alebo kontaktujte administrátora.\n" + error);
+      }
     }
+
+    Session.push((s) => {
+      s.appLoading = false;
+    });
   }
 }
 
@@ -116,7 +126,7 @@ export class Session {
     return this.store.update(func);
   }
 
-  static async load() {
+  static async fetch_user_data() {
     try {
       const [policies, managing] = await Promise.all([UserApi.my_policies(), UserApi.my_managing()]);
 
@@ -131,10 +141,9 @@ export class Session {
           mng_small: policies.policy_mng_small,
         };
         s.managingIds = managing.map((child) => child.user_id);
-        s.appLoading = false;
       });
     } catch (error) {
-      alert("Nepodarilo sa načítať dáta zo serveru. Skontroluj pripojenie na internet.\n" + error);
+      alert("Nepodarilo sa načítať dáta zo serveru - niektoré údaje nemusia byť správne.\n" + error);
     }
   }
 }

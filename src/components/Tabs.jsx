@@ -50,8 +50,7 @@ export default memo(({}) => {
   useEffect(() => {
     if (isLoggedIn) {
       SystemApi.device_update();
-      // only after Storage.load() was called
-      Session.load();
+      Session.fetch_user_data();
     }
   }, [isLoggedIn]);
 

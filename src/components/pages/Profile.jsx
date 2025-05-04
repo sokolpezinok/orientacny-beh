@@ -6,7 +6,7 @@ import { Header, Input, ItemGroup, Refresher, Select, Toggle } from "@/component
 import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
 import countries from "@/utils/countries";
-import { Session, Storage } from "@/utils/storage";
+import { Session } from "@/utils/storage";
 import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 
 export default () => <Content Render={Profile} fetchContent={UserApi.profile} errorText="Nepodarilo sa načítať dáta." />;
@@ -49,7 +49,7 @@ export const ProfileForm = ({ store }) => {
     });
   };
 
-  const disabled = !(Session.pull().policies.adm_small || Storage.pull().userId != state.user_id);
+  const disabled = !(Session.pull().policies.adm_small || Session.pull().policies.mng_big);
 
   const handleExplainDisabled = () =>
     alertModal(
@@ -69,7 +69,7 @@ export const ProfileForm = ({ store }) => {
           </div>
         </ItemGroup>
       )}
-      <ItemGroup title="Všeobecné" subtitle="Zadané meno a ďalšie údaje sa používajú na registráciu člena do centrálnej registrácie a na prihlasovanie na preteky.">
+      <ItemGroup title="Všeobecné" subtitle="Zadané údaje sa používajú na registráciu člena do centrálnej registrácie a na prihlasovanie na preteky.">
         <Input disabled={disabled} label="Meno" name="name" value={state.name} required onIonChange={handleChange} />
         <Input disabled={disabled} label="Priezvisko" name="surname" value={state.surname} required onIonChange={handleChange} />
         <Select disabled={disabled} label="Pohlavie" name="gender" value={state.gender} required onIonChange={handleChange}>
