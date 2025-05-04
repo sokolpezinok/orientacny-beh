@@ -1,7 +1,6 @@
-import { Share } from "@capacitor/share";
 import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
 import classNames from "classnames";
-import { bus, calendar, home, location, refresh, shareSocial } from "ionicons/icons";
+import { bus, calendar, home, location } from "ionicons/icons";
 import { memo, useRef, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 
@@ -20,26 +19,13 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
   const [select, setSelect] = useState(null);
   const router = useHistory();
   const { race_id } = useParams();
-  const { actionFeedbackModal, alertModal } = useModal();
+  const { alertModal } = useModal();
 
   const handleClose = () => setSelect(null);
 
   const isUserSignedIn = relations.find((child) => child.user_id == Storage.pull().userId).is_signed_in;
   const childrenSignedIn = relations.filter((child) => child.is_signed_in);
   const entries = new EntriesHelper(detail.entries);
-
-  const handleShare = actionFeedbackModal(async () => {
-    const { value } = await Share.canShare();
-    if (!value) throw "Zdielanie nie je dostupné.";
-
-    // catch share cancel
-    await Share.share({
-      title: detail.name,
-      text: `${detail.name}\n${detail.note}`,
-      url: RaceApi.getRedirect(race_id),
-      dialogTitle: detail.name,
-    }).catch(() => null);
-  }, "Nepodarilo sa zdielať.");
 
   const generateSignInLabel = () => {
     if (detail.cancelled) {
@@ -78,16 +64,7 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
   return (
     <IonPage>
       <IonHeader>
-        <Header defaultHref="/tabs/races" title="Podrobnosti">
-          <IonButtons slot="primary">
-            <IonButton onClick={onUpdate}>
-              <IonIcon slot="icon-only" icon={refresh} />
-            </IonButton>
-            <IonButton onClick={handleShare}>
-              <IonIcon slot="icon-only" icon={shareSocial} />
-            </IonButton>
-          </IonButtons>
-        </Header>
+        <Header defaultHref="/tabs/races" title="Podrobnosti" />
       </IonHeader>
       <IonContent>
         <Refresher onUpdate={onUpdate} />

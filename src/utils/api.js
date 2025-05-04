@@ -11,7 +11,7 @@ const deviceName = (await Device.getInfo()).name || "";
 class Api {
   static async fetch(part, method, { data = null, auth = false, headers = {}, server = null } = {}) {
     if (!window.navigator.onLine) {
-      throw "Vyzerá to tak, že si offline. Skontroluj prosím pripojenie na internet.";
+      throw "Zdá sa, že sa nevieme pripojiť na internet. Skontroluj, prosím, pripojenie.";
     }
 
     // these headers are required

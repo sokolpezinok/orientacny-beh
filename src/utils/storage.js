@@ -82,11 +82,10 @@ export class Storage {
     } catch (error) {
       console.error(error);
       try {
-        alert("Nepodarilo sa načítať dáta z úložiska, reštartujem, ospravedlňujeme sa za opätovné prihlásenie.\n" + error);
         await this.load_clean();
       } catch (error) {
         console.error(error);
-        alert("Ospravedlňujeme sa, došlo k neočakávanej chybe. Skúste vymazať úložisko aplikácie alebo kontaktujte administrátora.\n" + error);
+        alert("Ospravedlňujeme sa, došlo k neočakávanej chybe. Skús vymazať úložisko aplikácie alebo kontaktuj administrátora.\n" + error);
       }
     }
 
