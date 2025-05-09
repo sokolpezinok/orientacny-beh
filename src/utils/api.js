@@ -7,6 +7,8 @@ import { Notifications } from "./notify";
 const defaultServer = () => `${apiServer}/${Storage.pull().club.clubname}`;
 const deviceName = (await Device.getInfo()).name || "";
 
+let allowLogout = true;
+
 // server api packaged into a class
 class Api {
   static async fetch(part, method, { data = null, auth = false, headers = {}, server = null } = {}) {
@@ -48,7 +50,7 @@ class Api {
       }
 
       // reserved for going to login screen, probably token expired
-      if (response.status == 401) {
+      if (response.status == 401 && allowLogout) {
         alert("Prosím, prihlás sa znova.\n" + message);
         await SystemApi.logout();
         return;
@@ -196,8 +198,13 @@ export class SystemApi {
   };
 
   static logout = async () => {
+    // If a 401 error occurs during the logout process,
+    // the fetch request might try to trigger another logout sequence.
+    // This is unnecessary because we're already in the middle of logging out.
+    allowLogout = false;
     await SystemApi.device_delete().catch((error) => console.warn(error));
     await Notifications.destroy().catch((error) => console.warn(error));
+    allowLogout = true;
     await Storage.push((s) => {
       s.isLoggedIn = false;
     });

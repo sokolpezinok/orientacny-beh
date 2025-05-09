@@ -54,7 +54,7 @@ const UserNotify = memo(({ content: [content, devices], onUpdate }) => {
                 <IonSelectOption value={null}>Všetky zariadenia</IonSelectOption>
                 {devices.map((child) => (
                   <IonSelectOption key={child.device} value={child.device}>
-                    {child.device_name}
+                    {child.device_name || child.device}
                   </IonSelectOption>
                 ))}
               </Select>

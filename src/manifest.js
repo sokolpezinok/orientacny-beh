@@ -25,9 +25,9 @@
 // (c) KOB Sokol Pezinok
 
 export const appName = "Orientačný beh";
-export const appBuildVersion = `v3.06`;
+export const appBuildVersion = `v3.6.4`;
 export const appPackageName = "orienteering.app";
-export const debug = true;
+export const debug = false;
 
 //======================================//
 // do NOT add trailing slash at the end //
