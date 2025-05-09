@@ -132,7 +132,7 @@ export class Session {
       Session.push((s) => {
         s.policies = {
           adm: policies.policy_adm,
-          adm_small: policies.policy_sadm,
+          adm_small: policies.policy_adm_small,
           news: policies.policy_news,
           regs: policies.policy_regs,
           fin: policies.policy_fin,

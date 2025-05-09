@@ -37,7 +37,7 @@ const Notify = memo(({ content }) => {
     <IonPage>
       <Header defaultHref="/tabs/settings" title="Upozornenia">
         <IonButtons slot="end">
-          <IonButton onClick={formRef.current?.submit}>
+          <IonButton onClick={() => formRef.current?.submit()}>
             <IonIcon slot="icon-only" icon={save} />
           </IonButton>
         </IonButtons>

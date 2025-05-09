@@ -25,7 +25,7 @@ const UserProfile = memo(({ content, onUpdate }) => {
     <IonPage>
       <Header title="Preteky člena" defaultHref={`/tabs/users/${user_id}`}>
         <IonButtons slot="end">
-          <IonButton onClick={formRef.current?.submit}>
+          <IonButton onClick={() => formRef.current?.submit()}>
             <IonIcon slot="icon-only" icon={save} />
           </IonButton>
         </IonButtons>

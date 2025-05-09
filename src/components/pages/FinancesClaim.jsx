@@ -58,7 +58,7 @@ const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
           <StatefulForm Render={FinancesClaimForm} content={{ message: lastMessage }} onSubmit={handleSubmit} />
           <br />
           <Spacing>
-            <PrimaryButton onClick={formRef.current?.submit}>{isUpdate ? "Zmeniť" : "Poslať"}</PrimaryButton>
+            <PrimaryButton onClick={() => formRef.current?.submit()}>{isUpdate ? "Zmeniť" : "Poslať"}</PrimaryButton>
             <TransparentButton onClick={handleClose} disabled={detail.claim === FinancesEnum.CLAIM_CLOSED}>
               Uzavrieť
             </TransparentButton>
