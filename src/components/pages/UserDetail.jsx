@@ -33,6 +33,7 @@ export const UserDetail = memo(({ content, onUpdate }) => {
           <h4>Číslo čipu</h4>
           <Copyable text={content.si_chip || "-"} />
         </ItemGroup>
+        <hr />
         <ItemLink routerLink={`/tabs/users/${content.user_id}/races`}>Preteky člena</ItemLink>
         {(advancedOptions || doesManageUser(content.user_id)) && <ItemLink routerLink={`/tabs/users/${content.user_id}/profile`}>Profil</ItemLink>}
         {advancedOptions && (

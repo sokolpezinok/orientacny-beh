@@ -34,7 +34,7 @@ const UserRacesContent = ({ content }) => {
   return content.map((child) => (
     <Item key={child.race_id} routerLink={`/tabs/races/${child.race_id}`}>
       <h2>{child.name}</h2>
-      <p>{child.category}</p>
+      <p>{child.category || "-"}</p>
     </Item>
   ));
 };

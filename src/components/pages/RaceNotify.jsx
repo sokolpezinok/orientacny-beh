@@ -43,7 +43,7 @@ const RaceNotify = memo(({ content }) => {
         <ItemGroup>
           <h2>{content.name}</h2>
         </ItemGroup>
-        <ItemGroup title="Notifikácia" subtitle="Členovia tvojho klubu, ktorí majú povolene notifikácie, dostanú tvoju správu okamžite.">
+        <ItemGroup title="Notifikácia" subtitle="Členovia tvojho klubu, ktorí majú povolené notifikácie, dostanú tvoju správu okamžite.">
           Táto notifikácia je viazaná na udalosť <b>{content.name}</b>, po kliknutí na notifikáciu sa automaticky otvorí.
         </ItemGroup>
         <StatelessForm onSubmit={handleSubmit}>
