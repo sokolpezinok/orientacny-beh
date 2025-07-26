@@ -2,6 +2,7 @@ import { Device } from "@capacitor/device";
 
 import { apiServer, appBuildVersion } from "@/manifest.js";
 import { Storage } from "@/utils/storage";
+import i18next from "i18next";
 import { Notifications } from "./notify";
 
 const defaultServer = () => `${apiServer}/${Storage.pull().club.clubname}`;
@@ -13,7 +14,7 @@ let allowLogout = true;
 class Api {
   static async fetch(part, method, { data = null, auth = false, headers = {}, server = null } = {}) {
     if (!window.navigator.onLine) {
-      throw "Zdá sa, že sa nevieme pripojiť na internet. Skontroluj, prosím, pripojenie.";
+      throw i18next.t("api.noInternet");
     }
 
     // these headers are required
@@ -43,15 +44,15 @@ class Api {
 
     // raise an error based on status code and try to report an error
     if (!response.ok) {
-      let message = content?.message ?? "Neznáma chyba, ktorej chýba chybová hláška.";
+      let message = content?.message ?? i18next.t("api.unknownError");
 
       if (response.status >= 500) {
-        message += "\n\nChyba sa stala na serveri. Prosím, nahláste chybu administrátorom.";
+        message += "\n\n" + i18next.t("api.serverError");
       }
 
       // reserved for going to login screen, probably token expired
       if (response.status == 401 && allowLogout) {
-        alert("Prosím, prihlás sa znova.\n" + message);
+        alert(i18next.t("api.signInAgain") + "\n" + message);
         await SystemApi.logout();
         return;
       }
@@ -67,7 +68,7 @@ class Api {
   static post = (part, options) => this.fetch(part, "POST", options);
   static delete = (part, options) => this.fetch(part, "DELETE", options);
 }
-
+console.log(Api);
 export class GeneralApi {
   static clubs = () =>
     Api.get(`/clubs`, {

@@ -5,16 +5,18 @@ import { Copyable, Header, ItemGroup, ItemLink, Refresher } from "@/components/u
 import { doesManageUser } from "@/utils";
 import { UserApi } from "@/utils/api";
 import { Session } from "@/utils/storage";
+import { useTranslation } from "react-i18next";
 import Content from "../controllers/Content";
 
 export default () => <Content Render={UserDetail} fetchContent={({ user_id }) => UserApi.detail(user_id)} errorText="Nepodarilo sa načítať dáta." />;
 
 export const UserDetail = memo(({ content, onUpdate }) => {
+  const { t } = useTranslation();
   const advancedOptions = Session.pull().policies.adm_small || Session.pull().policies.mng_big;
 
   return (
     <IonPage>
-      <Header title="Podrobnosti">
+      <Header title={t("users.detail.title")}>
         <IonButtons slot="start">
           <IonBackButton defaultHref="/tabs/users" />
         </IonButtons>
@@ -26,20 +28,20 @@ export const UserDetail = memo(({ content, onUpdate }) => {
             {content.name} {content.surname}
           </h2>
         </ItemGroup>
-        <ItemGroup title="Čip">
-          <h4>Registračné číslo</h4>
+        <ItemGroup title={t("profile.chip")}>
+          <h4>{t("profile.regNumber")}</h4>
           <Copyable text={content.reg || "-"} />
           <br />
-          <h4>Číslo čipu</h4>
+          <h4>{t("profile.chipNumber")}</h4>
           <Copyable text={content.si_chip || "-"} />
         </ItemGroup>
         <hr />
-        <ItemLink routerLink={`/tabs/users/${content.user_id}/races`}>Preteky člena</ItemLink>
-        {(advancedOptions || doesManageUser(content.user_id)) && <ItemLink routerLink={`/tabs/users/${content.user_id}/profile`}>Profil</ItemLink>}
+        <ItemLink routerLink={`/tabs/users/${content.user_id}/races`}>{t("users.races.title")}</ItemLink>
+        {(advancedOptions || doesManageUser(content.user_id)) && <ItemLink routerLink={`/tabs/users/${content.user_id}/profile`}>{t("users.profile.title")}</ItemLink>}
         {advancedOptions && (
           <>
-            <ItemLink routerLink={`/tabs/users/${content.user_id}/notify`}>Poslať notifikáciu</ItemLink>
-            <ItemLink routerLink={`/tabs/users/${content.user_id}/devices`}>Zariadenia</ItemLink>
+            <ItemLink routerLink={`/tabs/users/${content.user_id}/notify`}>{t("users.notify.title")}</ItemLink>
+            <ItemLink routerLink={`/tabs/users/${content.user_id}/devices`}>{t("users.devices.title")}</ItemLink>
           </>
         )}
       </IonContent>

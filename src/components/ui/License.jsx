@@ -1,8 +1,8 @@
 import { Anchor } from "./Design";
 
 export default ({}) => {
-  const license = `Copyright ${new Date().getFullYear()} KOB Sokol Pezinok
-
+  const copyright = `Copyright ${new Date().getFullYear()} KOB Sokol Pezinok\n`;
+  const license = `
 Permission is hereby granted, free of charge, to any person obtaining a copy of this
 software and associated documentation files (the "Software"), to deal in the Software
 without restriction, including without limitation the rights to use, copy, modify,
@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <>
       <Anchor href="https://prihlasky.sokolpezinok.sk/legal/gdpr.html">Oznámenie o spracovaní osobných údajov</Anchor>
       <br />
-      <pre className="overflow-auto">{license}</pre>
+      <pre className="overflow-auto">{copyright + license}</pre>
     </>
   );
 };

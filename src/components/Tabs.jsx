@@ -6,6 +6,7 @@ import { Redirect, Route } from "react-router-dom";
 import { SystemApi } from "@/utils/api";
 import { payments } from "@/utils/icons";
 import { Session, Storage } from "@/utils/storage";
+import { useTranslation } from "react-i18next";
 import DeeplinkListener from "./controllers/DeeplinkListener";
 import NotifyListener from "./controllers/NotifyListener";
 import { SpinnerPage } from "./ui/Design";
@@ -75,6 +76,8 @@ export default memo(({}) => {
 });
 
 const Tabs = memo(({}) => {
+  const { t } = useTranslation();
+
   return (
     <IonTabs>
       <IonRouterOutlet>
@@ -102,19 +105,19 @@ const Tabs = memo(({}) => {
       <IonTabBar slot="bottom" id="ion-tab-bar">
         <IonTabButton tab="races" href="/tabs/races">
           <IonIcon icon={trailSign} />
-          <IonLabel>Preteky</IonLabel>
+          <IonLabel>{t("races.title")}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="finances" href="/tabs/finances">
           <IonIcon src={payments} />
-          <IonLabel>Financie</IonLabel>
+          <IonLabel>{t("finances.title")}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="users" href="/tabs/users">
           <IonIcon src={people} />
-          <IonLabel>Členovia</IonLabel>
+          <IonLabel>{t("users.title")}</IonLabel>
         </IonTabButton>
         <IonTabButton tab="settings" href="/tabs/settings">
           <IonIcon src={settings} />
-          <IonLabel>Nastavenia</IonLabel>
+          <IonLabel>{t("settings.title")}</IonLabel>
         </IonTabButton>
       </IonTabBar>
     </IonTabs>

@@ -23,6 +23,7 @@ import {
 import classNames from "classnames";
 import { alertCircleOutline, checkmarkCircleOutline, chevronForward, clipboardOutline, closeCircleOutline, openOutline } from "ionicons/icons";
 import { forwardRef, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useModal } from "./Modals";
 
 export function Item({ children, className, innerPadding, ...props }) {
@@ -72,6 +73,7 @@ export function Spacing({ children, innerPadding, topPadding, className, props }
 }
 
 export function ReadMore({ children }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const ref = useRef(null);
 
@@ -83,7 +85,7 @@ export function ReadMore({ children }) {
       {/* display only first time and if text has has been clamped (height was is hardcoded) */}
       {!expanded && ref.current && ref.current.getBoundingClientRect().height >= 96 && (
         <Anchor className="block" onClick={() => setExpanded(true)} textOnly>
-          Čítaj viac
+          {t("basic.readMore")}
         </Anchor>
       )}
     </>
@@ -233,14 +235,15 @@ export const Refresher = ({ onUpdate }) => {
 };
 
 export const Copyable = ({ text }) => {
+  const { t } = useTranslation();
   const { toastModal } = useModal();
 
   const handleClick = async () => {
     try {
       await window.navigator.clipboard.writeText(text);
-      toastModal("Skopírované!");
+      toastModal(t("basic.copyToClipboardSuccess"));
     } catch (error) {
-      toastModal("Nepodarilo sa skopírovať!");
+      toastModal(t("basic.copyToClipboardError"));
     }
   };
 
@@ -314,6 +317,7 @@ export const Error = ({ children, title = "", subtitle = "" }) => {
 };
 
 export const SpinnerPage = ({ name = "circular" }) => {
+  const { t } = useTranslation();
   const [state, setState] = useState(false);
 
   useEffect(() => {
@@ -328,8 +332,8 @@ export const SpinnerPage = ({ name = "circular" }) => {
           <div className="text-center">
             <IonSpinner color="primary" name={name} />
             <Drawer active={state}>
-              <p>Táto akcia trvá dlhšie, ako sme očakávali.</p>
-              <p>Za chvíľu to bude ...</p>
+              <p>{t("basic.loadingMoreThanExpected")}</p>
+              <p>{t("basic.promiseContentLoad")}</p>
             </Drawer>
           </div>
         </div>

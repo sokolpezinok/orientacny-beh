@@ -1,5 +1,6 @@
 import { IonContent, IonPage, IonRippleEffect } from "@ionic/react";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
 import { BooleanIcon, Header, Refresher } from "@/components/ui/Design";
@@ -9,20 +10,21 @@ import Content from "../controllers/Content";
 export default () => <Content Render={UserNotify} fetchContent={UserApi.statistics} errorText="Nepodarilo sa načítať dáta." />;
 
 const UserNotify = memo(({ content, onUpdate }) => {
+  const { t } = useTranslation();
   const router = useHistory();
 
   return (
     <IonPage>
-      <Header defaultHref="/tabs/users" title="Štatistiky" />
+      <Header defaultHref="/tabs/users" title={t("users.statistics.title")} />
       <IonContent>
         <Refresher onUpdate={onUpdate} />
         <table className="table">
           <thead>
             <tr>
-              <th>Meno</th>
-              <th>Priezvisko</th>
-              <th>Aplikácia</th>
-              <th>Notifikácie</th>
+              <th>{t("profile.name")}</th>
+              <th>{t("profile.surname")}</th>
+              <th>{t("users.statistics.hasAppInstalled")}</th>
+              <th>{t("users.statistics.hasNotifyActivated")}</th>
               <th />
             </tr>
           </thead>

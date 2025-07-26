@@ -6,8 +6,10 @@ import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import { Error, Refresher, SkeletonPage } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
+import { useTranslation } from "react-i18next";
 
 const Content = memo(({ Render, fetchContent, errorText }) => {
+  const { t } = useTranslation();
   const [content, setContent] = useState(null);
   const [error, setError] = useState(null);
   const { errorModal, confirmModal } = useModal();
@@ -21,7 +23,7 @@ const Content = memo(({ Render, fetchContent, errorText }) => {
 
   const handleUpdate = useCallback(async () => {
     if (formRef.current?.isDirty()) {
-      const surety = await confirmModal("Zmeny neboli uložené, zahodiť zmeny?");
+      const surety = await confirmModal(t("basic.confirmDiscardChanges"));
 
       if (!surety) {
         return;
@@ -63,7 +65,7 @@ const Content = memo(({ Render, fetchContent, errorText }) => {
       <IonContent>
         <Refresher onUpdate={handleUpdate} />
         <Error title={errorText} subtitle={error + ""}>
-          Ak chceš skúsiť znova, potiahni zhora nadol.
+          {t("basic.pullToRefresh")}
         </Error>
       </IonContent>
     </IonPage>
@@ -79,6 +81,7 @@ export const useStatefulForm = () => {
 };
 
 export const StatefulForm = ({ children, Render, content, onSubmit, props }) => {
+  const { t } = useTranslation();
   const current = useRef(new Store(content));
   const initial = useRef(null);
 
@@ -119,7 +122,7 @@ export const StatefulForm = ({ children, Render, content, onSubmit, props }) => 
       // cache action as it can change after user response
       const action = router.action;
 
-      confirmModal("Zmeny neboli uložené, zahodiť zmeny?").then((value) => {
+      confirmModal(t("basic.confirmDiscardChanges")).then((value) => {
         if (!value) {
           return;
         }

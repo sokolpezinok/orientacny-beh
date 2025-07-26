@@ -1,3 +1,4 @@
+import { initTranslation, useLoadTranslation } from "@/i18n";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { IonApp, IonPage, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
@@ -9,6 +10,7 @@ import Tabs from "./Tabs";
 import { Error, SpinnerPage } from "./ui/Design";
 
 setupIonicReact({});
+initTranslation();
 
 const matchColorMode = async () => {
   try {
@@ -36,6 +38,8 @@ function Fallback({ error }) {
 }
 
 const AppShell = () => {
+  useLoadTranslation();
+
   return (
     <IonApp>
       <ErrorBoundary FallbackComponent={Fallback}>

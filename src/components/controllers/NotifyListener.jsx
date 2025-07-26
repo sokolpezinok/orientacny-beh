@@ -2,6 +2,7 @@ import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { Capacitor } from "@capacitor/core";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
 import { useModal } from "@/components/ui/Modals";
@@ -9,6 +10,7 @@ import { SystemApi } from "@/utils/api";
 import { Notifications, NotifyEvents } from "@/utils/notify";
 
 const NotifyListener = ({}) => {
+  const { t } = useTranslation();
   // listens for push notifications
 
   const router = useHistory();
@@ -24,11 +26,11 @@ const NotifyListener = ({}) => {
     }
 
     if (!value) {
-      throw "Chyba v obsahu notifikácie. (value missing)";
+      throw t("api.notify.formatError");
     }
 
     router.push(`/tabs/races/${value}`);
-  }, "Nepodarilo sa otvoriť notifikáciu.");
+  }, t("api.notify.openError"));
 
   const handleNotifyReceived = actionFeedbackModal(async (event) => {
     await Notifications.notify({
@@ -37,11 +39,11 @@ const NotifyListener = ({}) => {
       largeBody: event.notification.body,
       extra: event.notification.data,
     });
-  }, "Nepodarilo sa prijať notifikáciu.");
+  }, t("api.notify.receiveError"));
 
   const handleTokenReceived = actionFeedbackModal(async (event) => {
     await SystemApi.fcm_token_update(event.token);
-  }, "Nepodarilo sa aktualizovať registračný token notifikácií.");
+  }, t("api.notify.tokenUpdateError"));
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -53,7 +55,7 @@ const NotifyListener = ({}) => {
       return actionFeedbackModal(async () => {
         await FirebaseMessaging.removeAllListeners();
         await LocalNotifications.removeAllListeners();
-      }, "Nastala chyba pri vypínaní notifikácií. Skús aplikáciu reštartovať.");
+      }, t("api.notify.removeListenerError"));
     }
   }, []);
 };

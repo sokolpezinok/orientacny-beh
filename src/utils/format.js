@@ -1,3 +1,5 @@
+import i18next from "i18next";
+
 export const formatDate = (value) => {
   const convert = new Date(value);
 
@@ -30,16 +32,16 @@ export const lazyDate = (value) => {
 
   switch (true) {
     case remainingDays === -1:
-      weekday = "včera";
+      weekday = i18next.t("week.yesterday");
       break;
     case remainingDays === 0:
-      weekday = "dnes";
+      weekday = i18next.t("week.today");
       break;
     case remainingDays === 1:
-      weekday = "zajtra";
+      weekday = i18next.t("week.tomorrow");
       break;
     case -7 < remainingDays && remainingDays < 0:
-      weekday = `min. ${possibleWeekday}`;
+      weekday = i18next.t("week.last", { dayName: possibleWeekday });
       break;
     case 0 < remainingDays && remainingDays < 7:
       weekday = possibleWeekday;
@@ -63,4 +65,6 @@ export const lazyDates = (values) => {
   return values.sort().map(lazyDate).join(" → ");
 };
 
+// This is not to prevent XSS attacks, React actually prevents XSS.
+// This is only for visual purposes, because server allows HTML styling and React does not.
 export const stripTags = (string) => string && string.replace(/<\/?[^>]+(>|$)/g, "");

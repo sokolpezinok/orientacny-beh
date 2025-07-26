@@ -1,5 +1,6 @@
 import { IonContent, IonPage } from "@ionic/react";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import { Header, ItemGroup, PrimaryButton, Refresher } from "@/components/ui/Design";
@@ -10,6 +11,7 @@ import { StatelessForm } from "../controllers/Content";
 import { UserNotifyForm } from "./UserNotify";
 
 const UserNotify = memo(({ onUpdate }) => {
+  const { t } = useTranslation();
   const { user_id } = useParams();
   const { actionFeedbackModal, confirmModal } = useModal();
 
@@ -21,29 +23,29 @@ const UserNotify = memo(({ onUpdate }) => {
     };
 
     if (data.title.length === 0) {
-      throw "Nezabudni vyplniť nadpis notifikácie.";
+      throw t("users.notify.fillTitle");
     }
 
-    const surety = await confirmModal(`Naozaj sa chceš poslať notifikáciu celému klubu ${Storage.pull().club.fullname}?`);
+    const surety = await confirmModal(t("users.notifyAll.confirmSend", { club: Storage.pull().club.fullname }));
 
     if (!surety) {
       return;
     }
 
     await UserApi.notify_everyone(user_id, data);
-    return "Notifikácia bola úspešne odoslaná.";
-  }, "Nepodarilo sa poslať notifikáciu.");
+    return t("users.notify.sendSuccess");
+  }, t("users.notify.sendError"));
 
   return (
     <IonPage>
-      <Header defaultHref="/tabs/users" title="Napísať klubu notifikáciu" />
+      <Header defaultHref="/tabs/users" title={t("users.notifyAll.title")} />
       <IonContent>
         <Refresher onUpdate={onUpdate} />
-        <ItemGroup title="Notifikácia" subtitle="Členovia tvojho klubu, ktorí majú povolené notifikácie, dostanú správu okamžite." />
+        <ItemGroup title={t("users.notify.notification")} subtitle={t("users.notifyAll.willReceiveImmediately")} />
         <StatelessForm onSubmit={handleSubmit}>
           <UserNotifyForm />
           <ItemGroup>
-            <PrimaryButton type="submit">Poslať</PrimaryButton>
+            <PrimaryButton type="submit">{t("basic.send")}</PrimaryButton>
           </ItemGroup>
         </StatelessForm>
       </IonContent>

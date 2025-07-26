@@ -1,5 +1,6 @@
 import { IonBackButton, IonButtons, IonContent, IonPage } from "@ionic/react";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
 import { Header, ItemGroup, PrimaryButton, Refresher, SmallSuccess, SmallWarning, Spacing, Textarea, TransparentButton } from "@/components/ui/Design";
@@ -14,6 +15,7 @@ export default () => (
 );
 
 const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
+  const { t } = useTranslation();
   const { fin_id } = useParams();
   const { actionFeedbackModal } = useModal();
   const router = useHistory();
@@ -23,17 +25,17 @@ const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
     const message = data.message.trim();
 
     if (message.length === 0) {
-      throw "Nezabudni napísať, čo sa ti nepáči.";
+      throw t("finances.claim.fillReason");
     }
 
     await FinancesApi.claim_message(fin_id, message);
     onUpdate();
-  }, "Nepodarilo sa poslať správu");
+  }, t("finances.claim.sendMessageError"));
 
   const handleClose = actionFeedbackModal(async () => {
     await FinancesApi.claim_close(fin_id);
     onUpdate();
-  }, "Nepodarilo sa uzavrieť reklamáciu");
+  }, t("finances.claim.closeClaimError"));
 
   // messages ordered by descending date
   const isUpdate = history.length > 0 && history[0].user_id == Storage.pull().userId;
@@ -41,7 +43,7 @@ const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
 
   return (
     <IonPage>
-      <Header title="Reklamácia">
+      <Header title={t("finances.claim.title")}>
         <IonButtons slot="start">
           <IonBackButton defaultHref="#" onClick={() => router.replace(`/tabs/finances/${fin_id}`)} />
         </IonButtons>
@@ -49,24 +51,24 @@ const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
       <IonContent>
         <Refresher onUpdate={onUpdate} />
         <ItemGroup>
-          <h2>{detail.race_name || `Transakcia #${fin_id}`}</h2>
+          <h2>{detail.race_name || t("finances.transactionID", { id: fin_id })}</h2>
           <br />
-          {detail.claim === FinancesEnum.CLAIM_OPENED && <SmallWarning title="Reklamácia je otvorená." />}
-          {detail.claim === FinancesEnum.CLAIM_CLOSED && <SmallSuccess title="Reklamácia bola uzatvorená." />}
+          {detail.claim === FinancesEnum.CLAIM_OPENED && <SmallWarning title={t("finances.claim.claimOpened")} />}
+          {detail.claim === FinancesEnum.CLAIM_CLOSED && <SmallSuccess title={t("finances.claim.claimClosed")} />}
         </ItemGroup>
-        <ItemGroup title="Poslať správu">
+        <ItemGroup title={t("finances.claim.sendMessage")}>
           <StatefulForm Render={FinancesClaimForm} content={{ message: lastMessage }} onSubmit={handleSubmit} />
           <br />
           <Spacing>
-            <PrimaryButton onClick={() => formRef.current?.submit()}>{isUpdate ? "Zmeniť" : "Poslať"}</PrimaryButton>
+            <PrimaryButton onClick={() => formRef.current?.submit()}>{isUpdate ? t("finances.claim.changeClaim") : t("finances.claim.sendClaim")}</PrimaryButton>
             <TransparentButton onClick={handleClose} disabled={detail.claim === FinancesEnum.CLAIM_CLOSED}>
-              Uzavrieť
+              {t("finances.claim.close")}
             </TransparentButton>
           </Spacing>
         </ItemGroup>
         <hr />
-        <ItemGroup title="Chat">
-          {history.length === 0 && <small>(zatiaľ žiadna správa)</small>}
+        <ItemGroup title={t("finances.claim.chat")}>
+          {history.length === 0 && <small>{t("finances.claim.noMessageFound")}</small>}
           {history.map((child) => (
             <div key={child.claim_id} className="mb-4">
               <h4>
@@ -82,6 +84,7 @@ const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
 });
 
 const FinancesClaimForm = ({ store }) => {
+  const { t } = useTranslation();
   const state = store.useState();
 
   const handleChange = (event) => {
@@ -92,5 +95,5 @@ const FinancesClaimForm = ({ store }) => {
     });
   };
 
-  return <Textarea name="message" label="Čo sa ti nepáči?" value={state.message} onIonChange={handleChange} />;
+  return <Textarea name="message" label={t("finances.claim.reason")} value={state.message} onIonChange={handleChange} />;
 };

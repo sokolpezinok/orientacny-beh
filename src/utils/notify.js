@@ -1,6 +1,7 @@
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { Capacitor } from "@capacitor/core";
 import { LocalNotifications } from "@capacitor/local-notifications";
+import i18next from "i18next";
 import { SystemApi } from "./api";
 import { Storage } from "./storage";
 
@@ -13,7 +14,7 @@ export class Notifications {
     }
 
     if (status.receive !== "granted") {
-      throw "Povolenie bolo zrušené používateľom. Notifikácie môžeš povoliť v systémových nastaveniach.";
+      throw i18next.t("notify.deniedByUser");
     }
   };
 

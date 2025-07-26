@@ -1,5 +1,6 @@
 import { IonContent, IonPage } from "@ionic/react";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import { Header, Item, ItemGroup, Refresher } from "@/components/ui/Design";
@@ -9,11 +10,12 @@ import Content from "../controllers/Content";
 export default () => <Content Render={UserRaces} fetchContent={({ user_id }) => UserApi.user_races(user_id)} errorText="Nepodarilo sa načítať dáta." />;
 
 const UserRaces = memo(({ content, onUpdate }) => {
+  const { t } = useTranslation();
   const { user_id } = useParams();
 
   return (
     <IonPage>
-      <Header title="Preteky člena" defaultHref={`/tabs/users/${user_id}`} />
+      <Header title={t("users.races.title")} defaultHref={`/tabs/users/${user_id}`} />
       <IonContent>
         <Refresher onUpdate={onUpdate} />
         <UserRacesContent content={content} />
@@ -23,10 +25,12 @@ const UserRaces = memo(({ content, onUpdate }) => {
 });
 
 const UserRacesContent = ({ content }) => {
+  const { t } = useTranslation();
+
   if (content.length === 0) {
     return (
       <ItemGroup>
-        <small>(žiadne preteky)</small>
+        <small>{t("users.races.noRacesFound")}</small>
       </ItemGroup>
     );
   }

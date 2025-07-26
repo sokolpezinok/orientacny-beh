@@ -1,5 +1,6 @@
 import { IonContent, IonPage } from "@ionic/react";
 import { memo } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import { Header, Input, ItemGroup, PrimaryButton, Textarea } from "@/components/ui/Design";
@@ -12,6 +13,7 @@ import Content, { StatelessForm } from "../controllers/Content";
 export default () => <Content Render={RaceNotify} fetchContent={({ race_id }) => RaceApi.detail(race_id)} errorText="Nepodarilo sa načítať preteky." />;
 
 const RaceNotify = memo(({ content }) => {
+  const { t } = useTranslation();
   const { race_id } = useParams();
   const { actionFeedbackModal, confirmModal } = useModal();
 
@@ -23,37 +25,37 @@ const RaceNotify = memo(({ content }) => {
     };
 
     if (data.title.length === 0) {
-      throw "Nezabudni vyplniť nadpis notifikácie.";
+      throw t("races.notify.fillTitle");
     }
 
-    const surety = await confirmModal(`Naozaj sa chceš poslať notifikáciu celému klubu ${Storage.pull().club.fullname}?`);
+    const surety = await confirmModal(t("races.notify.confirmSend", { club: Storage.pull().club.fullname }));
 
     if (!surety) {
       return;
     }
 
     await RaceApi.notify(race_id, data);
-    return "Notifikácia bola úspešne odoslaná.";
-  }, "Nepodarilo sa poslať notifikáciu.");
+    return t("races.notify.sendSuccess");
+  }, t("races.notify.sendError"));
 
   return (
     <IonPage>
-      <Header defaultHref={`/tabs/races/${race_id}`} title="Napísať notifikáciu" />
+      <Header defaultHref={`/tabs/races/${race_id}`} title={t("races.notify.title")} />
       <IonContent>
         <ItemGroup>
           <h2>{content.name}</h2>
         </ItemGroup>
-        <ItemGroup title="Notifikácia" subtitle="Členovia tvojho klubu, ktorí majú povolené notifikácie, dostanú tvoju správu okamžite.">
-          Táto notifikácia je viazaná na udalosť <b>{content.name}</b>, po kliknutí na notifikáciu sa automaticky otvorí.
+        <ItemGroup title={t("races.notify.notification")} subtitle={t("races.notify.willReceiveImmediately")}>
+          <Trans i18nKey="races.notify.notifyIsBoundToEvent" values={{ event: content.name }} components={[<b />]} />
         </ItemGroup>
         <StatelessForm onSubmit={handleSubmit}>
           <ItemGroup>
-            <Input label="Nadpis" name="title" value="Pripomienka" required />
-            <Input label="URL adresa obrázka (nepovinné)" name="image" value="" />
-            <Textarea label="Obsah" name="body" value={`Už len ${lazyDate(content.entries[0])} sa dá prihlásiť. Nikto ďalší nechce ísť?`} />
+            <Input label={t("races.notify.titleLabel")} name="title" value={t("races.notify.titlePlaceholder")} required />
+            <Input label={t("races.notify.imageUrlLabel")} name="image" value="" />
+            <Textarea label={t("races.notify.bodyLabel")} name="body" value={t("races.notify.bodyPlaceholder", { date: lazyDate(content.entries[0]) })} />
           </ItemGroup>
           <ItemGroup>
-            <PrimaryButton type="submit">Poslať celému klubu</PrimaryButton>
+            <PrimaryButton type="submit">{t("races.notify.send")}</PrimaryButton>
           </ItemGroup>
         </StatelessForm>
       </IonContent>

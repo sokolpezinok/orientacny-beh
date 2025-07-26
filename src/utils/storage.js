@@ -10,6 +10,7 @@ export class Storage {
     preferences: {
       activeNotify: false,
       hasAcceptedTerms: false,
+      locale: "sk",
     },
 
     // access token
@@ -53,6 +54,10 @@ export class Storage {
       key: this.profile,
       value: JSON.stringify(profile),
     });
+  }
+
+  static subscribe(watch, listener) {
+    return this.store.subscribe(watch, listener);
   }
 
   static load_clean() {

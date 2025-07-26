@@ -1,6 +1,7 @@
 import { IonButton, IonButtons, IonContent, IonIcon, IonItem, IonPage, IonPopover, IonRippleEffect, IonSearchbar } from "@ionic/react";
 import { ellipsisVertical } from "ionicons/icons";
 import { memo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
 import { Header, Refresher } from "@/components/ui/Design";
@@ -12,6 +13,7 @@ import Content from "../controllers/Content";
 export default () => <Content Render={Users} fetchContent={UserApi.list} errorText="Nepodarilo sa načítať dáta." />;
 
 const Users = memo(({ content, onUpdate }) => {
+  const { t } = useTranslation();
   const [table, setTable] = useState(content);
   const router = useHistory();
 
@@ -36,7 +38,7 @@ const Users = memo(({ content, onUpdate }) => {
 
   return (
     <IonPage>
-      <Header title="Členovia">
+      <Header title={t("users.title")}>
         {Session.pull().policies.mng_big && (
           <IonButtons slot="end">
             <IonButton id="ellipsis">
@@ -44,24 +46,24 @@ const Users = memo(({ content, onUpdate }) => {
             </IonButton>
             <IonPopover trigger="ellipsis" dismissOnSelect={true}>
               <IonContent>
-                <IonItem routerLink="/tabs/users/notify">Poslať notifikáciu</IonItem>
-                <IonItem routerLink="/tabs/users/statistics">Štatistiky</IonItem>
+                <IonItem routerLink="/tabs/users/notify">{t("users.notify.title")}</IonItem>
+                <IonItem routerLink="/tabs/users/statistics">{t("users.statistics.title")}</IonItem>
               </IonContent>
             </IonPopover>
           </IonButtons>
         )}
       </Header>
       <div className="bg-background">
-        <IonSearchbar placeholder="Vyhľadaj podľa mena alebo čísla čipu" onIonInput={handleChange} onIonClear={handleClear} />
+        <IonSearchbar placeholder={t("users.searchTutorial")} onIonInput={handleChange} onIonClear={handleClear} />
       </div>
       <IonContent>
         <Refresher onUpdate={onUpdate} />
         <table className="table">
           <thead>
             <tr>
-              <th>Meno</th>
-              <th>Priezvisko</th>
-              <th>Čip</th>
+              <th>{t("profile.name")}</th>
+              <th>{t("profile.surname")}</th>
+              <th>{t("profile.chipNumber")}</th>
               <th />
             </tr>
           </thead>

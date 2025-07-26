@@ -1,11 +1,12 @@
 import { IonBackButton, IonButtons, IonContent, IonInputPasswordToggle, IonModal, IonPage, IonSelectOption } from "@ionic/react";
 import { memo, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
 import { Checkbox, Header, Input, PrimaryButton, Select, Spacing } from "@/components/ui/Design";
 import License from "@/components/ui/License";
 import { useModal } from "@/components/ui/Modals";
-import { debug } from "@/manifest";
+import { appName, debug } from "@/manifest";
 import { sort } from "@/utils";
 import { GeneralApi, SystemApi } from "@/utils/api";
 import { Storage } from "@/utils/storage";
@@ -14,6 +15,8 @@ import Content, { StatelessForm } from "../controllers/Content";
 export default () => <Content Render={Login} fetchContent={GeneralApi.clubs} errorText="Nepodarilo sa načítať zoznam klubov." />;
 
 const Login = memo(({ content }) => {
+  const { t } = useTranslation();
+
   const [termsAccepted, setTermsAccepted] = useState(Storage.pull().preferences.hasAcceptedTerms);
   const [isOpen, setOpen] = useState(false);
 
@@ -32,7 +35,7 @@ const Login = memo(({ content }) => {
   content = sort(content, (value) => value.fullname.toLowerCase());
 
   const handleSubmit = actionFeedbackModal(async (elements) => {
-    if (!termsAccepted) throw "Súhlas s licenčnými podmienkami je povinný.";
+    if (!termsAccepted) throw t("login.acceptTerms");
 
     const data = {
       username: elements.username.value,
@@ -40,9 +43,9 @@ const Login = memo(({ content }) => {
       clubname: elements.clubname.value,
     };
 
-    if (data.username === "") throw "Nezabudni zadať meno.";
-    if (data.password === "") throw "Nezabudni zadať heslo.";
-    if (data.clubname === "") throw "Nezabudni vybrať klub.";
+    if (data.username === "") throw t("login.fillUsername");
+    if (data.password === "") throw t("login.fillPassword");
+    if (data.clubname === "") throw t("login.fillClub");
 
     const selectedClub = content.find((child) => child.clubname === data.clubname);
 
@@ -55,10 +58,10 @@ const Login = memo(({ content }) => {
 
     router.push("/tabs");
 
-    if (await confirmModal("Zapni si notifikácie", "Nezmeškaj prihlasovanie na preteky a dôležité správy. Svoje rozhodnutie môžeš kedykoľvek zmeniť v upozorneniach.")) {
+    if (await confirmModal(t("login.alertSetupNotifyTitle"), t("login.alertSetupNotifyBody"))) {
       router.push("/tabs/settings/notify");
     }
-  }, "Nastal problém pri prihlasovaní.");
+  }, t("login.alertLoginError"));
 
   return (
     <IonPage>
@@ -67,15 +70,15 @@ const Login = memo(({ content }) => {
           <div className="flex w-full max-w-xl flex-col gap-8 p-8 lg:max-w-6xl lg:flex-row">
             <div className="flex items-center gap-8">
               <img className="w-24" src="/favicon.png" />
-              <h1 className="lg:text-4xl">Orientačný beh</h1>
+              <h1 className="lg:text-4xl">{appName}</h1>
             </div>
             <div className="flex-1">
               <StatelessForm onSubmit={handleSubmit}>
-                <Input name="username" type="text" label="Meno" required />
-                <Input name="password" type="password" label="Heslo" required>
+                <Input name="username" type="text" label={t("login.username")} required />
+                <Input name="password" type="password" label={t("login.password")} required>
                   <IonInputPasswordToggle slot="end" />
                 </Input>
-                <Select name="clubname" label="Klub" required>
+                <Select name="clubname" label={t("login.club")} required>
                   {content
                     .filter((child) => child.is_release || debug)
                     .map((child, index) => (
@@ -86,19 +89,19 @@ const Login = memo(({ content }) => {
                 </Select>
                 <br />
                 <Checkbox checked={termsAccepted} onIonChange={(event) => setTermsAccepted(event.target.checked)} required>
-                  Súhlasím s{" "}
+                  {t("login.iAgreeWith")}{" "}
                   <a href="#" ref={licenseRef}>
-                    licenčnými podmienkami
+                    {t("login.withTermsOfService")}
                   </a>
                 </Checkbox>
                 <br />
-                <PrimaryButton type="submit">Prihlásiť sa</PrimaryButton>
+                <PrimaryButton type="submit">{t("Prihlásiť sa")}</PrimaryButton>
               </StatelessForm>
             </div>
           </div>
         </div>
         <IonModal isOpen={isOpen}>
-          <Header title="Licenčné podmienky">
+          <Header title={t("login.termsOfService")}>
             <IonButtons slot="start">
               <IonBackButton defaultHref="#" onClick={() => setOpen(false)} />
             </IonButtons>
