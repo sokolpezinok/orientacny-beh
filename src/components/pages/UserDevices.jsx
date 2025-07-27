@@ -8,7 +8,7 @@ import { UserApi } from "@/utils/api";
 import Content from "../controllers/Content";
 import { DevicesContent } from "./Devices";
 
-export default () => <Content Render={UserDevices} fetchContent={({ user_id }) => UserApi.user_devices(user_id)} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={UserDevices} fetchContent={({ user_id }) => UserApi.user_devices(user_id)} />;
 
 const UserDevices = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();

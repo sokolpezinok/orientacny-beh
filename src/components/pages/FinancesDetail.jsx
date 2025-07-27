@@ -8,7 +8,7 @@ import { FinancesApi, FinancesEnum } from "@/utils/api";
 import { lazyDate, stripTags } from "@/utils/format";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={FinancesDetail} fetchContent={({ fin_id }) => FinancesApi.detail(fin_id)} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={FinancesDetail} fetchContent={({ fin_id }) => FinancesApi.detail(fin_id)} />;
 
 export const FinancesDetail = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();
@@ -74,7 +74,7 @@ export const FinancesDetail = memo(({ content, onUpdate }) => {
               </PrimaryButton>
             </SmallSuccess>
           )}
-          {content.claim === FinancesEnum.CLAIM_UNOPENED && <PrimaryButton onClick={handleClick}>Reklamovať</PrimaryButton>}
+          {content.claim === FinancesEnum.CLAIM_UNOPENED && <PrimaryButton onClick={handleClick}>{t("finances.detail.claim")}</PrimaryButton>}
         </ItemGroup>
       </IonContent>
     </IonPage>

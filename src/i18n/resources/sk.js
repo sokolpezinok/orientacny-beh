@@ -64,6 +64,7 @@ export default {
       transactionDate: "Dátum transakcie:",
       raceDate: "Dátum preteku:",
       transactionAuthor: "Autor:",
+      claim: "Reklamovať",
     },
     storno: {
       title: "Táto transakcia bolo stornovaná.",
@@ -73,6 +74,7 @@ export default {
     },
   },
   login: {
+    clubsLoadError: "Nepodarilo sa načítať zoznam klubov.",
     acceptTerms: "Súhlas s licenčnými podmienkami je povinný.",
     fillUsername: "Nezabudni zadať meno.",
     fillPassword: "Nezabudni zadať heslo.",
@@ -86,6 +88,7 @@ export default {
     iAgreeWith: "Súhlasím s",
     withTermsOfService: "licenčnými podmienkami",
     termsOfService: "Licenčné podmienky",
+    login: "Prihlásiť sa",
   },
   notify: {
     title: "Upozornenia",
@@ -157,6 +160,7 @@ export default {
     title: "Preteky",
     alertNoRacesTitle: "V najbližšej dobe nie sú naplánované preteky.",
     alertNoRacesBody: "Môžeš si zabehať nesúťažne ;)",
+    racesLoadError: "Nepodarilo sa načítať preteky.",
     detail: {
       title: "Podrobnosti",
       alertRaceCancelledTitle: "Preteky sú zrušené",
@@ -165,6 +169,7 @@ export default {
       alertDeadlineExpiredBody: "Vypršal posledný možný termín na prihlásenie.",
       signInOrUpdate: "Zmeniť / Odhlásiť sa",
       signInDeadline: "Prihlásiť sa do",
+      signInDeadlineNumber: "{{number}}. termín",
       transportOwn: "Vlastná doprava",
       transportOrganized: "Organizovaná doprava",
       accommodationOwn: "Vlastné ubytovanie",
@@ -294,6 +299,10 @@ export default {
     unknownError: "Neznáma chyba, ktorej chýba chybová hláška.",
     serverError: "Chyba sa stala na serveri. Prosím, nahláste chybu administrátorom.",
     signInAgain: "Prosím, prihlás sa znova.",
+    fatalError: "Neočakávaná chyba, kvôli ktorej aplikácia nemôže fungovať.",
+    storageLoadError: "Ospravedlňujeme sa, došlo k neočakávanej chybe. Skús vymazať úložisko aplikácie alebo kontaktuj administrátora.",
+    dataLoadError: "Nepodarilo sa načítať dáta.",
+    policiesLoadError: "Nepodarilo sa načítať dáta zo serveru - niektoré údaje nemusia byť správne.",
     deepLink: {
       openError: "Nepodarilo sa otvoriť odkaz.",
       unknownServer: "Odkaz sa nezhoduje so serverom.",

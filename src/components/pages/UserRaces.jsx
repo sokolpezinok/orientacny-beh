@@ -7,7 +7,7 @@ import { Header, Item, ItemGroup, Refresher } from "@/components/ui/Design";
 import { UserApi } from "@/utils/api";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={UserRaces} fetchContent={({ user_id }) => UserApi.user_races(user_id)} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={UserRaces} fetchContent={({ user_id }) => UserApi.user_races(user_id)} />;
 
 const UserRaces = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();

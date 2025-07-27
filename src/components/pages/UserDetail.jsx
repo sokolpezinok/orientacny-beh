@@ -8,7 +8,7 @@ import { Session } from "@/utils/storage";
 import { useTranslation } from "react-i18next";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={UserDetail} fetchContent={({ user_id }) => UserApi.detail(user_id)} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={UserDetail} fetchContent={({ user_id }) => UserApi.detail(user_id)} />;
 
 export const UserDetail = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();

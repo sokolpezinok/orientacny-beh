@@ -4,6 +4,7 @@ import { IonApp, IonPage, IonRouterOutlet, setupIonicReact } from "@ionic/react"
 import { IonReactRouter } from "@ionic/react-router";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { useTranslation } from "react-i18next";
 import { Redirect, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Tabs from "./Tabs";
@@ -30,9 +31,11 @@ window.matchMedia("(prefers-color-scheme: dark)").addListener(matchColorMode);
 matchColorMode(window.matchMedia("(prefers-color-scheme: dark)"));
 
 function Fallback({ error }) {
+  const { t } = useTranslation();
+
   return (
     <IonPage>
-      <Error title="Neočakávaná chyba, kvôli ktorej aplikácia nemôže fungovať." subtitle={error?.message ? error.message : error + ""} />
+      <Error title={t("api.fatalError")} subtitle={error?.message ? error.message : error + ""} />
     </IonPage>
   );
 }

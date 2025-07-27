@@ -10,9 +10,7 @@ import { Storage } from "@/utils/storage";
 import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 import { useModal } from "../ui/Modals";
 
-export default () => (
-  <Content Render={FinancesClaim} fetchContent={({ fin_id }) => Promise.all([FinancesApi.detail(fin_id), FinancesApi.claim_history(fin_id)])} errorText="Nepodarilo sa načítať dáta." />
-);
+export default () => <Content Render={FinancesClaim} fetchContent={({ fin_id }) => Promise.all([FinancesApi.detail(fin_id), FinancesApi.claim_history(fin_id)])} />;
 
 const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
   const { t } = useTranslation();

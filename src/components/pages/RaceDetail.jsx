@@ -14,7 +14,10 @@ import { category, group } from "@/utils/icons";
 import { Session, Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={RaceDetail} fetchContent={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])} errorText="Nepodarilo sa načítať preteky." />;
+export default () => {
+  const { t } = useTranslation();
+  return <Content Render={RaceDetail} fetchContent={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])} errorText={t("races.racesLoadError")} />;
+};
 
 const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
   const { t } = useTranslation();
@@ -44,7 +47,7 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
 
     return (
       <p>
-        {t("races.detail.signInDeadline")} <span className="text-primary">{lazyDate(entries.currentEntry())}</span> ({entries.currentEntryIndex()}. termín)
+        {t("races.detail.signInDeadline")} <span className="text-primary">{lazyDate(entries.currentEntry())}</span> ({t("races.detail.signInDeadlineNumber", { number: entries.currentEntryIndex() })})
       </p>
     );
   };

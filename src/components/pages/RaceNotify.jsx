@@ -10,7 +10,7 @@ import { lazyDate } from "@/utils/format";
 import { Storage } from "@/utils/storage";
 import Content, { StatelessForm } from "../controllers/Content";
 
-export default () => <Content Render={RaceNotify} fetchContent={({ race_id }) => RaceApi.detail(race_id)} errorText="Nepodarilo sa načítať preteky." />;
+export default () => <Content Render={RaceNotify} fetchContent={({ race_id }) => RaceApi.detail(race_id)} />;
 
 const RaceNotify = memo(({ content }) => {
   const { t } = useTranslation();

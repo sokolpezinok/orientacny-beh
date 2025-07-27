@@ -10,7 +10,7 @@ import { UserApi } from "@/utils/api";
 import { Session } from "@/utils/storage";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={Users} fetchContent={UserApi.list} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={Users} fetchContent={UserApi.list} />;
 
 const Users = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();

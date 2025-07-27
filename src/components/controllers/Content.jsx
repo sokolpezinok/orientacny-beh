@@ -21,6 +21,8 @@ const Content = memo(({ Render, fetchContent, errorText }) => {
 
   const paramsKey = useMemo(() => JSON.stringify(params), [params]);
 
+  errorText ||= t("api.dataLoadError");
+
   const handleUpdate = useCallback(async () => {
     if (formRef.current?.isDirty()) {
       const surety = await confirmModal(t("basic.confirmDiscardChanges"));

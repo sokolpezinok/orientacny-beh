@@ -9,7 +9,7 @@ import { lazyDate, stripTags } from "@/utils/format";
 import { Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={Finances} fetchContent={() => Promise.all([FinancesApi.overview(), FinancesApi.history()])} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={Finances} fetchContent={() => Promise.all([FinancesApi.overview(), FinancesApi.history()])} />;
 
 const Finances = memo(({ content: [overview, history], onUpdate }) => {
   const { t } = useTranslation();

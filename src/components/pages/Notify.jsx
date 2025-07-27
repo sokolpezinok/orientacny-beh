@@ -10,7 +10,7 @@ import { Notifications } from "@/utils/notify";
 import { Session, Storage } from "@/utils/storage";
 import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 
-export default () => <Content Render={Notify} fetchContent={UserApi.notify} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={Notify} fetchContent={UserApi.notify} />;
 
 const Notify = memo(({ content }) => {
   const { t } = useTranslation();

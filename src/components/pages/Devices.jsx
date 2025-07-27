@@ -10,7 +10,7 @@ import { formatDatetime } from "@/utils/format";
 import { Storage } from "@/utils/storage";
 import Content from "../controllers/Content";
 
-export default () => <Content Render={Devices} fetchContent={UserApi.devices} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={Devices} fetchContent={UserApi.devices} />;
 
 const Devices = memo(({ onUpdate, content }) => {
   const { t } = useTranslation();

@@ -10,7 +10,7 @@ import countries from "@/utils/countries";
 import { Session } from "@/utils/storage";
 import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 
-export default () => <Content Render={Profile} fetchContent={UserApi.profile} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={Profile} fetchContent={UserApi.profile} />;
 
 const Profile = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();

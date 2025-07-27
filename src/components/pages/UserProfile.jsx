@@ -10,7 +10,7 @@ import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
 import { useModal } from "../ui/Modals";
 import { ProfileForm } from "./Profile";
 
-export default () => <Content Render={UserProfile} fetchContent={({ user_id }) => UserApi.user_profile(user_id)} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={UserProfile} fetchContent={({ user_id }) => UserApi.user_profile(user_id)} />;
 
 const UserProfile = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();

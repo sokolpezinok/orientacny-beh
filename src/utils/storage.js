@@ -1,4 +1,5 @@
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
+import i18next from "i18next";
 import { Store } from "pullstate";
 import { UserApi } from "./api";
 
@@ -90,7 +91,7 @@ export class Storage {
         await this.load_clean();
       } catch (error) {
         console.error(error);
-        alert("Ospravedlňujeme sa, došlo k neočakávanej chybe. Skús vymazať úložisko aplikácie alebo kontaktuj administrátora.\n" + error);
+        alert(i18next.t("api.storageLoadError") + "\n" + error);
       }
     }
 
@@ -147,7 +148,7 @@ export class Session {
         s.managingIds = managing.map((child) => child.user_id);
       });
     } catch (error) {
-      alert("Nepodarilo sa načítať dáta zo serveru - niektoré údaje nemusia byť správne.\n" + error);
+      alert(i18next.t("api.policiesLoadError") + "\n" + error);
     }
   }
 }

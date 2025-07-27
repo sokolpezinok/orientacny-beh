@@ -12,7 +12,10 @@ import { GeneralApi, SystemApi } from "@/utils/api";
 import { Storage } from "@/utils/storage";
 import Content, { StatelessForm } from "../controllers/Content";
 
-export default () => <Content Render={Login} fetchContent={GeneralApi.clubs} errorText="Nepodarilo sa načítať zoznam klubov." />;
+export default () => {
+  const { t } = useTranslation();
+  return <Content Render={Login} fetchContent={GeneralApi.clubs} errorText={t("login.clubsLoadError")} />;
+};
 
 const Login = memo(({ content }) => {
   const { t } = useTranslation();
@@ -95,7 +98,7 @@ const Login = memo(({ content }) => {
                   </a>
                 </Checkbox>
                 <br />
-                <PrimaryButton type="submit">{t("Prihlásiť sa")}</PrimaryButton>
+                <PrimaryButton type="submit">{t("login.login")}</PrimaryButton>
               </StatelessForm>
             </div>
           </div>

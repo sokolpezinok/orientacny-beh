@@ -8,7 +8,7 @@ import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
 import Content, { StatelessForm } from "../controllers/Content";
 
-export default () => <Content Render={UserNotify} fetchContent={({ user_id }) => Promise.all([UserApi.detail(user_id), UserApi.user_devices(user_id)])} errorText="Nepodarilo sa načítať dáta." />;
+export default () => <Content Render={UserNotify} fetchContent={({ user_id }) => Promise.all([UserApi.detail(user_id), UserApi.user_devices(user_id)])} />;
 
 const UserNotify = memo(({ content: [content, devices], onUpdate }) => {
   const { t } = useTranslation();
