@@ -11,12 +11,16 @@ t("foo.bar.baz")            => foo.bar.baz
 t('foo')                    => foo
 t('foo', {count: 1})        => foo
 <Trans i18nKey="foo" ... /> => foo
+
+Does not match:
+
+import("foo/bar.baz")
 */
 
 const sourceFiles = "./src/**/*.{js,jsx}";
 const internalizationFiles = "./src/i18n/resources/*.js";
 
-const regex = /(?:t\(|i18nKey=)["']([\w\.]+)["']/g;
+const regex = /[^\w](?:t\(|i18nKey=)["']([^"']+)["']/g;
 const pluralSuffixes = ["_zero", "_one", "_few", "_other"];
 
 // -------------------------------------------------- //

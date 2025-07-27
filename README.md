@@ -53,6 +53,12 @@ npm run build:visualize
 npm run open:android
 ```
 
+## Tests
+
+```sh
+npm run test:i18n
+```
+
 ## Build
 
 - Android
