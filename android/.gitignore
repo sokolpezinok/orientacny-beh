@@ -20,6 +20,7 @@ out/
 # release/
 app/release/output-metadata.json
 app/build/outputs/apk/debug/output-metadata.json
+app/release/baselineProfiles/
 
 # Gradle files
 .gradle/

@@ -1,7 +1,10 @@
 import { initTranslation, useLoadTranslation } from "@/i18n";
+import { Capacitor } from "@capacitor/core";
 import { StatusBar, Style } from "@capacitor/status-bar";
+import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
 import { IonApp, IonPage, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
+import Color from "color";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
@@ -13,22 +16,33 @@ import { Error, SpinnerPage } from "./ui/Design";
 setupIonicReact({});
 initTranslation();
 
-const matchColorMode = async () => {
-  try {
-    await StatusBar.setStyle({
-      style: Style.Dark, // white text
+const toolbarColor = "#ea580c";
+
+const matchMediaListener = async (event) => {
+  if (Capacitor.getPlatform() === "android" && Capacitor.isPluginAvailable("StatusBar")) {
+    StatusBar.setStyle({
+      style: event.matches
+        ? Style.Dark // white text
+        : Style.Light, // dark text
     });
-    await StatusBar.setBackgroundColor({
-      color: "#ea580c",
-    });
-  } catch {}
+    StatusBar.setBackgroundColor({ color: toolbarColor });
+  }
+
+  if (Capacitor.isPluginAvailable("EdgeToEdge")) {
+    const color = window.getComputedStyle(document.body).backgroundColor;
+
+    if (!color) {
+      return;
+    }
+
+    EdgeToEdge.setBackgroundColor({ color: Color(color).hex() });
+  }
 };
 
-// create a listener to color mode change
-window.matchMedia("(prefers-color-scheme: dark)").addListener(matchColorMode);
+const matchMedia = window.matchMedia("(prefers-color-scheme: dark)");
 
-// applies default color mode
-matchColorMode(window.matchMedia("(prefers-color-scheme: dark)"));
+matchMedia.addEventListener("change", matchMediaListener);
+matchMediaListener(matchMedia);
 
 function Fallback({ error }) {
   const { t } = useTranslation();
