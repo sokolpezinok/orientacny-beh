@@ -25,7 +25,7 @@
 // (c) KOB Sokol Pezinok
 
 export const appName = "Orientačný beh";
-export const appBuildVersion = `v3.6.7`;
+export const appBuildVersion = `v3.6.8`;
 export const appPackageName = "orienteering.app";
 export const debug = false;
 
