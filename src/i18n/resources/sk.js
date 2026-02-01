@@ -88,6 +88,7 @@ export default {
     iAgreeWith: "Súhlasím s",
     withTermsOfService: "licenčnými podmienkami",
     termsOfService: "Licenčné podmienky",
+    showDebugClubs: "Zobraziť testovacie kluby",
     login: "Prihlásiť sa",
   },
   notify: {

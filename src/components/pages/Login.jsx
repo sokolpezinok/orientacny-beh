@@ -1,4 +1,4 @@
-import { IonBackButton, IonButtons, IonContent, IonInputPasswordToggle, IonModal, IonPage, IonSelectOption } from "@ionic/react";
+import { IonBackButton, IonButton, IonButtons, IonContent, IonIcon, IonInputPasswordToggle, IonItem, IonModal, IonPage, IonPopover, IonSelectOption } from "@ionic/react";
 import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
@@ -10,6 +10,7 @@ import { appName, debug } from "@/manifest";
 import { sort } from "@/utils";
 import { GeneralApi, SystemApi } from "@/utils/api";
 import { Storage } from "@/utils/storage";
+import { ellipsisVertical } from "ionicons/icons";
 import Content, { StatelessForm } from "../controllers/Content";
 
 export default () => {
@@ -20,6 +21,7 @@ export default () => {
 const Login = memo(({ content }) => {
   const { t } = useTranslation();
 
+  const [showDebugClubs, setShowDebugClubs] = useState(debug);
   const [termsAccepted, setTermsAccepted] = useState(Storage.pull().preferences.hasAcceptedTerms);
   const [isOpen, setOpen] = useState(false);
 
@@ -68,6 +70,22 @@ const Login = memo(({ content }) => {
 
   return (
     <IonPage>
+      <div className="ml-auto p-4">
+        <IonButtons>
+          <IonButton id="ellipsis">
+            <IonIcon slot="icon-only" icon={ellipsisVertical} />
+          </IonButton>
+          <IonPopover trigger="ellipsis" dismissOnSelect={false}>
+            <IonContent>
+              <IonItem>
+                <Checkbox checked={showDebugClubs} onIonChange={(event) => setShowDebugClubs(event.target.checked)}>
+                  {t("login.showDebugClubs")}
+                </Checkbox>
+              </IonItem>
+            </IonContent>
+          </IonPopover>
+        </IonButtons>
+      </div>
       <IonContent>
         <div className="flex h-full items-center justify-center">
           <div className="flex w-full max-w-xl flex-col gap-8 p-8 lg:max-w-6xl lg:flex-row">
@@ -83,7 +101,7 @@ const Login = memo(({ content }) => {
                 </Input>
                 <Select name="clubname" label={t("login.club")} required>
                   {content
-                    .filter((child) => child.is_release || debug)
+                    .filter((child) => child.is_release || showDebugClubs)
                     .map((child, index) => (
                       <IonSelectOption key={child.clubname} value={child.clubname}>
                         {child.fullname}
