@@ -126,7 +126,6 @@ export class UserApi {
     });
   static user_device = (device) => Api.get(`/user/device/${device}`, { auth: true });
   static user_device_delete = (device) => Api.delete(`/user/device/${device}`, { auth: true });
-  static user_devices = (user_id) => Api.get(`/user/${user_id}/devices`, { auth: true });
   static devices = () =>
     Api.get(`/user/devices`, {
       auth: true,
@@ -136,7 +135,7 @@ export class UserApi {
       auth: true,
       data: { title, body, image },
     });
-  static notify_everyone = () =>
+  static notify_everyone = ({ title, body, image }) =>
     Api.post(`/user/notify`, {
       auth: true,
       data: { title, body, image },
