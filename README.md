@@ -12,7 +12,7 @@ https://members.eob.cz/
 ```sh
 git clone https://github.com/sokolpezinok/orientacny-beh
 cd orientacny-beh
-npm install
+pnpm i
 ```
 
 ## Development
@@ -20,55 +20,65 @@ npm install
 **Starts the Vite development server.**
 
 ```sh
-npm run dev
+pnpm run dev
 ```
 
 **Builds the production version using Vite.**
 
 ```sh
-npm run build
+pnpm run build
 ```
 
 **Previews the production build locally.**
 
 ```sh
-npm run preview
+pnpm run preview
 ```
 
-**Builds the project and runs it on an Android device/emulator.**
+**Builds the project and outputs in `dist/`**
 
 ```sh
-npm run build:android
-```
-
-**Builds the project for bundle size visualization.**
-
-```sh
-npm run build:visualize
+pnpm run build:android
 ```
 
 **Syncs Capacitor and opens the Android project in Android Studio.**
 
 ```sh
-npm run open:android
+pnpm run android:open
 ```
 
-## Tests
+**Cleans android cache**
 
 ```sh
-npm run test:i18n
+pnpm run android:clean
+```
+
+## Tests & Linting
+
+**Runs `i18n` tests**
+
+```sh
+pnpm run test:i18n
+```
+
+**Runs eslint**
+
+```sh
+pnpm run lint
 ```
 
 ## Build
 
-- Android
+**Android Release Checklist**
+
+1. Increase `versionCode` and `versionName` in `android/variables.gradle`, increase `appBuildVersion` in `src/manifest`
+2. Build the app
 
 ```sh
-npm run build
-npm run open:android
+pnpm run android:build
 ```
 
-In Android Studio select `Build`->`Generate Signed Bundle / APK`.
+3. Sign it
 
 ## Extensions & Environment
 
