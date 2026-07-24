@@ -3,7 +3,7 @@ import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
-import { ColoredValue, Error, Header, Item, ItemGroup, Refresher, Select } from "@/components/ui/Design";
+import { ColoredValue, Fatal, Header, Item, ItemGroup, Refresher, Select } from "@/components/ui/Design";
 import { FinancesApi } from "@/utils/api";
 import { lazyDate, stripTags } from "@/utils/format";
 import { Storage } from "@/utils/storage";
@@ -40,7 +40,7 @@ const FinancesOf = ({ overview, history }) => {
   const router = useHistory();
 
   if (overview === undefined) {
-    return <Error title={t("finances.overviewError")} />;
+    return <Fatal title={t("finances.overviewError")} />;
   }
 
   return (

@@ -1,6 +1,6 @@
 import { Anchor } from "./Design";
 
-export default ({}) => {
+export default () => {
   const copyright = `Copyright ${new Date().getFullYear()} KOB Sokol Pezinok\n`;
   const license = `
 Permission is hereby granted, free of charge, to any person obtaining a copy of this

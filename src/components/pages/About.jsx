@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { Accordion, Anchor, BooleanIcon, Header, ItemGroup } from "@/components/ui/Design";
 import License from "@/components/ui/License";
-import { apiVersion, appBuildVersion, debug } from "@/manifest.js";
+import { apiVersion } from "@/utils/api";
 import { Session, Storage } from "@/utils/storage";
 
 const About = memo(({}) => {
@@ -67,8 +67,8 @@ const About = memo(({}) => {
         </ItemGroup>
         <hr />
         <ItemGroup title={t("about.version")}>
-          {appBuildVersion}
-          {debug && " " + t("about.debug")}
+          {import.meta.env.VITE_APP_VERSION}
+          {import.meta.env.DEV && " " + t("about.debug")}
         </ItemGroup>
         <ItemGroup title={t("about.apiVersion")}>{apiVersion}</ItemGroup>
       </IonContent>

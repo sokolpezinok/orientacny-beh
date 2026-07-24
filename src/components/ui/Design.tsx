@@ -22,11 +22,11 @@ import {
 } from "@ionic/react";
 import classNames from "classnames";
 import { alertCircleOutline, checkmarkCircleOutline, chevronForward, clipboardOutline, closeCircleOutline, openOutline } from "ionicons/icons";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { ComponentProps, forwardRef, HTMLAttributes, ReactNode, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useModal } from "./Modals";
 
-export function Item({ children, className, innerPadding, ...props }) {
+export function Item({ children, className, innerPadding, ...props }: ComponentProps<typeof IonItem> & { innerPadding: boolean }) {
   return (
     <IonItem lines="full" style={Object.assign({ "--padding-start": "0" }, innerPadding || { "--inner-padding-end": "0" })} {...props}>
       <div className={classNames("w-full p-4", className)}>{children}</div>
@@ -34,7 +34,7 @@ export function Item({ children, className, innerPadding, ...props }) {
   );
 }
 
-export function ItemGroup({ children, title, subtitle, className, ripple = false, ...props }) {
+export function ItemGroup({ children, title, subtitle, className, ripple = false, ...props }: Omit<HTMLAttributes<HTMLDivElement>, "title"> & { title?: string; subtitle?: string; ripple: boolean }) {
   // <div className={classNames("p-4", border && "border-outline-variant border-b")}></div>
   return (
     <div className={classNames("p-4", ripple && "ion-activatable pointer relative", className)} {...props}>
@@ -50,7 +50,7 @@ export function ItemGroup({ children, title, subtitle, className, ripple = false
   );
 }
 
-export function Accordion({ children, title, subtitle }) {
+export function Accordion({ children, title, subtitle }: { children: ReactNode; title?: string; subtitle?: string }) {
   return (
     <IonAccordion>
       <Item slot="header" innerPadding>
@@ -64,7 +64,7 @@ export function Accordion({ children, title, subtitle }) {
   );
 }
 
-export function Spacing({ children, innerPadding, topPadding, className, props }) {
+export function Spacing({ children, innerPadding, topPadding, className, ...props }: HTMLAttributes<HTMLDivElement> & { innerPadding: boolean; topPadding: boolean }) {
   return (
     <div className={classNames("flex flex-col gap-y-4", innerPadding && "p-4", topPadding && "pt-4", className)} {...props}>
       {children}
@@ -72,10 +72,10 @@ export function Spacing({ children, innerPadding, topPadding, className, props }
   );
 }
 
-export function ReadMore({ children }) {
+export function ReadMore({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -92,7 +92,7 @@ export function ReadMore({ children }) {
   );
 }
 
-export function Header({ children, defaultHref, title }) {
+export function Header({ children, defaultHref, title }: { children: ReactNode; defaultHref?: string; title: string }) {
   return (
     <IonToolbar>
       {defaultHref && (
@@ -106,7 +106,7 @@ export function Header({ children, defaultHref, title }) {
   );
 }
 
-export function PrimaryButton({ children, type, className, ...props }) {
+export function PrimaryButton({ children, type, className, ...props }: ComponentProps<typeof IonButton>) {
   // use w-full instead expand="full" to preserve round corners
   return (
     <IonButton fill="solid" className={classNames("m-0 w-full", className)} type={type ?? "button"} {...props}>
@@ -115,7 +115,7 @@ export function PrimaryButton({ children, type, className, ...props }) {
   );
 }
 
-export function TransparentButton({ children, type, className, ...props }) {
+export function TransparentButton({ children, type, className, ...props }: ComponentProps<typeof IonButton>) {
   // use w-full instead expand="full" to preserve round corners
   return (
     <IonButton fill="clear" className={classNames("m-0 w-full", className)} type={type ?? "button"} {...props}>
@@ -124,7 +124,7 @@ export function TransparentButton({ children, type, className, ...props }) {
   );
 }
 
-export function OutlinedButton({ children, type, className, ...props }) {
+export function OutlinedButton({ children, type, className, ...props }: ComponentProps<typeof IonButton>) {
   // use w-full instead expand="full" to preserve round corners
   return (
     <IonButton fill="outline" className={classNames("m-0 w-full", className)} type={type ?? "button"} {...props}>
@@ -133,7 +133,7 @@ export function OutlinedButton({ children, type, className, ...props }) {
   );
 }
 
-export function InputLabel({ children, className, required, ...props }) {
+export function InputLabel({ children, className, required, ...props }: HTMLAttributes<HTMLDivElement> & { required?: boolean }) {
   return (
     <div className={classNames("text-on-primary-container font-medium tracking-wider uppercase", className)} {...props}>
       {children}
@@ -142,7 +142,7 @@ export function InputLabel({ children, className, required, ...props }) {
   );
 }
 
-export function Input({ children, label, required, ...props }) {
+export function Input({ children, label, required, ...props }: ComponentProps<typeof IonInput>) {
   return (
     <IonInput labelPlacement="stacked" placeholder="..." required={required} {...props}>
       <InputLabel slot="label" required={required}>
@@ -153,7 +153,7 @@ export function Input({ children, label, required, ...props }) {
   );
 }
 
-export function Textarea({ children, label, required, ...props }) {
+export function Textarea({ children, label, required, ...props }: ComponentProps<typeof IonTextarea>) {
   return (
     <IonTextarea labelPlacement="stacked" placeholder="..." autoGrow={true} required={required} {...props}>
       <InputLabel slot="label" required={required}>
@@ -164,7 +164,7 @@ export function Textarea({ children, label, required, ...props }) {
   );
 }
 
-export function Select({ children, label, required, ...props }) {
+export function Select({ children, label, required, ...props }: ComponentProps<typeof IonSelect>) {
   return (
     <IonSelect labelPlacement="stacked" placeholder="..." required={required} {...props}>
       <InputLabel slot="label" required={required}>
@@ -175,7 +175,7 @@ export function Select({ children, label, required, ...props }) {
   );
 }
 
-export function Toggle({ children, className, required, ...props }) {
+export function Toggle({ children, className, required, ...props }: ComponentProps<typeof IonToggle>) {
   return (
     <IonToggle justify="space-between" labelPlacement="start" className={classNames("w-full", className)} required={required} {...props}>
       <div className="whitespace-break-spaces">
@@ -186,7 +186,7 @@ export function Toggle({ children, className, required, ...props }) {
   );
 }
 
-export function Checkbox({ children, className, required, ...props }) {
+export function Checkbox({ children, className, required, ...props }: ComponentProps<typeof IonCheckbox>) {
   /* TODO: add separate label as a workaround to https://github.com/ionic-team/ionic-docs/issues/3459 */
   return (
     <IonCheckbox justify="space-between" className={classNames("w-full", className)} required={required} {...props}>
@@ -198,7 +198,7 @@ export function Checkbox({ children, className, required, ...props }) {
   );
 }
 
-export const Drawer = ({ children, active, className }) => {
+export const Drawer = ({ children, active, className }: { children: ReactNode; active: boolean; className?: string }) => {
   return (
     <div className="grid transition-[grid-template-rows]" style={{ gridTemplateRows: active ? "1fr" : "0fr" }}>
       <div className={classNames("overflow-hidden", className)}>{children}</div>
@@ -206,7 +206,7 @@ export const Drawer = ({ children, active, className }) => {
   );
 };
 
-export function ItemLink({ children, style, ...props }) {
+export function ItemLink({ children, style, ...props }: ComponentProps<typeof IonItem>) {
   return (
     <IonItem lines="full" style={Object.assign({ "--padding-start": "0" }, style)} {...props}>
       <div className="w-full p-4">{children}</div>
@@ -215,7 +215,7 @@ export function ItemLink({ children, style, ...props }) {
   );
 }
 
-export const Anchor = forwardRef(function ({ children, className, href, textOnly, ...props }, ref) {
+export const Anchor = forwardRef<HTMLAnchorElement, HTMLAttributes<HTMLAnchorElement> & { href: string; textOnly?: boolean }>(function ({ children, className, href, textOnly, ...props }, ref) {
   return (
     (children || href) && (
       <a ref={ref} href={href} target="_blank" className={classNames("text-primary cursor-pointer", textOnly && "no-underline", className)} {...props}>
@@ -226,7 +226,7 @@ export const Anchor = forwardRef(function ({ children, className, href, textOnly
   );
 });
 
-export const Refresher = ({ onUpdate }) => {
+export const Refresher = ({ onUpdate }: { onUpdate: () => Promise<void> }) => {
   return (
     <IonRefresher slot="fixed" onIonRefresh={(event) => onUpdate().finally(event.detail.complete)}>
       <IonRefresherContent />
@@ -234,7 +234,7 @@ export const Refresher = ({ onUpdate }) => {
   );
 };
 
-export const Copyable = ({ text }) => {
+export const Copyable = ({ text }: { text: string }) => {
   const { t } = useTranslation();
   const { toastModal } = useModal();
 
@@ -255,11 +255,11 @@ export const Copyable = ({ text }) => {
   );
 };
 
-export const BooleanIcon = ({ value, className, ...props }) => {
+export const BooleanIcon = ({ value, className, ...props }: ComponentProps<typeof IonIcon> & { value: boolean }) => {
   return <IonIcon className={classNames("align-middle text-2xl", value ? "text-success" : "text-error", className)} icon={value ? checkmarkCircleOutline : closeCircleOutline} {...props} />;
 };
 
-export const SmallWarning = ({ children, title }) => {
+export const SmallWarning = ({ children, title }: { children: ReactNode; title: string }) => {
   return (
     <div className="bg-primary-container rounded-lg p-4">
       <div className="grid grid-cols-[auto_1fr] gap-4">
@@ -271,7 +271,7 @@ export const SmallWarning = ({ children, title }) => {
   );
 };
 
-export const SmallSuccess = ({ children, title }) => {
+export const SmallSuccess = ({ children, title }: { children: ReactNode; title: string }) => {
   return (
     <div className="bg-success-container rounded-lg p-4">
       <div className="grid grid-cols-[auto_1fr] gap-4">
@@ -283,7 +283,7 @@ export const SmallSuccess = ({ children, title }) => {
   );
 };
 
-export const SmallError = ({ children, title }) => {
+export const SmallError = ({ children, title }: { children: ReactNode; title: string }) => {
   return (
     <div className="bg-error-container rounded-lg p-4">
       <div className="grid grid-cols-[auto_1fr] gap-4">
@@ -295,7 +295,7 @@ export const SmallError = ({ children, title }) => {
   );
 };
 
-export const ColoredValue = ({ value, className, ...props }) => {
+export const ColoredValue = ({ value, className, ...props }: HTMLAttributes<HTMLSpanElement> & { value: number }) => {
   return (
     <span className={classNames(value >= 0 ? "text-success" : "text-error", className)} {...props}>
       {value}
@@ -303,7 +303,7 @@ export const ColoredValue = ({ value, className, ...props }) => {
   );
 };
 
-export const Error = ({ children, title = "", subtitle = "" }) => {
+export const Fatal = ({ children, title = "", subtitle = "" }: { children?: ReactNode; title?: string; subtitle?: string }) => {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="text-center">
@@ -316,7 +316,7 @@ export const Error = ({ children, title = "", subtitle = "" }) => {
   );
 };
 
-export const SpinnerPage = ({ name = "circular" }) => {
+export const SpinnerPage = ({ name = "circular" }: { name?: ComponentProps<typeof IonSpinner>["name"] }) => {
   const { t } = useTranslation();
   const [state, setState] = useState(false);
 
@@ -342,7 +342,7 @@ export const SpinnerPage = ({ name = "circular" }) => {
   );
 };
 
-export const SkeletonPage = ({}) => {
+export const SkeletonPage = () => {
   return (
     <IonPage>
       <IonToolbar>

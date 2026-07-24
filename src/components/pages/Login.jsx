@@ -6,7 +6,6 @@ import { useHistory } from "react-router-dom";
 import { Checkbox, Header, Input, PrimaryButton, Select, Spacing } from "@/components/ui/Design";
 import License from "@/components/ui/License";
 import { useModal } from "@/components/ui/Modals";
-import { appName, debug } from "@/manifest";
 import { sort } from "@/utils";
 import { GeneralApi, SystemApi } from "@/utils/api";
 import { Storage } from "@/utils/storage";
@@ -21,7 +20,7 @@ export default () => {
 const Login = memo(({ content }) => {
   const { t } = useTranslation();
 
-  const [showDebugClubs, setShowDebugClubs] = useState(debug);
+  const [showDebugClubs, setShowDebugClubs] = useState(import.meta.env.DEV);
   const [termsAccepted, setTermsAccepted] = useState(Storage.pull().preferences.hasAcceptedTerms);
   const [isOpen, setOpen] = useState(false);
 
@@ -91,7 +90,7 @@ const Login = memo(({ content }) => {
           <div className="flex w-full max-w-xl flex-col gap-8 p-8 lg:max-w-6xl lg:flex-row">
             <div className="flex items-center gap-8">
               <img className="w-24" src="/favicon.png" />
-              <h1 className="lg:text-4xl">{appName}</h1>
+              <h1 className="lg:text-4xl">{import.meta.env.VITE_APP_TITLE}</h1>
             </div>
             <div className="flex-1">
               <StatelessForm onSubmit={handleSubmit}>

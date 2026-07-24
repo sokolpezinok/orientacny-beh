@@ -1,20 +1,20 @@
-import { App } from "@capacitor/app";
+import { App, URLOpenListenerEvent } from "@capacitor/app";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
 import { useModal } from "@/components/ui/Modals";
-import { apiDomain } from "@/manifest.js";
+import { apiDomain } from "@/utils/api";
 import { Storage } from "@/utils/storage";
 
-const DeeplinkListener = ({}) => {
+const DeeplinkListener = () => {
   const { t } = useTranslation();
   // listen for deeplink open
 
   const router = useHistory();
   const { actionFeedbackModal } = useModal();
 
-  const handleDeeplink = actionFeedbackModal(async (event) => {
+  const handleDeeplink = actionFeedbackModal(async (event: URLOpenListenerEvent) => {
     // expects url in format
     // https://members.eob.cz/api/spt/race/132
     // https://members.eob.cz/api/spt/race/132/redirect
