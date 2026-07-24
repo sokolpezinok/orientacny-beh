@@ -1,9 +1,6 @@
 # production
 /build
 
-# rollup-plugin-visualizer
-/stats.html
-
 # Logs
 logs
 *.log

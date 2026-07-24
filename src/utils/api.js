@@ -1,9 +1,16 @@
 import { Device } from "@capacitor/device";
 
-import { apiServer, appBuildVersion } from "@/manifest.js";
 import { Storage } from "@/utils/storage";
 import i18next from "i18next";
 import { Notifications } from "./notify";
+
+//======================================//
+// do NOT add trailing slash at the end //
+//======================================//
+
+export const apiDomain = "members.eob.cz";
+export const apiVersion = 3;
+export const apiServer = `https://members.eob.cz/api/${import.meta.env.DEV ? "debug/" : ""}${apiVersion}`;
 
 const defaultServer = () => `${apiServer}/${Storage.pull().club.clubname}`;
 const deviceName = (await Device.getInfo()).name || "";
@@ -184,7 +191,7 @@ export class FinancesApi {
 export class SystemApi {
   static login = async ({ username, password, clubname }) => {
     const { access_token, device, user_id } = await Api.post(`/system/login`, {
-      data: { username, password, app_version: appBuildVersion, device_name: deviceName },
+      data: { username, password, app_version: import.meta.env.VITE_APP_VERSION, device_name: deviceName },
       server: `${apiServer}/${clubname}`,
     });
 
@@ -225,7 +232,7 @@ export class SystemApi {
   static device_update = () =>
     Api.post(`/system/device`, {
       auth: true,
-      data: { device_name: deviceName, app_version: appBuildVersion },
+      data: { device_name: deviceName, app_version: import.meta.env.VITE_APP_VERSION },
     });
 
   static device_delete = () =>

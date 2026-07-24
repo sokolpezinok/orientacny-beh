@@ -33,6 +33,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Set env
+        run: |
+          echo "VITE_APP_VERSION=v3.$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+          echo "ANDROID_VERSION_CODE=$((${{ github.run_id }} + 312))" >> $GItHUB_ENV
+
       - name: Build web assets
         run: pnpm vite build
 
