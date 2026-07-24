@@ -2,8 +2,8 @@ ext {
     minSdkVersion = 24
     compileSdkVersion = 36
     targetSdkVersion = 36
-    versionCode = System.getenv("ANDROID_VERSION_CODE").toInteger()
-    versionName = System.getenv("VITE_APP_TITLE")
+    versionCode = (System.getenv("ANDROID_VERSION_CODE") ?: "1").toInteger()
+    versionName = System.getenv("VITE_APP_VERSION") ?: "0.0.0"
     androidxActivityVersion = '1.11.0'
     androidxAppCompatVersion = '1.7.1'
     androidxCoordinatorLayoutVersion = '1.3.0'
