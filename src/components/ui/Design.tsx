@@ -26,7 +26,7 @@ import { ComponentProps, forwardRef, HTMLAttributes, ReactNode, useEffect, useRe
 import { useTranslation } from "react-i18next";
 import { useModal } from "./Modals";
 
-export function Item({ children, className, innerPadding, ...props }: ComponentProps<typeof IonItem> & { innerPadding: boolean }) {
+export function Item({ children, className, innerPadding, ...props }: ComponentProps<typeof IonItem> & { innerPadding?: boolean }) {
   return (
     <IonItem lines="full" style={Object.assign({ "--padding-start": "0" }, innerPadding || { "--inner-padding-end": "0" })} {...props}>
       <div className={classNames("w-full p-4", className)}>{children}</div>
@@ -34,7 +34,7 @@ export function Item({ children, className, innerPadding, ...props }: ComponentP
   );
 }
 
-export function ItemGroup({ children, title, subtitle, className, ripple = false, ...props }: Omit<HTMLAttributes<HTMLDivElement>, "title"> & { title?: string; subtitle?: string; ripple: boolean }) {
+export function ItemGroup({ children, title, subtitle, className, ripple = false, ...props }: Omit<HTMLAttributes<HTMLDivElement>, "title"> & { title?: string; subtitle?: string; ripple?: boolean }) {
   // <div className={classNames("p-4", border && "border-outline-variant border-b")}></div>
   return (
     <div className={classNames("p-4", ripple && "ion-activatable pointer relative", className)} {...props}>
@@ -92,7 +92,7 @@ export function ReadMore({ children }: { children: ReactNode }) {
   );
 }
 
-export function Header({ children, defaultHref, title }: { children: ReactNode; defaultHref?: string; title: string }) {
+export function Header({ children, defaultHref, title }: { children?: ReactNode; defaultHref?: string; title: string }) {
   return (
     <IonToolbar>
       {defaultHref && (
@@ -215,7 +215,7 @@ export function ItemLink({ children, style, ...props }: ComponentProps<typeof Io
   );
 }
 
-export const Anchor = forwardRef<HTMLAnchorElement, HTMLAttributes<HTMLAnchorElement> & { href: string; textOnly?: boolean }>(function ({ children, className, href, textOnly, ...props }, ref) {
+export const Anchor = forwardRef<HTMLAnchorElement, HTMLAttributes<HTMLAnchorElement> & { href?: string; textOnly?: boolean }>(function ({ children, className, href, textOnly, ...props }, ref) {
   return (
     (children || href) && (
       <a ref={ref} href={href} target="_blank" className={classNames("text-primary cursor-pointer", textOnly && "no-underline", className)} {...props}>
@@ -259,7 +259,7 @@ export const BooleanIcon = ({ value, className, ...props }: ComponentProps<typeo
   return <IonIcon className={classNames("align-middle text-2xl", value ? "text-success" : "text-error", className)} icon={value ? checkmarkCircleOutline : closeCircleOutline} {...props} />;
 };
 
-export const SmallWarning = ({ children, title }: { children: ReactNode; title: string }) => {
+export const SmallWarning = ({ children, title }: { children?: ReactNode; title: string }) => {
   return (
     <div className="bg-primary-container rounded-lg p-4">
       <div className="grid grid-cols-[auto_1fr] gap-4">
@@ -271,7 +271,7 @@ export const SmallWarning = ({ children, title }: { children: ReactNode; title: 
   );
 };
 
-export const SmallSuccess = ({ children, title }: { children: ReactNode; title: string }) => {
+export const SmallSuccess = ({ children, title }: { children?: ReactNode; title: string }) => {
   return (
     <div className="bg-success-container rounded-lg p-4">
       <div className="grid grid-cols-[auto_1fr] gap-4">
@@ -283,7 +283,7 @@ export const SmallSuccess = ({ children, title }: { children: ReactNode; title: 
   );
 };
 
-export const SmallError = ({ children, title }: { children: ReactNode; title: string }) => {
+export const SmallError = ({ children, title }: { children?: ReactNode; title: string }) => {
   return (
     <div className="bg-error-container rounded-lg p-4">
       <div className="grid grid-cols-[auto_1fr] gap-4">

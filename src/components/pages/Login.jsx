@@ -21,7 +21,7 @@ const Login = memo(({ content }) => {
   const { t } = useTranslation();
 
   const [showDebugClubs, setShowDebugClubs] = useState(import.meta.env.DEV);
-  const [termsAccepted, setTermsAccepted] = useState(Storage.pull().preferences.hasAcceptedTerms);
+  const [termsAccepted, setTermsAccepted] = useState(Storage.getStorage().preferences.hasAcceptedTerms);
   const [isOpen, setOpen] = useState(false);
 
   const { actionFeedbackModal, confirmModal } = useModal();
@@ -54,7 +54,7 @@ const Login = memo(({ content }) => {
     const selectedClub = content.find((child) => child.clubname === data.clubname);
 
     await SystemApi.login(data);
-    await Storage.push((s) => {
+    await Storage.updateStorage((s) => {
       s.club = selectedClub;
       s.preferences.hasAcceptedTerms = true;
       s.isLoggedIn = true;

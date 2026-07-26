@@ -8,11 +8,11 @@ import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
 import { formatDatetime } from "@/utils/format";
 import { Storage } from "@/utils/storage";
-import Content from "../controllers/Content";
+import Content, { RenderComponent } from "../controllers/Content";
 
 export default () => <Content Render={Devices} fetchContent={UserApi.devices} />;
 
-const Devices = memo(({ onUpdate, content }) => {
+const Devices: RenderComponent<typeof UserApi.devices> = memo(({ onUpdate, content }) => {
   const { t } = useTranslation();
 
   return (
@@ -26,10 +26,10 @@ const Devices = memo(({ onUpdate, content }) => {
   );
 });
 
-export const DevicesContent = ({ content, onUpdate }) => {
+export const DevicesContent: RenderComponent<typeof UserApi.devices> = ({ content, onUpdate }) => {
   const { t } = useTranslation();
   const { actionFeedbackModal, confirmModal } = useModal();
-  const currentDevice = Storage.pull().device;
+  const currentDevice = Storage.getStorage().device;
 
   const handleDelete = actionFeedbackModal(async (device) => {
     const result = await confirmModal(t("devices.confirmDeviceRemoval"));
@@ -61,7 +61,7 @@ export const DevicesContent = ({ content, onUpdate }) => {
         </h4>
         <h4>{child.fcm_status ? t("devices.notifyActive") : t("devices.notifyInactive")}</h4>
       </div>
-      <IonButton fill="transparent" shape="circle" className="text-error" onClick={() => handleDelete(child.device)} disabled={child.device === currentDevice}>
+      <IonButton fill="clear" shape="round" className="text-error" onClick={() => handleDelete(child.device)} disabled={child.device === currentDevice}>
         <IonIcon slot="icon-only" icon={trash} />
       </IonButton>
     </div>

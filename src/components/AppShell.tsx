@@ -1,4 +1,5 @@
 import { initTranslation, useLoadTranslation } from "@/i18n";
+import { Storage } from "@/utils/storage";
 import { Capacitor } from "@capacitor/core";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
@@ -15,6 +16,8 @@ import { Fatal, SpinnerPage } from "./ui/Design";
 
 setupIonicReact({});
 initTranslation();
+
+await Storage.hydrate();
 
 const toolbarColor = "#ea580c";
 

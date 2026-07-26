@@ -7,14 +7,14 @@ import { Header, Item, ItemGroup, Refresher } from "@/components/ui/Design";
 import { EntriesHelper } from "@/utils";
 import { RaceApi } from "@/utils/api";
 import { lazyDates } from "@/utils/format";
-import Content from "../controllers/Content";
+import Content, { RenderComponent } from "../controllers/Content";
 
 export default () => {
   const { t } = useTranslation();
   return <Content Render={Races} fetchContent={RaceApi.list} errorText={t("races.racesLoadError")} />;
 };
 
-const Races = memo(({ content, onUpdate }) => {
+const Races: RenderComponent<typeof RaceApi.list> = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();
 
   if (content.length === 0) {

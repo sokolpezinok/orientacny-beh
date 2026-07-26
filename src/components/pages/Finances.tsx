@@ -4,16 +4,18 @@ import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
 import { ColoredValue, Fatal, Header, Item, ItemGroup, Refresher, Select } from "@/components/ui/Design";
-import { FinancesApi } from "@/utils/api";
+import { FinanceOverview, FinancePayment, FinancesApi } from "@/utils/api";
 import { lazyDate, stripTags } from "@/utils/format";
 import { Storage } from "@/utils/storage";
-import Content from "../controllers/Content";
+import Content, { RenderComponent } from "../controllers/Content";
 
-export default () => <Content Render={Finances} fetchContent={() => Promise.all([FinancesApi.overview(), FinancesApi.history()])} />;
+const fetchContent = () => Promise.all([FinancesApi.overview(), FinancesApi.history()]);
 
-const Finances = memo(({ content: [overview, history], onUpdate }) => {
+export default () => <Content Render={Finances} fetchContent={fetchContent} />;
+
+const Finances: RenderComponent<typeof fetchContent> = memo(({ content: [overview, history], onUpdate }) => {
   const { t } = useTranslation();
-  const [current, setCurrent] = useState(Storage.pull().userId);
+  const [current, setCurrent] = useState(Storage.getStorage().userId);
 
   return (
     <IonPage>
@@ -35,7 +37,7 @@ const Finances = memo(({ content: [overview, history], onUpdate }) => {
   );
 });
 
-const FinancesOf = ({ overview, history }) => {
+const FinancesOf = ({ overview, history }: { overview?: FinanceOverview; history: FinancePayment[] }) => {
   const { t } = useTranslation();
   const router = useHistory();
 

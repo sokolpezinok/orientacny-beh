@@ -1,35 +1,31 @@
-import { Session } from "./storage";
+import { Session, Storage } from "./storage";
 
-export const parseDates = (dates) => {
+export const parseDates = (dates: string[]) => {
   // converts into date and removes time part.
   return dates.map((date) => new Date(date).setHours(0, 0, 0, 0));
 };
 
 export class EntriesHelper {
-  constructor(entries) {
+  entries: number[];
+  today: number;
+
+  constructor(entries: string[]) {
     this.entries = entries.map((child) => new Date(child).setHours(0, 0, 0, 0)).sort((a, b) => a - b);
     this.today = new Date().setHours(0, 0, 0, 0);
   }
 
-  isExpired = () => this.entries.length !== 0 && this.entries.at(-1) < this.today;
+  isExpired = () => this.entries.length !== 0 && this.entries.at(-1)! < this.today;
   currentEntryIndex = () => this.entries.findIndex((child) => child >= this.today) + 1;
   currentEntry = () => this.entries.find((child) => child >= this.today);
 }
 
-export const normalize = (string) =>
-  string
+export const normalize = (value: string) =>
+  value
     .normalize("NFKD")
     .replace(/\p{Diacritic}/gu, "")
     .toLowerCase();
 
-/**
- * Sorts array alphabetically by function if provided.
- *
- * @param {Array} array
- * @param {function} func
- * @returns {Array}
- */
-export const sort = (array, func = null) =>
+export const sort = <T>(array: T[], func: ((value: T) => any) | null = null) =>
   array.sort((a, b) => {
     if (func !== null) {
       a = func(a);
@@ -43,4 +39,14 @@ export const sort = (array, func = null) =>
 
 export const unixTime = () => Math.floor(Date.now() / 1000);
 
-export const doesManageUser = (user_id) => Session.pull().policies.mng_small && Session.pull().managingIds.includes(user_id);
+export const doesManageUser = (user_id: number) => Session.getRawState().policies.mng_small && Session.getRawState().managingIds.includes(user_id);
+
+export const getClub = () => {
+  const club = Storage.getStorage().club;
+
+  if (!club) {
+    throw new Error("Club not found!");
+  }
+
+  return club;
+};

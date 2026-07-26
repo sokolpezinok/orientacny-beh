@@ -11,7 +11,7 @@ import { Storage } from "@/utils/storage";
 const Settings = memo(({}) => {
   const { t } = useTranslation();
   const { confirmModal, actionFeedbackModal } = useModal();
-  const locale = Storage.useState((s) => s.preferences.locale);
+  const locale = Storage.useStorage((s) => s.preferences.locale);
 
   const handleLogout = actionFeedbackModal(async (event) => {
     const surety = await confirmModal(t("settings.confirmSignOut"));
@@ -21,7 +21,7 @@ const Settings = memo(({}) => {
   }, t("settings.signOutError"));
 
   const handleLocale = actionFeedbackModal(async (event) => {
-    Storage.push((s) => {
+    Storage.updateStorage((s) => {
       s.preferences.locale = event.target.value;
     });
   });

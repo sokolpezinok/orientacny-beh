@@ -1,7 +1,8 @@
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { Capacitor } from "@capacitor/core";
-import { LocalNotifications } from "@capacitor/local-notifications";
+import { LocalNotifications, LocalNotificationSchema } from "@capacitor/local-notifications";
 import i18next from "i18next";
+import { getClub } from ".";
 import { SystemApi } from "./api";
 import { Storage } from "./storage";
 
@@ -26,9 +27,9 @@ export class Notifications {
     await this.requestPermissions();
 
     const { token } = await FirebaseMessaging.getToken();
-    await FirebaseMessaging.subscribeToTopic({ topic: Storage.pull().club.clubname });
+    await FirebaseMessaging.subscribeToTopic({ topic: getClub().clubname });
     await SystemApi.fcm_token_update(token);
-    await Storage.push((s) => {
+    Storage.updateStorage((s) => {
       s.preferences.activeNotify = true;
     });
   };
@@ -38,9 +39,9 @@ export class Notifications {
       return;
     }
 
-    await FirebaseMessaging.unsubscribeFromTopic({ topic: Storage.pull().club.clubname });
+    await FirebaseMessaging.unsubscribeFromTopic({ topic: getClub().clubname });
     await SystemApi.fcm_token_delete();
-    await Storage.push((s) => {
+    Storage.updateStorage((s) => {
       s.preferences.activeNotify = false;
     });
   };
@@ -53,14 +54,12 @@ export class Notifications {
     await FirebaseMessaging.deleteToken();
   };
 
-  static notify = ({ id, data, title, body, ...options }) =>
+  static notify = (options: Omit<LocalNotificationSchema, "id">) =>
     LocalNotifications.schedule({
       notifications: [
         {
           // 32-bit int, the value should be between -2147483648 and 2147483647 inclusive
-          id: id ?? Math.floor(Math.random() * 4294967295) - 2147483648,
-          title,
-          largeBody: body,
+          id: Math.floor(Math.random() * 4294967295) - 2147483648,
           ...options,
         },
       ],

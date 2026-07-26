@@ -1,13 +1,13 @@
 import { App, URLOpenListenerEvent } from "@capacitor/app";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
 import { useModal } from "@/components/ui/Modals";
+import { getClub } from "@/utils";
 import { apiDomain } from "@/utils/api";
-import { Storage } from "@/utils/storage";
 
-const DeeplinkListener = () => {
+const DeeplinkListener: FC = () => {
   const { t } = useTranslation();
   // listen for deeplink open
 
@@ -31,7 +31,7 @@ const DeeplinkListener = () => {
 
     const [_, club, race_id] = search;
 
-    if (club !== Storage.pull().club.clubname) throw t("api.deepLink.clubError");
+    if (club !== getClub().clubname) throw t("api.deepLink.clubError");
 
     router.push(`/tabs/races/${race_id}`);
   }, t("api.deepLink.openError"));

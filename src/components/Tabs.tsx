@@ -1,20 +1,21 @@
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react";
 import { people, settings, trailSign } from "ionicons/icons";
-import { lazy, memo, Suspense, useEffect } from "react";
+import { ComponentType, lazy, memo, Suspense, useEffect } from "react";
 import { Redirect, Route } from "react-router-dom";
 
-import { SystemApi } from "@/utils/api";
+import { SystemApi, UserApi } from "@/utils/api";
 import { payments } from "@/utils/icons";
 import { Session, Storage } from "@/utils/storage";
+import i18next from "i18next";
 import { useTranslation } from "react-i18next";
 import DeeplinkListener from "./controllers/DeeplinkListener";
 import NotifyListener from "./controllers/NotifyListener";
 import { SpinnerPage } from "./ui/Design";
 
-const Wrapper = (func) => {
+const Wrapper = <T extends object>(func: () => Promise<{ default: ComponentType<T> }>) => {
   const Render = lazy(func);
 
-  return memo((props) => {
+  return memo((props: T) => {
     return (
       <Suspense fallback={<SpinnerPage />}>
         <Render {...props} />
@@ -43,20 +44,43 @@ const UserRaces = Wrapper(() => import("./pages/UserRaces"));
 const Users = Wrapper(() => import("./pages/Users"));
 const UserStatistics = Wrapper(() => import("./pages/UserStatistics"));
 
-export default memo(({}) => {
+export default memo(() => {
   const appLoading = Session.useState((s) => s.appLoading);
-  const isLoggedIn = Storage.useState((s) => s.isLoggedIn);
-  const allowNotify = Storage.useState((s) => s.preferences.activeNotify);
+  const isLoggedIn = Storage.useStorage((s) => s.isLoggedIn);
+  const allowNotify = Storage.useStorage((s) => s.preferences.activeNotify);
 
   useEffect(() => {
     if (isLoggedIn) {
       SystemApi.device_update();
-      Session.fetch_user_data();
     }
   }, [isLoggedIn]);
 
   useEffect(() => {
-    Storage.load();
+    const initStorageAndSession = async () => {
+      try {
+        const [policies, managing] = await Promise.all([UserApi.my_policies(), UserApi.my_managing()]);
+
+        Session.update((s) => {
+          s.policies = {
+            adm: policies.policy_adm,
+            adm_small: policies.policy_adm_small,
+            news: policies.policy_news,
+            regs: policies.policy_regs,
+            fin: policies.policy_fin,
+            mng_big: policies.policy_mng_big,
+            mng_small: policies.policy_mng_small,
+          };
+          s.managingIds = managing.map((child) => child.user_id);
+        });
+      } catch (error: any) {
+        alert(i18next.t("api.policiesLoadError") + "\n" + error);
+      } finally {
+        Session.update((s) => {
+          s.appLoading = false;
+        });
+      }
+    };
+    initStorageAndSession();
   }, []);
 
   if (appLoading) return <SpinnerPage />;
@@ -75,7 +99,7 @@ export default memo(({}) => {
   );
 });
 
-const Tabs = memo(({}) => {
+const Tabs = memo(() => {
   const { t } = useTranslation();
 
   return (

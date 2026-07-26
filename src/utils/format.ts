@@ -1,6 +1,6 @@
 import i18next from "i18next";
 
-export const formatDate = (value) => {
+export const formatDate = (value: string) => {
   const convert = new Date(value);
 
   let result = `${convert.getDate()}. ${convert.getMonth() + 1}.`;
@@ -12,20 +12,20 @@ export const formatDate = (value) => {
   return result;
 };
 
-export const formatTime = (value) => {
+export const formatTime = (value: string) => {
   const convert = new Date(value);
 
   return `${(convert.getHours() + "").padStart(2, "0")}:${(convert.getMinutes() + "").padStart(2, "0")}:${(convert.getSeconds() + "").padStart(2, "0")}`;
 };
 
-export const formatDatetime = (value) => {
+export const formatDatetime = (value: string) => {
   return formatDate(value) + " " + formatTime(value);
 };
 
-export const lazyDate = (value) => {
+export const lazyDate = (value: string) => {
   const date = new Date(value);
 
-  const remainingDays = Math.ceil((date - Date.now()) / 86400000);
+  const remainingDays = Math.ceil((+date - Date.now()) / 86400000);
   const possibleWeekday = date.toLocaleDateString("sk-SK", { weekday: "long" });
 
   let weekday;
@@ -57,7 +57,7 @@ export const lazyDate = (value) => {
   return result;
 };
 
-export const lazyDates = (values) => {
+export const lazyDates = (values: string[]) => {
   if (values.length === 1) {
     return lazyDate(values[0]);
   }
@@ -67,4 +67,4 @@ export const lazyDates = (values) => {
 
 // This is not to prevent XSS attacks, React actually prevents XSS.
 // This is only for visual purposes, because server allows HTML styling and React does not.
-export const stripTags = (string) => string && string.replace(/<\/?[^>]+(>|$)/g, "");
+export const stripTags = (value: string) => value && value.replace(/<\/?[^>]+(>|$)/g, "");

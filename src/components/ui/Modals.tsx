@@ -44,16 +44,15 @@ export const useModal = () => {
   );
 
   const alertModal = useCallback(
-    (header: string | null, message: string) => modal({ header: header || message, message: (header && message) || "", buttons: [OKButton] }).then((event) => buttonDismissed(event as any)),
+    (message: string, header?: string) => modal({ header: header || message, message: (header && message) || "", buttons: [OKButton] }).then((event) => buttonDismissed(event as any)),
     [modal]
   );
   const errorModal = useCallback(
-    (header: string | null, message: string) => modal({ header: header || message, message: (header && message) || "", buttons: [OKButton] }).then((event) => buttonDismissed(event as any)),
+    (message: string, header?: string) => modal({ header: header || message, message: (header && message) || "", buttons: [OKButton] }).then((event) => buttonDismissed(event as any)),
     [modal]
   );
   const confirmModal = useCallback(
-    (header: string | null, message: string) =>
-      modal({ header: header || message, message: (header && message) || "", buttons: [CancelButton, OKButton] }).then((event) => buttonDismissed(event as any)),
+    (message: string, header?: string) => modal({ header: header || message, message: (header && message) || "", buttons: [CancelButton, OKButton] }).then((event) => buttonDismissed(event as any)),
     [modal]
   );
   const toastModal = useCallback((message: string) => toast({ message, duration: 3000 }), [toast]);

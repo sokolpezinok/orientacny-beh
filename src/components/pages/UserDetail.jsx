@@ -12,7 +12,7 @@ export default () => <Content Render={UserDetail} fetchContent={({ user_id }) =>
 
 export const UserDetail = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();
-  const advancedOptions = Session.pull().policies.adm_small || Session.pull().policies.mng_big;
+  const advancedOptions = Session.getRawState().policies.adm_small || Session.getRawState().policies.mng_big;
 
   return (
     <IonPage>

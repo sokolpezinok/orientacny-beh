@@ -5,9 +5,9 @@ import { useParams } from "react-router-dom";
 
 import { Header, Input, ItemGroup, PrimaryButton, Textarea } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
+import { getClub } from "@/utils";
 import { RaceApi } from "@/utils/api";
 import { lazyDate } from "@/utils/format";
-import { Storage } from "@/utils/storage";
 import Content, { StatelessForm } from "../controllers/Content";
 
 export default () => <Content Render={RaceNotify} fetchContent={({ race_id }) => RaceApi.detail(race_id)} />;
@@ -28,7 +28,7 @@ const RaceNotify = memo(({ content }) => {
       throw t("races.notify.fillTitle");
     }
 
-    const surety = await confirmModal(t("races.notify.confirmSend", { club: Storage.pull().club.fullname }));
+    const surety = await confirmModal(t("races.notify.confirmSend", { club: getClub().fullname }));
 
     if (!surety) {
       return;

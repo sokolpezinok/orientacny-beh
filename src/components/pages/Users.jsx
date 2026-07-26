@@ -39,7 +39,7 @@ const Users = memo(({ content, onUpdate }) => {
   return (
     <IonPage>
       <Header title={t("users.title")}>
-        {Session.pull().policies.mng_big && (
+        {Session.getRawState().policies.mng_big && (
           <IonButtons slot="end">
             <IonButton id="ellipsis">
               <IonIcon slot="icon-only" icon={ellipsisVertical} />

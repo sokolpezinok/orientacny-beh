@@ -35,7 +35,7 @@ export const useLoadTranslation = () => {
   const { i18n } = useTranslation();
 
   useEffect(() => {
-    Storage.subscribe(
+    Storage.subscribeStorage(
       (s) => s.preferences.locale,
       (locale) => {
         i18n.changeLanguage(locale || defaultLocale);

@@ -5,8 +5,8 @@ import { useParams } from "react-router-dom";
 
 import { Header, ItemGroup, PrimaryButton, Refresher } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
+import { getClub } from "@/utils";
 import { UserApi } from "@/utils/api";
-import { Storage } from "@/utils/storage";
 import { StatelessForm } from "../controllers/Content";
 import { UserNotifyForm } from "./UserNotify";
 
@@ -26,7 +26,7 @@ const UserNotify = memo(({ onUpdate }) => {
       throw t("users.notify.fillTitle");
     }
 
-    const surety = await confirmModal(t("users.notifyAll.confirmSend", { club: Storage.pull().club.fullname }));
+    const surety = await confirmModal(t("users.notifyAll.confirmSend", { club: getClub().fullname }));
 
     if (!surety) {
       return;

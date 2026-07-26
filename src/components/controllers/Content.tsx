@@ -9,69 +9,70 @@ import { useModal } from "@/components/ui/Modals";
 import { Ref } from "react";
 import { useTranslation } from "react-i18next";
 
-const Content = memo(
-  <T, P extends object>({ Render, fetchContent, errorText }: { Render: ComponentType<{ content: T; onUpdate: () => void }>; fetchContent: (params: P) => Promise<T>; errorText: string }) => {
-    const { t } = useTranslation();
-    const [content, setContent] = useState<T | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const { errorModal, confirmModal } = useModal();
-    const params = useParams<P>();
-    const formRef = useRef<StatefulFormHandle>(null);
+type RenderComponentInner<T> = ComponentType<{ content: T; onUpdate: () => Promise<void> }>;
+export type RenderComponent<T extends (...args: any) => Promise<any>> = RenderComponentInner<Awaited<ReturnType<T>>>;
 
-    const paramsKey = useMemo(() => JSON.stringify(params), [params]);
+const Content = memo(<T,>({ Render, fetchContent, errorText }: { Render: RenderComponentInner<any>; fetchContent: (params: Record<string, string>) => Promise<T>; errorText?: string }) => {
+  const { t } = useTranslation();
+  const [content, setContent] = useState<T | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { errorModal, confirmModal } = useModal();
+  const params = useParams();
+  const formRef = useRef<StatefulFormHandle>(null);
 
-    errorText ||= t("api.dataLoadError");
+  const paramsKey = useMemo(() => JSON.stringify(params), [params]);
 
-    console.log(content, error);
+  errorText ||= t("api.dataLoadError");
 
-    const handleUpdate = useCallback(async () => {
-      if (formRef.current?.isDirty()) {
-        const surety = await confirmModal(t("basic.confirmDiscardChanges"));
+  console.log(content, error);
 
-        if (!surety) {
-          return;
-        }
+  const handleUpdate = useCallback(async () => {
+    if (formRef.current?.isDirty()) {
+      const surety = await confirmModal(t("basic.confirmDiscardChanges"));
+
+      if (!surety) {
+        return;
       }
-
-      fetchContent(params)
-        .then((data) => {
-          setContent(data);
-          data;
-        })
-        .catch((error) => {
-          if (content === null) setError(error);
-          else errorModal(errorText, error);
-        });
-    }, [paramsKey, fetchContent, errorModal, confirmModal, errorText]);
-
-    useEffect(() => {
-      handleUpdate();
-    }, [paramsKey]);
-
-    if (content !== null) {
-      return (
-        <StatefulFormContext.Provider value={formRef}>
-          <Render content={content} onUpdate={handleUpdate} />
-        </StatefulFormContext.Provider>
-      );
     }
 
-    if (error === null) {
-      return <SkeletonPage />;
-    }
+    await fetchContent(params)
+      .then((data) => {
+        setContent(data);
+        data;
+      })
+      .catch((error) => {
+        if (content === null) setError(error);
+        else errorModal(errorText, error);
+      });
+  }, [paramsKey, fetchContent, errorModal, confirmModal, errorText]);
 
+  useEffect(() => {
+    handleUpdate();
+  }, [paramsKey]);
+
+  if (content !== null) {
     return (
-      <IonPage>
-        <IonContent>
-          <Refresher onUpdate={handleUpdate} />
-          <Fatal title={errorText} subtitle={error + ""}>
-            {t("basic.pullToRefresh")}
-          </Fatal>
-        </IonContent>
-      </IonPage>
+      <StatefulFormContext.Provider value={formRef}>
+        <Render content={content} onUpdate={handleUpdate} />
+      </StatefulFormContext.Provider>
     );
   }
-);
+
+  if (error === null) {
+    return <SkeletonPage />;
+  }
+
+  return (
+    <IonPage>
+      <IonContent>
+        <Refresher onUpdate={handleUpdate} />
+        <Fatal title={errorText} subtitle={error + ""}>
+          {t("basic.pullToRefresh")}
+        </Fatal>
+      </IonContent>
+    </IonPage>
+  );
+});
 
 export default Content;
 
@@ -199,4 +200,31 @@ export const StatelessForm = ({
       {children}
     </form>
   );
+};
+
+const useFetch = <T, P extends object>(fetcher: () => Promise<T>) => {
+  const { t } = useTranslation();
+  const [content, setContent] = useState<T | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { errorModal } = useModal();
+  const params = useParams<P>();
+  const paramsKey = useMemo(() => JSON.stringify(params), [params]);
+
+  const refresh = useCallback(async () => {
+    try {
+      setContent(await fetcher());
+    } catch (error: any) {
+      if (content === null) {
+        setError(error);
+      } else {
+        errorModal(error, t("api.dataLoadError"));
+      }
+    }
+  }, [errorModal, t, fetcher]);
+
+  useEffect(() => {
+    refresh();
+  }, [paramsKey]);
+
+  return { content, refresh, error };
 };

@@ -36,7 +36,7 @@ const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
   }, t("finances.claim.closeClaimError"));
 
   // messages ordered by descending date
-  const isUpdate = history.length > 0 && history[0].user_id == Storage.pull().userId;
+  const isUpdate = history.length > 0 && history[0].user_id == Storage.getStorage().userId;
   const lastMessage = isUpdate ? history[0].text : "";
 
   return (

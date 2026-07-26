@@ -56,7 +56,7 @@ export const NotifyForm = ({ store }) => {
   const state = store.useState();
   const { actionFeedbackModal } = useModal();
 
-  const allowNotify = Storage.useState((s) => s.preferences.activeNotify);
+  const allowNotify = Storage.useStorage((s) => s.preferences.activeNotify);
 
   const handleNotify = actionFeedbackModal(async (event) => {
     try {
@@ -173,15 +173,15 @@ export const NotifyForm = ({ store }) => {
           </Drawer>
         </Drawer>
       </ItemGroup>
-      {(Session.pull().policies.regs || Session.pull().policies.fin) && (
+      {(Session.getRawState().policies.regs || Session.getRawState().policies.fin) && (
         <ItemGroup title={t("notify.advanced")}>
           <SmallWarning title={t("notify.sectionDoesNotSupportPushNotify")} />
           <br />
           <Spacing>
-            <Toggle name="send_internal_entry_expired" checked={state.send_internal_entry_expired} disabled={!Session.pull().policies.regs} onIonChange={handleChange}>
+            <Toggle name="send_internal_entry_expired" checked={state.send_internal_entry_expired} disabled={!Session.getRawState().policies.regs} onIonChange={handleChange}>
               {t("notify.notifyInternalEntryExpired")}
             </Toggle>
-            <Toggle name="send_member_minus" checked={state.send_member_minus} disabled={!Session.pull().policies.fin} onIonChange={handleChange}>
+            <Toggle name="send_member_minus" checked={state.send_member_minus} disabled={!Session.getRawState().policies.fin} onIonChange={handleChange}>
               {t("notify.notifyMemberMinus")}
             </Toggle>
           </Spacing>

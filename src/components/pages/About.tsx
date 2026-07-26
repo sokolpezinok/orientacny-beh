@@ -9,8 +9,8 @@ import { Session, Storage } from "@/utils/storage";
 
 const About = memo(({}) => {
   const { t } = useTranslation();
-  const storage = Storage.pull();
-  const session = Session.pull();
+  const storage = Storage.getStorage();
+  const session = Session.getRawState();
 
   return (
     <IonPage>
@@ -31,7 +31,7 @@ const About = memo(({}) => {
         </IonAccordionGroup>
         <hr />
         <ItemGroup title={t("about.signedIntoClub")}>
-          {storage.club.fullname} ({storage.club.shortcut})
+          {storage.club?.fullname} ({storage.club?.shortcut})
         </ItemGroup>
         <ItemGroup title={t("about.signedInUser")}>{storage.userId}</ItemGroup>
         <ItemGroup title={t("about.deviceID")}>{storage.device}</ItemGroup>

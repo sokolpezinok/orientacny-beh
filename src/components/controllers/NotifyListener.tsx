@@ -1,7 +1,7 @@
-import { FirebaseMessaging } from "@capacitor-firebase/messaging";
+import { FirebaseMessaging, NotificationActionPerformedEvent, NotificationReceivedEvent } from "@capacitor-firebase/messaging";
 import { Capacitor } from "@capacitor/core";
-import { LocalNotifications } from "@capacitor/local-notifications";
-import { useEffect } from "react";
+import { ActionPerformed, LocalNotifications } from "@capacitor/local-notifications";
+import { FC, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
@@ -9,15 +9,15 @@ import { useModal } from "@/components/ui/Modals";
 import { SystemApi } from "@/utils/api";
 import { Notifications, NotifyEvents } from "@/utils/notify";
 
-const NotifyListener = ({}) => {
+const NotifyListener: FC = () => {
   const { t } = useTranslation();
   // listens for push notifications
 
   const router = useHistory();
   const { actionFeedbackModal } = useModal();
 
-  const handleNotifyActionPerformed = actionFeedbackModal(async (event) => {
-    const data = event?.notification?.data || event?.notification?.extra;
+  const handleNotifyActionPerformed = actionFeedbackModal(async (event: NotificationActionPerformedEvent | ActionPerformed) => {
+    const data: { event?: NotifyEvents; value?: string } = (event?.notification as any)?.data || (event?.notification as any)?.extra;
     const type = data?.event ?? NotifyEvents.BASIC;
     const value = data?.value;
 
@@ -32,10 +32,12 @@ const NotifyListener = ({}) => {
     router.push(`/tabs/races/${value}`);
   }, t("api.notify.openError"));
 
-  const handleNotifyReceived = actionFeedbackModal(async (event) => {
+  const handleNotifyReceived = actionFeedbackModal(async (event: NotificationReceivedEvent) => {
+    event.notification.title;
+
     await Notifications.notify({
-      title: event.notification.title,
-      body: event.notification.body,
+      title: event.notification.title || "",
+      body: event.notification.body || "",
       largeBody: event.notification.body,
       extra: event.notification.data,
     });
@@ -52,10 +54,12 @@ const NotifyListener = ({}) => {
       FirebaseMessaging.addListener("tokenReceived", handleTokenReceived);
       LocalNotifications.addListener("localNotificationActionPerformed", handleNotifyActionPerformed);
 
-      return actionFeedbackModal(async () => {
-        await FirebaseMessaging.removeAllListeners();
-        await LocalNotifications.removeAllListeners();
-      }, t("api.notify.removeListenerError"));
+      return () => {
+        actionFeedbackModal(async () => {
+          await FirebaseMessaging.removeAllListeners();
+          await LocalNotifications.removeAllListeners();
+        }, t("api.notify.removeListenerError"))();
+      };
     }
   }, []);
 };

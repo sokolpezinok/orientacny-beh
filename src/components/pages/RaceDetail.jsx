@@ -28,7 +28,7 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
 
   const handleClose = () => setSelect(null);
 
-  const isUserSignedIn = relations.find((child) => child.user_id == Storage.pull().userId).is_signed_in;
+  const isUserSignedIn = relations.find((child) => child.user_id == Storage.getStorage().userId).is_signed_in;
   const childrenSignedIn = relations.filter((child) => child.is_signed_in);
   const entries = new EntriesHelper(detail.entries);
 
@@ -63,7 +63,7 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
       return;
     }
 
-    setSelect(user_id || Storage.pull().userId);
+    setSelect(user_id || Storage.getStorage().userId);
   };
 
   return (
@@ -98,7 +98,7 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
             </div>
           </Spacing>
         </ItemGroup>
-        {Session.pull().policies.mng_big && <ItemLink routerLink={`/tabs/races/${race_id}/notify`}>{t("races.detail.writeNotify")}</ItemLink>}
+        {Session.getRawState().policies.mng_big && <ItemLink routerLink={`/tabs/races/${race_id}/notify`}>{t("races.detail.writeNotify")}</ItemLink>}
         <ItemLink routerLink="#" onClick={() => handleSignin()}>
           {generateSignInLabel()}
         </ItemLink>

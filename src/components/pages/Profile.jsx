@@ -52,7 +52,7 @@ export const ProfileForm = ({ store }) => {
     });
   };
 
-  const disabled = !(Session.pull().policies.adm_small || Session.pull().policies.mng_big);
+  const disabled = !(Session.getRawState().policies.adm_small || Session.getRawState().policies.mng_big);
 
   const handleExplainDisabled = () => alertModal(t("profile.alertUpdateDisabledTitle"), t("profile.alertUpdateDisabledBody"));
 
@@ -84,7 +84,7 @@ export const ProfileForm = ({ store }) => {
             </IonSelectOption>
           ))}
         </Select>
-        <Toggle disabled={!Session.pull().policies.adm_small} name="is_hidden" checked={state.is_hidden} onIonChange={handleChange}>
+        <Toggle disabled={!Session.getRawState().policies.adm_small} name="is_hidden" checked={state.is_hidden} onIonChange={handleChange}>
           {t("profile.hiddenAccount")}
         </Toggle>
       </ItemGroup>
