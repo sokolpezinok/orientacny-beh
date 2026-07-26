@@ -8,7 +8,7 @@ import { locales } from "@/i18n";
 import { SystemApi } from "@/utils/api";
 import { Storage } from "@/utils/storage";
 
-const Settings = memo(({}) => {
+const Settings = memo(() => {
   const { t } = useTranslation();
   const { confirmModal, actionFeedbackModal } = useModal();
   const locale = Storage.useStorage((s) => s.preferences.locale);

@@ -33,8 +33,6 @@ const NotifyListener: FC = () => {
   }, t("api.notify.openError"));
 
   const handleNotifyReceived = actionFeedbackModal(async (event: NotificationReceivedEvent) => {
-    event.notification.title;
-
     await Notifications.notify({
       title: event.notification.title || "",
       body: event.notification.body || "",

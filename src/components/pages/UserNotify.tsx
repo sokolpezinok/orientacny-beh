@@ -47,7 +47,7 @@ const UserNotify: RenderComponent<typeof fetchContent> = memo(({ content: [conte
       <IonContent>
         <Refresher onUpdate={onUpdate} />
         <ItemGroup title={t("users.notify.notification")}>
-          <Trans i18nKey="users.notify.willReceiveImmediately" values={{ name: content.sort_name }} components={[<b />]} />
+          <Trans i18nKey="users.notify.willReceiveImmediately" values={{ name: content.sort_name }} components={[<b key="0" />]} />
         </ItemGroup>
         <StatelessForm onSubmit={handleSubmit}>
           <ItemGroup title={t("users.notify.selectDevice")}>
@@ -76,7 +76,7 @@ const UserNotify: RenderComponent<typeof fetchContent> = memo(({ content: [conte
   );
 });
 
-export const UserNotifyForm = ({}) => {
+export const UserNotifyForm = () => {
   const { t } = useTranslation();
 
   return (

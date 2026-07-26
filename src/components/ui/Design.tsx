@@ -248,7 +248,7 @@ export const Copyable = ({ text }: { text: string }) => {
     try {
       await window.navigator.clipboard.writeText(text);
       toastModal(t("basic.copyToClipboardSuccess"));
-    } catch (error) {
+    } catch {
       toastModal(t("basic.copyToClipboardError"));
     }
   };

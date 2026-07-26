@@ -9,7 +9,7 @@ import { useModal } from "@/components/ui/Modals";
 import { useTranslation } from "react-i18next";
 
 type RenderComponentInner<T> = ComponentType<{ content: T; onUpdate: () => Promise<void> }>;
-export type RenderComponent<T extends (params: Record<string, string>) => Promise<any>> = RenderComponentInner<Awaited<ReturnType<T>>>;
+export type RenderComponent<T extends (params: any) => Promise<any>> = RenderComponentInner<Awaited<ReturnType<T>>>;
 
 // memo() erases a component's own generics, so the generic function is defined
 // separately and the memoized wrapper is cast back to its original signature.

@@ -7,7 +7,7 @@ import License from "@/components/ui/License";
 import { apiVersion } from "@/utils/api";
 import { Session, Storage } from "@/utils/storage";
 
-const About = memo(({}) => {
+const About = memo(() => {
   const { t } = useTranslation();
   const storage = Storage.getStorage();
   const session = Session.getRawState();

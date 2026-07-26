@@ -46,7 +46,7 @@ const RaceNotify: RenderComponent<typeof RaceApi.detail> = memo(({ content }) =>
           <h2>{content.name}</h2>
         </ItemGroup>
         <ItemGroup title={t("races.notify.notification")} subtitle={t("races.notify.willReceiveImmediately")}>
-          <Trans i18nKey="races.notify.notifyIsBoundToEvent" values={{ event: content.name }} components={[<b />]} />
+          <Trans i18nKey="races.notify.notifyIsBoundToEvent" values={{ event: content.name }} components={[<b key="0" />]} />
         </ItemGroup>
         <StatelessForm onSubmit={handleSubmit}>
           <ItemGroup>

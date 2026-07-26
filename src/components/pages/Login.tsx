@@ -101,7 +101,7 @@ const Login: RenderComponent<typeof GeneralApi.clubs> = memo(({ content }) => {
                 <Select name="clubname" label={t("login.club")} required>
                   {content
                     .filter((child) => child.is_release || showDebugClubs)
-                    .map((child, index) => (
+                    .map((child) => (
                       <IonSelectOption key={child.clubname} value={child.clubname}>
                         {child.fullname}
                       </IonSelectOption>

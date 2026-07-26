@@ -10,7 +10,7 @@ const buttonDismissed = <T,>(event: CustomEvent<OverlayEventDetail<T>>) => event
 export const useModal = () => {
   const [presentAlert] = useIonAlert();
   const [presentLoading, dismissLoading] = useIonLoading();
-  const [presentToast, dismissToast] = useIonToast();
+  const [presentToast] = useIonToast();
 
   const modal = useCallback(
     ({ header, message, ...options }: AlertOptions) => {
