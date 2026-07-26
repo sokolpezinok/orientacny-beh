@@ -301,7 +301,7 @@ export default {
     serverError: "Chyba sa stala na serveri. Prosím, nahláste chybu administrátorom.",
     signInAgain: "Prosím, prihlás sa znova.",
     fatalError: "Neočakávaná chyba, kvôli ktorej aplikácia nemôže fungovať.",
-    storageLoadError: "Ospravedlňujeme sa, došlo k neočakávanej chybe. Skús vymazať úložisko aplikácie alebo kontaktuj administrátora.",
+    storageNotHydratedError: "Neočakávaná chyba, dáta z úložiska neboli načítané.",
     dataLoadError: "Nepodarilo sa načítať dáta.",
     policiesLoadError: "Nepodarilo sa načítať dáta zo serveru - niektoré údaje nemusia byť správne.",
     deepLink: {

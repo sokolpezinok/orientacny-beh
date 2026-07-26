@@ -21,7 +21,7 @@ export class StorageStore<T extends object> extends Store<{ hydrated: boolean; s
 
     const value = await this.get();
 
-    let storage: T = this.initial;
+    let storage = this.initial;
 
     // try to hydrate store
     if (value) {
@@ -48,7 +48,7 @@ export class StorageStore<T extends object> extends Store<{ hydrated: boolean; s
   useStorage<R>(selector: (s: T) => R): R {
     return this.useState((s) => {
       if (!s.hydrated || !s.storage) {
-        throw new Error(i18next.t("general.storageNotHydratedError"));
+        throw new Error(i18next.t("api.storageNotHydratedError"));
       }
 
       return selector(s.storage);
@@ -58,7 +58,7 @@ export class StorageStore<T extends object> extends Store<{ hydrated: boolean; s
   updateStorage(selector: TUpdateFunction<T>) {
     return this.update((s, original) => {
       if (!s.hydrated || !s.storage || !original.hydrated || !original.storage) {
-        throw new Error(i18next.t("general.storageNotHydratedError"));
+        throw new Error(i18next.t("api.storageNotHydratedError"));
       }
 
       return selector(s.storage, original.storage);
@@ -69,7 +69,7 @@ export class StorageStore<T extends object> extends Store<{ hydrated: boolean; s
     const s = this.getRawState();
 
     if (!s.hydrated || !s.storage) {
-      throw new Error(i18next.t("general.storageNotHydratedError"));
+      throw new Error(i18next.t("api.storageNotHydratedError"));
     }
 
     return s.storage;
@@ -79,7 +79,7 @@ export class StorageStore<T extends object> extends Store<{ hydrated: boolean; s
     return this.subscribe(
       (s) => {
         if (!s.hydrated || !s.storage) {
-          throw new Error(i18next.t("general.storageNotHydratedError"));
+          throw new Error(i18next.t("api.storageNotHydratedError"));
         }
 
         return selector(s.storage);
