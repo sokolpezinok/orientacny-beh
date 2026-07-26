@@ -19,16 +19,16 @@ export class StorageStore<T extends object> extends Store<{ hydrated: boolean; s
       return;
     }
 
-    const value = await this.get();
-
     let storage = this.initial;
 
-    // try to hydrate store
-    if (value) {
-      try {
+    try {
+      const value = await this.get();
+
+      // try to hydrate store
+      if (value) {
         storage = JSON.parse(value) as T;
-      } catch {}
-    }
+      }
+    } catch {}
 
     // use replace to avoid weird ts errors
     this.replace({

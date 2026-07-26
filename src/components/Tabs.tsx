@@ -45,45 +45,40 @@ const Users = Wrapper(() => import("./pages/Users"));
 const UserStatistics = Wrapper(() => import("./pages/UserStatistics"));
 
 export default memo(() => {
-  const appLoading = Session.useState((s) => s.appLoading);
+  const isHydrated = Storage.useState((s) => s.hydrated);
   const isLoggedIn = Storage.useStorage((s) => s.isLoggedIn);
   const allowNotify = Storage.useStorage((s) => s.preferences.activeNotify);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      SystemApi.device_update();
+    if (!isLoggedIn) {
+      return;
     }
+
+    const initData = async () => {
+      SystemApi.device_update();
+
+      const [policies, managing] = await Promise.all([UserApi.my_policies(), UserApi.my_managing()]);
+
+      Session.update((s) => {
+        s.policies = {
+          adm: policies.policy_adm,
+          adm_small: policies.policy_adm_small,
+          news: policies.policy_news,
+          regs: policies.policy_regs,
+          fin: policies.policy_fin,
+          mng_big: policies.policy_mng_big,
+          mng_small: policies.policy_mng_small,
+        };
+        s.managingIds = managing.map((child) => child.user_id);
+      });
+    };
+
+    initData().catch((error) => {
+      alert(i18next.t("api.policiesLoadError") + "\n" + error);
+    });
   }, [isLoggedIn]);
 
-  useEffect(() => {
-    const initStorageAndSession = async () => {
-      try {
-        const [policies, managing] = await Promise.all([UserApi.my_policies(), UserApi.my_managing()]);
-
-        Session.update((s) => {
-          s.policies = {
-            adm: policies.policy_adm,
-            adm_small: policies.policy_adm_small,
-            news: policies.policy_news,
-            regs: policies.policy_regs,
-            fin: policies.policy_fin,
-            mng_big: policies.policy_mng_big,
-            mng_small: policies.policy_mng_small,
-          };
-          s.managingIds = managing.map((child) => child.user_id);
-        });
-      } catch (error: any) {
-        alert(i18next.t("api.policiesLoadError") + "\n" + error);
-      } finally {
-        Session.update((s) => {
-          s.appLoading = false;
-        });
-      }
-    };
-    initStorageAndSession();
-  }, []);
-
-  if (appLoading) return <SpinnerPage />;
+  if (!isHydrated) return <SpinnerPage />;
   if (!isLoggedIn) return <Redirect to="/login" />;
 
   return (

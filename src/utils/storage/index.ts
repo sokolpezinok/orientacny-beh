@@ -53,8 +53,6 @@ export const Storage = new StorageStore<StorageType>(
 );
 
 type SessionType = {
-  appLoading: boolean;
-
   policies: {
     adm: boolean;
     adm_small: boolean;
@@ -69,8 +67,6 @@ type SessionType = {
 };
 
 export const Session = new Store<SessionType>({
-  appLoading: true,
-
   // user permissions
   policies: {
     adm: false,
