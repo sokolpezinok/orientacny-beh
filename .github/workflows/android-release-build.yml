@@ -33,16 +33,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Test code
+        run: |
+          pnpm exec tsc --noEmit
+          pnpm exec eslint src
+          pnpm exec jest
+
       - name: Set env
         run: |
           echo "VITE_APP_VERSION=v3.$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
           echo "ANDROID_VERSION_CODE=$((${{ github.run_number }} + 312))" >> $GITHUB_ENV
 
       - name: Build web assets
-        run: pnpm vite build
+        run: pnpm exec vite build
 
       - name: Sync capacitor
-        run: pnpm cap sync
+        run: pnpm exec cap sync
 
       - name: Decode keystore
         run: |
