@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonContent, IonIcon, IonItem, IonPage, IonPopover, IonRippleEffect, IonSearchbar } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonIcon, IonItem, IonPage, IonPopover, IonRippleEffect, IonSearchbar, SearchbarCustomEvent } from "@ionic/react";
 import { ellipsisVertical } from "ionicons/icons";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,11 +8,11 @@ import { Header, Refresher } from "@/components/ui/Design";
 import { normalize } from "@/utils";
 import { UserApi } from "@/utils/api";
 import { Session } from "@/utils/storage";
-import Content from "../controllers/Content";
+import Content, { RenderComponent } from "../controllers/Content";
 
 export default () => <Content Render={Users} fetchContent={UserApi.list} />;
 
-const Users = memo(({ content, onUpdate }) => {
+const Users: RenderComponent<typeof UserApi.list> = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();
   const [table, setTable] = useState(content);
   const router = useHistory();
@@ -21,8 +21,8 @@ const Users = memo(({ content, onUpdate }) => {
     setTable(content);
   };
 
-  const handleChange = (event) => {
-    const value = normalize(event.target.value.trim());
+  const handleChange = (event: SearchbarCustomEvent) => {
+    const value = normalize((event.target.value ?? "").trim());
 
     if (value === "") {
       handleClear();

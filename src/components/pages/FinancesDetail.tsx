@@ -6,15 +6,15 @@ import { useHistory } from "react-router-dom";
 import { ColoredValue, Header, ItemGroup, PrimaryButton, Refresher, SmallSuccess, SmallWarning } from "@/components/ui/Design";
 import { FinancesApi, FinancesEnum } from "@/utils/api";
 import { lazyDate, stripTags } from "@/utils/format";
-import Content from "../controllers/Content";
+import Content, { RenderComponent } from "../controllers/Content";
 
-export default () => <Content Render={FinancesDetail} fetchContent={({ fin_id }) => FinancesApi.detail(fin_id)} />;
+export default () => <Content Render={FinancesDetail} fetchContent={({ fin_id }) => FinancesApi.detail(+fin_id)} />;
 
-export const FinancesDetail = memo(({ content, onUpdate }) => {
+export const FinancesDetail: RenderComponent<typeof FinancesApi.detail> = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();
   const router = useHistory();
 
-  const handleClick = (event) => {
+  const handleClick = () => {
     router.push(`/tabs/finances/${content.fin_id}/claim`);
   };
 

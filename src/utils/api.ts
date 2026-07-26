@@ -83,9 +83,20 @@ class Api {
   static delete = <T>(part: string, options?: Parameters<typeof this.fetch>[2]) => this.fetch<T>(part, "DELETE", options);
 }
 console.log(Api);
+
+export type Club = {
+  clubname: string;
+  fullname: string;
+  is_release: boolean;
+  shortcut: string;
+  baseadr: string;
+  mainwww: string;
+  emailadr: string;
+};
+
 export class GeneralApi {
   static clubs = () =>
-    Api.get(`/clubs`, {
+    Api.get<Club[]>(`/clubs`, {
       server: apiServer,
     });
 }
@@ -269,6 +280,7 @@ export type Race = {
   transport: 0 | 1 | 2 | 3;
   accommodation: 0 | 1 | 2;
   categories: string[];
+  everyone: { user_id: number; name: string; surname: string; category: string; transport: boolean; accommodation: boolean }[];
 };
 
 export type RaceSignedUser = {
@@ -335,11 +347,12 @@ export type FinancePayment = {
   note: string;
   amount: number;
   date: string;
-  storno: boolean | null;
+  storno: 1 | null;
   storno_user_id: number | null;
   storno_date: string | null;
   storno_note: string | null;
-  claim: boolean;
+  storno_sort_name: string | null;
+  claim: 0 | 1 | null;
 };
 
 export type FinanceClaim = {

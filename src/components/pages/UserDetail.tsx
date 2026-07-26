@@ -6,11 +6,11 @@ import { doesManageUser } from "@/utils";
 import { UserApi } from "@/utils/api";
 import { Session } from "@/utils/storage";
 import { useTranslation } from "react-i18next";
-import Content from "../controllers/Content";
+import Content, { RenderComponent } from "../controllers/Content";
 
-export default () => <Content Render={UserDetail} fetchContent={({ user_id }) => UserApi.detail(user_id)} />;
+export default () => <Content Render={UserDetail} fetchContent={({ user_id }) => UserApi.detail(+user_id)} />;
 
-export const UserDetail = memo(({ content, onUpdate }) => {
+export const UserDetail: RenderComponent<typeof UserApi.detail> = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();
   const advancedOptions = Session.getRawState().policies.adm_small || Session.getRawState().policies.mng_big;
 
@@ -33,7 +33,7 @@ export const UserDetail = memo(({ content, onUpdate }) => {
           <Copyable text={content.reg || "-"} />
           <br />
           <h4>{t("profile.chipNumber")}</h4>
-          <Copyable text={content.si_chip || "-"} />
+          <Copyable text={`${content.si_chip || "-"}`} />
         </ItemGroup>
         <hr />
         <ItemLink routerLink={`/tabs/users/${content.user_id}/races`}>{t("users.races.title")}</ItemLink>

@@ -1,21 +1,19 @@
 import { IonContent, IonPage } from "@ionic/react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 
-import { Header, ItemGroup, PrimaryButton, Refresher } from "@/components/ui/Design";
+import { Header, ItemGroup, PrimaryButton } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { getClub } from "@/utils";
 import { UserApi } from "@/utils/api";
 import { StatelessForm } from "../controllers/Content";
 import { UserNotifyForm } from "./UserNotify";
 
-const UserNotify = memo(({ onUpdate }) => {
+const UserNotify = memo(() => {
   const { t } = useTranslation();
-  const { user_id } = useParams();
   const { actionFeedbackModal, confirmModal } = useModal();
 
-  const handleSubmit = actionFeedbackModal(async (elements) => {
+  const handleSubmit = actionFeedbackModal(async (elements: any) => {
     const data = {
       title: elements.title.value,
       image: elements.image.value,
@@ -32,7 +30,7 @@ const UserNotify = memo(({ onUpdate }) => {
       return;
     }
 
-    await UserApi.notify_everyone(user_id, data);
+    await UserApi.notify_everyone(data);
     return t("users.notify.sendSuccess");
   }, t("users.notify.sendError"));
 
@@ -40,7 +38,6 @@ const UserNotify = memo(({ onUpdate }) => {
     <IonPage>
       <Header defaultHref="/tabs/users" title={t("users.notifyAll.title")} />
       <IonContent>
-        <Refresher onUpdate={onUpdate} />
         <ItemGroup title={t("users.notify.notification")} subtitle={t("users.notifyAll.willReceiveImmediately")} />
         <StatelessForm onSubmit={handleSubmit}>
           <UserNotifyForm />

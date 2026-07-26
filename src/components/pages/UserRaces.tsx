@@ -5,13 +5,13 @@ import { useParams } from "react-router-dom";
 
 import { Header, Item, ItemGroup, Refresher } from "@/components/ui/Design";
 import { UserApi } from "@/utils/api";
-import Content from "../controllers/Content";
+import Content, { RenderComponent } from "../controllers/Content";
 
-export default () => <Content Render={UserRaces} fetchContent={({ user_id }) => UserApi.user_races(user_id)} />;
+export default () => <Content Render={UserRaces} fetchContent={({ user_id }) => UserApi.user_races(+user_id)} />;
 
-const UserRaces = memo(({ content, onUpdate }) => {
+const UserRaces: RenderComponent<typeof UserApi.user_races> = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();
-  const { user_id } = useParams();
+  const { user_id } = useParams<{ user_id: string }>();
 
   return (
     <IonPage>
@@ -24,7 +24,7 @@ const UserRaces = memo(({ content, onUpdate }) => {
   );
 });
 
-const UserRacesContent = ({ content }) => {
+const UserRacesContent = ({ content }: { content: Awaited<ReturnType<typeof UserApi.user_races>> }) => {
   const { t } = useTranslation();
 
   if (content.length === 0) {

@@ -6,18 +6,20 @@ import { useParams } from "react-router-dom";
 import { Header, Input, ItemGroup, PrimaryButton, Refresher, Select, SmallError, Textarea } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { UserApi } from "@/utils/api";
-import Content, { StatelessForm } from "../controllers/Content";
+import Content, { RenderComponent, StatelessForm } from "../controllers/Content";
 
-export default () => <Content Render={UserNotify} fetchContent={({ user_id }) => Promise.all([UserApi.detail(user_id), UserApi.user_devices(user_id)])} />;
+const fetchContent = ({ user_id }: { user_id: string }) => Promise.all([UserApi.detail(+user_id), UserApi.user_devices(+user_id)]);
 
-const UserNotify = memo(({ content: [content, devices], onUpdate }) => {
+export default () => <Content Render={UserNotify} fetchContent={fetchContent} />;
+
+const UserNotify: RenderComponent<typeof fetchContent> = memo(({ content: [content, devices], onUpdate }) => {
   const { t } = useTranslation();
-  const { user_id } = useParams();
+  const { user_id } = useParams<{ user_id: string }>();
   const { actionFeedbackModal, confirmModal } = useModal();
 
   devices = devices.filter((child) => child.fcm_status);
 
-  const handleSubmit = actionFeedbackModal(async (elements) => {
+  const handleSubmit = actionFeedbackModal(async (elements: any) => {
     const data = {
       device: elements.device.value,
       title: elements.title.value,
@@ -35,7 +37,7 @@ const UserNotify = memo(({ content: [content, devices], onUpdate }) => {
       return;
     }
 
-    await UserApi.user_notify(user_id, data);
+    await UserApi.user_notify(+user_id, data);
     return t("users.notify.sendSuccess");
   }, t("users.notify.sendError"));
 

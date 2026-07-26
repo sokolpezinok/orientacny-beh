@@ -1,23 +1,24 @@
 import { IonButton, IonButtons, IonContent, IonIcon, IonPage, IonSelectOption } from "@ionic/react";
 import { alertCircleOutline, save } from "ionicons/icons";
+import { Store } from "pullstate";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Header, Input, ItemGroup, Refresher, Select, Toggle } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
-import { UserApi } from "@/utils/api";
+import { UserApi, UserProfile as UserProfileType } from "@/utils/api";
 import countries from "@/utils/countries";
 import { Session } from "@/utils/storage";
-import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
+import Content, { RenderComponent, StatefulForm, useStatefulForm } from "../controllers/Content";
 
 export default () => <Content Render={Profile} fetchContent={UserApi.profile} />;
 
-const Profile = memo(({ content, onUpdate }) => {
+const Profile: RenderComponent<typeof UserApi.profile> = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();
   const { actionFeedbackModal } = useModal();
   const formRef = useStatefulForm();
 
-  const handleSubmit = actionFeedbackModal(async (data) => {
+  const handleSubmit = actionFeedbackModal(async (data: Partial<UserProfileType>) => {
     await UserApi.profile_update(data);
     return t("profile.profileUpdateSuccess");
   }, t("profile.profileUpdateError"));
@@ -39,16 +40,16 @@ const Profile = memo(({ content, onUpdate }) => {
   );
 });
 
-export const ProfileForm = ({ store }) => {
+export const ProfileForm = ({ store }: { store: Store<UserProfileType> }) => {
   const { t } = useTranslation();
   const state = store.useState();
   const { alertModal } = useModal();
 
-  const handleChange = (event) => {
+  const handleChange = (event: any) => {
     const { name, checked, value } = event.target;
 
     store.update((s) => {
-      s[name] = checked ?? value;
+      (s as any)[name] = checked ?? value;
     });
   };
 
@@ -62,7 +63,7 @@ export const ProfileForm = ({ store }) => {
         <ItemGroup>
           <div className="bg-primary-container grid grid-cols-[auto_1fr] gap-4 rounded-lg p-4">
             <IonIcon icon={alertCircleOutline} className="self-center text-2xl" />
-            <a className="!text-inherit" onClick={handleExplainDisabled}>
+            <a className="text-inherit!" onClick={handleExplainDisabled}>
               {t("profile.alertUpdateDisabledTitle")}
             </a>
           </div>

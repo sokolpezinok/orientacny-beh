@@ -8,16 +8,16 @@ import { useModal } from "@/components/ui/Modals";
 import { getClub } from "@/utils";
 import { RaceApi } from "@/utils/api";
 import { lazyDate } from "@/utils/format";
-import Content, { StatelessForm } from "../controllers/Content";
+import Content, { RenderComponent, StatelessForm } from "../controllers/Content";
 
-export default () => <Content Render={RaceNotify} fetchContent={({ race_id }) => RaceApi.detail(race_id)} />;
+export default () => <Content Render={RaceNotify} fetchContent={({ race_id }) => RaceApi.detail(+race_id)} />;
 
-const RaceNotify = memo(({ content }) => {
+const RaceNotify: RenderComponent<typeof RaceApi.detail> = memo(({ content }) => {
   const { t } = useTranslation();
-  const { race_id } = useParams();
+  const { race_id } = useParams<{ race_id: string }>();
   const { actionFeedbackModal, confirmModal } = useModal();
 
-  const handleSubmit = actionFeedbackModal(async (elements) => {
+  const handleSubmit = actionFeedbackModal(async (elements: any) => {
     const data = {
       title: elements.title.value,
       image: elements.image.value,
@@ -34,7 +34,7 @@ const RaceNotify = memo(({ content }) => {
       return;
     }
 
-    await RaceApi.notify(race_id, data);
+    await RaceApi.notify(+race_id, data);
     return t("races.notify.sendSuccess");
   }, t("races.notify.sendError"));
 

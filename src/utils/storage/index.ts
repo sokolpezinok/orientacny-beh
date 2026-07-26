@@ -1,5 +1,6 @@
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import { Store } from "pullstate";
+import type { Club } from "../api";
 import { StorageStore } from "./wrapper";
 
 type StorageType = {
@@ -14,15 +15,7 @@ type StorageType = {
   userId: number | null;
   device: string | null;
 
-  club?: {
-    clubname: string;
-    fullname: string;
-    is_release: boolean;
-    shortcut: string;
-    baseadr: string;
-    mainwww: string;
-    emailadr: string;
-  };
+  club?: Club;
 };
 
 export const Storage = new StorageStore<StorageType>(

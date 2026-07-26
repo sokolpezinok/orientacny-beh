@@ -1,6 +1,5 @@
 import i18next from "i18next";
-import type { Draft } from "immer";
-import { Store } from "pullstate";
+import { Store, TUpdateFunction } from "pullstate";
 
 export class StorageStore<T extends object> extends Store<{ hydrated: boolean; storage?: T }> {
   private initial: T;
@@ -56,13 +55,13 @@ export class StorageStore<T extends object> extends Store<{ hydrated: boolean; s
     });
   }
 
-  updateStorage(selector: (s: Draft<T>) => void) {
-    return this.update((s) => {
-      if (!s.hydrated || !s.storage) {
+  updateStorage(selector: TUpdateFunction<T>) {
+    return this.update((s, original) => {
+      if (!s.hydrated || !s.storage || !original.hydrated || !original.storage) {
         throw new Error(i18next.t("general.storageNotHydratedError"));
       }
 
-      return selector(s.storage);
+      return selector(s.storage, original.storage);
     });
   }
 

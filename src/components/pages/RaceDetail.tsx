@@ -1,34 +1,36 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
 import classNames from "classnames";
 import { bus, calendar, home, location } from "ionicons/icons";
 import { memo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
-import { Anchor, BooleanIcon, Drawer, Header, Input, ItemGroup, ItemLink, PrimaryButton, ReadMore, Refresher, Select, SmallWarning, Spacing, Toggle, TransparentButton } from "@/components/ui/Design";
+import { Anchor, BackButton, BooleanIcon, Drawer, Header, Input, ItemGroup, ItemLink, PrimaryButton, ReadMore, Refresher, Select, SmallWarning, Spacing, Toggle, TransparentButton } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { EntriesHelper, sort } from "@/utils";
-import { RaceApi, RaceEnum } from "@/utils/api";
+import { Race, RaceApi, RaceEnum, RaceSignedUser } from "@/utils/api";
 import { lazyDate, lazyDates } from "@/utils/format";
 import { category, group } from "@/utils/icons";
 import { Session, Storage } from "@/utils/storage";
-import Content from "../controllers/Content";
+import Content, { RenderComponent } from "../controllers/Content";
+
+const fetchContent = ({ race_id }: Record<string, string>) => Promise.all([RaceApi.detail(+race_id), RaceApi.relations(+race_id)]);
 
 export default () => {
   const { t } = useTranslation();
-  return <Content Render={RaceDetail} fetchContent={({ race_id }) => Promise.all([RaceApi.detail(race_id), RaceApi.relations(race_id)])} errorText={t("races.racesLoadError")} />;
+  return <Content Render={RaceDetail} fetchContent={fetchContent} errorText={t("races.racesLoadError")} />;
 };
 
-const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
+const RaceDetail: RenderComponent<typeof fetchContent> = memo(({ content: [detail, relations], onUpdate }) => {
   const { t } = useTranslation();
-  const [select, setSelect] = useState(null);
+  const [select, setSelect] = useState<number | null>(null);
   const router = useHistory();
-  const { race_id } = useParams();
+  const { race_id } = useParams<{ race_id: string }>();
   const { alertModal } = useModal();
 
   const handleClose = () => setSelect(null);
 
-  const isUserSignedIn = relations.find((child) => child.user_id == Storage.getStorage().userId).is_signed_in;
+  const isUserSignedIn = relations.find((child) => child.user_id == Storage.getStorage().userId)!.is_signed_in;
   const childrenSignedIn = relations.filter((child) => child.is_signed_in);
   const entries = new EntriesHelper(detail.entries);
 
@@ -47,12 +49,12 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
 
     return (
       <p>
-        {t("races.detail.signInDeadline")} <span className="text-primary">{lazyDate(entries.currentEntry())}</span> ({t("races.detail.signInDeadlineNumber", { number: entries.currentEntryIndex() })})
+        {t("races.detail.signInDeadline")} <span className="text-primary">{lazyDate(entries.currentEntry()!)}</span> ({t("races.detail.signInDeadlineNumber", { number: entries.currentEntryIndex() })})
       </p>
     );
   };
 
-  const handleSignin = (user_id = null) => {
+  const handleSignin = (user_id: number | null = null) => {
     if (detail.cancelled) {
       alertModal(t("races.detail.alertRaceCancelledTitle"), t("races.detail.alertRaceCancelledBody"));
       return;
@@ -150,7 +152,7 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
         <IonModal isOpen={select !== null} onDidDismiss={handleClose}>
           <Header title={t("basic.signIn")}>
             <IonButtons slot="start">
-              <IonBackButton defaultHref="#" onClick={handleClose} />
+              <BackButton defaultHref="#" onClick={handleClose} />
             </IonButtons>
           </Header>
           <IonContent>
@@ -172,7 +174,7 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
             {select !== null && (
               <RaceSignOf
                 detail={detail}
-                user={relations.find((child) => child.user_id == select)}
+                user={relations.find((child) => child.user_id == select)!}
                 onClose={() => {
                   handleClose();
                   onUpdate();
@@ -186,14 +188,14 @@ const RaceDetail = memo(({ content: [detail, relations], onUpdate }) => {
   );
 });
 
-const RaceSignOf = ({ detail, user, onClose }) => {
+const RaceSignOf = ({ detail, user, onClose }: { detail: Race; user: RaceSignedUser; onClose: () => void }) => {
   const { t } = useTranslation();
   const { actionFeedbackModal } = useModal();
-  const ref = useRef(null);
-  const [sharedTransport, setSharedTransport] = useState(user.transport);
+  const ref = useRef<HTMLFormElement>(null);
+  const [sharedTransport, setSharedTransport] = useState(!!user.transport);
 
   const handleSignin = actionFeedbackModal(async () => {
-    const els = ref.current.elements;
+    const els = ref.current!.elements as any;
     const collected = {
       category: els.category.value.trim(),
       transport: els.transport.value === "on",
@@ -256,14 +258,14 @@ const RaceSignOf = ({ detail, user, onClose }) => {
             </Drawer>
           </>
         ) : (
-          <Toggle name="transport" checked={RaceEnum.isTransportSelectable(detail.transport) ? user.transport : detail.transport} disabled={!RaceEnum.isTransportSelectable(detail.transport)}>
+          <Toggle name="transport" checked={!!(RaceEnum.isTransportSelectable(detail.transport) ? user.transport : detail.transport)} disabled={!RaceEnum.isTransportSelectable(detail.transport)}>
             {t("races.signin.wantUseSharedTransport")}
           </Toggle>
         )}
         <br />
         <Toggle
           name="accommodation"
-          checked={RaceEnum.isAccommodationSelectable(detail.accommodation) ? user.accommodation : detail.accommodation}
+          checked={!!(RaceEnum.isAccommodationSelectable(detail.accommodation) ? user.accommodation : detail.accommodation)}
           disabled={!RaceEnum.isAccommodationSelectable(detail.accommodation)}
         >
           {t("races.signin.wantUseSharedAccommodation")}

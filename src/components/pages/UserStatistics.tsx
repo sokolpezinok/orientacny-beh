@@ -5,11 +5,11 @@ import { useHistory } from "react-router-dom";
 
 import { BooleanIcon, Header, Refresher } from "@/components/ui/Design";
 import { UserApi } from "@/utils/api";
-import Content from "../controllers/Content";
+import Content, { RenderComponent } from "../controllers/Content";
 
 export default () => <Content Render={UserNotify} fetchContent={UserApi.statistics} />;
 
-const UserNotify = memo(({ content, onUpdate }) => {
+const UserNotify: RenderComponent<typeof UserApi.statistics> = memo(({ content, onUpdate }) => {
   const { t } = useTranslation();
   const router = useHistory();
 

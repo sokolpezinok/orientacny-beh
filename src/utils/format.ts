@@ -1,6 +1,6 @@
 import i18next from "i18next";
 
-export const formatDate = (value: string) => {
+export const formatDate = (value: string | number) => {
   const convert = new Date(value);
 
   let result = `${convert.getDate()}. ${convert.getMonth() + 1}.`;
@@ -12,17 +12,17 @@ export const formatDate = (value: string) => {
   return result;
 };
 
-export const formatTime = (value: string) => {
+export const formatTime = (value: string | number) => {
   const convert = new Date(value);
 
   return `${(convert.getHours() + "").padStart(2, "0")}:${(convert.getMinutes() + "").padStart(2, "0")}:${(convert.getSeconds() + "").padStart(2, "0")}`;
 };
 
-export const formatDatetime = (value: string) => {
+export const formatDatetime = (value: string | number) => {
   return formatDate(value) + " " + formatTime(value);
 };
 
-export const lazyDate = (value: string) => {
+export const lazyDate = (value: string | number) => {
   const date = new Date(value);
 
   const remainingDays = Math.ceil((+date - Date.now()) / 86400000);

@@ -1,23 +1,23 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonIcon, IonInputPasswordToggle, IonItem, IonModal, IonPage, IonPopover, IonSelectOption } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonIcon, IonInputPasswordToggle, IonItem, IonModal, IonPage, IonPopover, IonSelectOption } from "@ionic/react";
 import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
-import { Checkbox, Header, Input, PrimaryButton, Select, Spacing } from "@/components/ui/Design";
+import { BackButton, Checkbox, Header, Input, PrimaryButton, Select, Spacing } from "@/components/ui/Design";
 import License from "@/components/ui/License";
 import { useModal } from "@/components/ui/Modals";
 import { sort } from "@/utils";
 import { GeneralApi, SystemApi } from "@/utils/api";
 import { Storage } from "@/utils/storage";
 import { ellipsisVertical } from "ionicons/icons";
-import Content, { StatelessForm } from "../controllers/Content";
+import Content, { RenderComponent, StatelessForm } from "../controllers/Content";
 
 export default () => {
   const { t } = useTranslation();
   return <Content Render={Login} fetchContent={GeneralApi.clubs} errorText={t("login.clubsLoadError")} />;
 };
 
-const Login = memo(({ content }) => {
+const Login: RenderComponent<typeof GeneralApi.clubs> = memo(({ content }) => {
   const { t } = useTranslation();
 
   const [showDebugClubs, setShowDebugClubs] = useState(import.meta.env.DEV);
@@ -26,7 +26,7 @@ const Login = memo(({ content }) => {
 
   const { actionFeedbackModal, confirmModal } = useModal();
   const router = useHistory();
-  const licenseRef = useRef(null);
+  const licenseRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     licenseRef.current?.addEventListener("click", (event) => {
@@ -38,7 +38,7 @@ const Login = memo(({ content }) => {
   // sort clubs by fullname
   content = sort(content, (value) => value.fullname.toLowerCase());
 
-  const handleSubmit = actionFeedbackModal(async (elements) => {
+  const handleSubmit = actionFeedbackModal(async (elements: any) => {
     if (!termsAccepted) throw t("login.acceptTerms");
 
     const data = {
@@ -123,7 +123,7 @@ const Login = memo(({ content }) => {
         <IonModal isOpen={isOpen}>
           <Header title={t("login.termsOfService")}>
             <IonButtons slot="start">
-              <IonBackButton defaultHref="#" onClick={() => setOpen(false)} />
+              <BackButton defaultHref="#" onClick={() => setOpen(false)} />
             </IonButtons>
           </Header>
           <IonContent>

@@ -1,37 +1,40 @@
-import { IonBackButton, IonButtons, IonContent, IonPage } from "@ionic/react";
+import { IonButtons, IonContent, IonPage } from "@ionic/react";
 import { memo } from "react";
+import { Store } from "pullstate";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
-import { Header, ItemGroup, PrimaryButton, Refresher, SmallSuccess, SmallWarning, Spacing, Textarea, TransparentButton } from "@/components/ui/Design";
+import { BackButton, Header, ItemGroup, PrimaryButton, Refresher, SmallSuccess, SmallWarning, Spacing, Textarea, TransparentButton } from "@/components/ui/Design";
 import { FinancesApi, FinancesEnum } from "@/utils/api";
 import { formatDatetime } from "@/utils/format";
 import { Storage } from "@/utils/storage";
-import Content, { StatefulForm, useStatefulForm } from "../controllers/Content";
+import Content, { RenderComponent, StatefulForm, useStatefulForm } from "../controllers/Content";
 import { useModal } from "../ui/Modals";
 
-export default () => <Content Render={FinancesClaim} fetchContent={({ fin_id }) => Promise.all([FinancesApi.detail(fin_id), FinancesApi.claim_history(fin_id)])} />;
+const fetchContent = ({ fin_id }: { fin_id: string }) => Promise.all([FinancesApi.detail(+fin_id), FinancesApi.claim_history(+fin_id)]);
 
-const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
+export default () => <Content Render={FinancesClaim} fetchContent={fetchContent} />;
+
+const FinancesClaim: RenderComponent<typeof fetchContent> = memo(({ content: [detail, history], onUpdate }) => {
   const { t } = useTranslation();
-  const { fin_id } = useParams();
+  const { fin_id } = useParams<{ fin_id: string }>();
   const { actionFeedbackModal } = useModal();
   const router = useHistory();
   const formRef = useStatefulForm();
 
-  const handleSubmit = actionFeedbackModal(async (data) => {
+  const handleSubmit = actionFeedbackModal(async (data: { message: string }) => {
     const message = data.message.trim();
 
     if (message.length === 0) {
       throw t("finances.claim.fillReason");
     }
 
-    await FinancesApi.claim_message(fin_id, message);
+    await FinancesApi.claim_message(+fin_id, message);
     onUpdate();
   }, t("finances.claim.sendMessageError"));
 
   const handleClose = actionFeedbackModal(async () => {
-    await FinancesApi.claim_close(fin_id);
+    await FinancesApi.claim_close(+fin_id);
     onUpdate();
   }, t("finances.claim.closeClaimError"));
 
@@ -43,7 +46,7 @@ const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
     <IonPage>
       <Header title={t("finances.claim.title")}>
         <IonButtons slot="start">
-          <IonBackButton defaultHref="#" onClick={() => router.replace(`/tabs/finances/${fin_id}`)} />
+          <BackButton defaultHref="#" onClick={() => router.replace(`/tabs/finances/${fin_id}`)} />
         </IonButtons>
       </Header>
       <IonContent>
@@ -81,15 +84,15 @@ const FinancesClaim = memo(({ content: [detail, history], onUpdate }) => {
   );
 });
 
-const FinancesClaimForm = ({ store }) => {
+const FinancesClaimForm = ({ store }: { store: Store<{ message: string }> }) => {
   const { t } = useTranslation();
   const state = store.useState();
 
-  const handleChange = (event) => {
+  const handleChange = (event: any) => {
     const { name, value } = event.target;
 
     store.update((s) => {
-      s[name] = value;
+      (s as any)[name] = value;
     });
   };
 

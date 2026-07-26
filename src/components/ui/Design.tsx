@@ -22,7 +22,7 @@ import {
 } from "@ionic/react";
 import classNames from "classnames";
 import { alertCircleOutline, checkmarkCircleOutline, chevronForward, clipboardOutline, closeCircleOutline, openOutline } from "ionicons/icons";
-import { ComponentProps, forwardRef, HTMLAttributes, ReactNode, useEffect, useRef, useState } from "react";
+import { ComponentProps, ComponentType, forwardRef, HTMLAttributes, MouseEvent as ReactMouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useModal } from "./Modals";
 
@@ -64,7 +64,7 @@ export function Accordion({ children, title, subtitle }: { children: ReactNode; 
   );
 }
 
-export function Spacing({ children, innerPadding, topPadding, className, ...props }: HTMLAttributes<HTMLDivElement> & { innerPadding: boolean; topPadding: boolean }) {
+export function Spacing({ children, innerPadding, topPadding, className, ...props }: HTMLAttributes<HTMLDivElement> & { innerPadding?: boolean; topPadding?: boolean }) {
   return (
     <div className={classNames("flex flex-col gap-y-4", innerPadding && "p-4", topPadding && "pt-4", className)} {...props}>
       {children}
@@ -91,6 +91,12 @@ export function ReadMore({ children }: { children: ReactNode }) {
     </>
   );
 }
+
+// IonBackButton renders a real clickable element and does forward a click
+// listener at runtime, but @ionic/react's own Props type for it omits
+// `onClick` entirely. Widen the component's own type once here instead of
+// casting to `any` at every call site.
+export const BackButton = IonBackButton as ComponentType<ComponentProps<typeof IonBackButton> & { onClick?: (event: ReactMouseEvent) => void }>;
 
 export function Header({ children, defaultHref, title }: { children?: ReactNode; defaultHref?: string; title: string }) {
   return (
