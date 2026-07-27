@@ -1,11 +1,8 @@
 import { initTranslation, useLoadTranslation } from "@/i18n";
 import { Storage } from "@/utils/storage";
-import { Capacitor } from "@capacitor/core";
-import { StatusBar, Style } from "@capacitor/status-bar";
-import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
+import { Capacitor, SystemBars, SystemBarsStyle } from "@capacitor/core";
 import { IonApp, IonPage, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import Color from "color";
 import { Suspense, useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
@@ -19,27 +16,13 @@ initTranslation();
 
 await Storage.hydrate();
 
-const toolbarColor = "#ea580c";
-
 const matchMediaListener = async (event: MediaQueryList | MediaQueryListEvent) => {
-  if (Capacitor.getPlatform() === "android" && Capacitor.isPluginAvailable("StatusBar")) {
-    StatusBar.setStyle({
+  if (Capacitor.isNativePlatform()) {
+    SystemBars.setStyle({
       style: event.matches
-        ? Style.Dark // white text
-        : Style.Light, // dark text
+        ? SystemBarsStyle.Dark // white text/icons
+        : SystemBarsStyle.Light, // dark text/icons
     });
-    StatusBar.setBackgroundColor({ color: toolbarColor });
-  }
-
-  if (Capacitor.isPluginAvailable("EdgeToEdge")) {
-    const color = window.getComputedStyle(document.body).backgroundColor;
-
-    if (!color) {
-      return;
-    }
-
-    EdgeToEdge.setNavigationBarColor({ color: Color(color).hex() });
-    EdgeToEdge.setStatusBarColor({ color: Color(color).hex() });
   }
 };
 

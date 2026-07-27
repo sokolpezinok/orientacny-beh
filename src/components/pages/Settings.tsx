@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonSelectOption } from "@ionic/react";
+import { IonContent, IonPage, IonSelectOption } from "@ionic/react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -28,9 +28,7 @@ const Settings = memo(() => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <Header title={t("settings.title")} />
-      </IonHeader>
+      <Header title={t("settings.title")} />
       <IonContent>
         <Item>
           <Select label={t("settings.selectLanguage")} value={locale} onIonChange={handleLocale}>

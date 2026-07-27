@@ -5,6 +5,7 @@ import {
   IonButtons,
   IonCheckbox,
   IonContent,
+  IonHeader,
   IonIcon,
   IonInput,
   IonItem,
@@ -100,15 +101,17 @@ export const BackButton = IonBackButton as ComponentType<ComponentProps<typeof I
 
 export function Header({ children, defaultHref, title }: { children?: ReactNode; defaultHref?: string; title: string }) {
   return (
-    <IonToolbar>
-      {defaultHref && (
-        <IonButtons slot="start">
-          <IonBackButton defaultHref={defaultHref} />
-        </IonButtons>
-      )}
-      <IonTitle>{title}</IonTitle>
-      {children}
-    </IonToolbar>
+    <IonHeader>
+      <IonToolbar>
+        {defaultHref && (
+          <IonButtons slot="start">
+            <IonBackButton defaultHref={defaultHref} />
+          </IonButtons>
+        )}
+        <IonTitle>{title}</IonTitle>
+        {children}
+      </IonToolbar>
+    </IonHeader>
   );
 }
 

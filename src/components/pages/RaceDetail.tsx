@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonIcon, IonModal, IonPage, IonRippleEffect, IonSelectOption } from "@ionic/react";
 import classNames from "classnames";
 import { bus, calendar, home, location } from "ionicons/icons";
 import { memo, useRef, useState } from "react";
@@ -70,9 +70,7 @@ const RaceDetail: RenderComponent<typeof fetchContent> = memo(({ content: [detai
 
   return (
     <IonPage>
-      <IonHeader>
-        <Header defaultHref="/tabs/races" title={t("races.detail.title")} />
-      </IonHeader>
+      <Header defaultHref="/tabs/races" title={t("races.detail.title")} />
       <IonContent>
         <Refresher onUpdate={onUpdate} />
         <ItemGroup>
