@@ -10,5 +10,10 @@
     "SystemBars": {
       "insetsHandling": "css"
     }
+  },
+  "server": {
+    "hostname": "members.eob.cz",
+    "androidScheme": "https",
+    "html5mode": false
   }
 }
