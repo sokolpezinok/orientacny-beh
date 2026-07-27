@@ -7,5 +7,9 @@
       "smallIcon": "ic_notification",
       "iconColor": "#f76d22"
     }
+  },
+  "server": {
+    "hostname": "members.eob.cz",
+    "androidScheme": "https"
   }
 }
