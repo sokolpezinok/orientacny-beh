@@ -43,6 +43,12 @@ pnpm run android:build-release
 pnpm run dev
 ```
 
+Run this in separate terminal for live android preview:
+
+```sh
+pnpm run android:live
+```
+
 **Builds the production version using Vite.**
 
 ```sh

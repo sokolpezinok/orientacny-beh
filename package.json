@@ -11,6 +11,7 @@
     "android:build-release": "echo \"\\033[31mApp Version: $VITE_APP_VERSION\nAndroid Version Code: $ANDROID_VERSION_CODE\\033[0m\" && vite build && cap sync && cd ./android && ./gradlew app:assembleRelease app:bundleRelease && cd .. && mkdir -p ./dist/ && cp -v ./android/app/build/outputs/bundle/release/app-release.aab ./android/app/build/outputs/apk/release/app-release-unsigned.apk ./dist/",
     "android:clean": "cd ./android && ./gradlew clean && cd ..",
     "android:open": "cap sync && cap open android",
+    "android:live": "echo \"\\033[31mPlease run vite server on 5173.\\033[0m\" && adb reverse tcp:5173 tcp:5173 && cap run android -l --port 5173 --host localhost",
     "test": "jest"
   },
   "dependencies": {
