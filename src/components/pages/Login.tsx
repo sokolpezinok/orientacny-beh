@@ -94,7 +94,7 @@ const Login: RenderComponent<typeof GeneralApi.clubs> = memo(({ content }) => {
             </div>
             <div className="flex-1">
               <StatelessForm onSubmit={handleSubmit}>
-                <Input autocomplete="email" name="username" type="text" label={t("login.username")} required />
+                <Input autocomplete="username" name="username" type="text" label={t("login.username")} required />
                 <Input autocomplete="current-password" name="password" type="password" label={t("login.password")} required>
                   <IonInputPasswordToggle slot="end" />
                 </Input>
