@@ -72,10 +72,16 @@ jobs:
         if: always()
         run: rm -f android/app/release.keystore
 
+      - name: Collect artifacts
+        run: |
+          mkdir -p artifacts
+          cp android/app/build/outputs/bundle/release/app-release.aab artifacts/
+          cp android/app/build/outputs/apk/release/app-release.apk artifacts/
+          echo "VITE_APP_VERSION=$VITE_APP_VERSION" >> artifacts/version.env
+          echo "ANDROID_VERSION_CODE=$ANDROID_VERSION_CODE" >> artifacts/version.env
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: app-release-bundle
-          path: |
-            android/app/build/outputs/bundle/release/app-release.aab
-            android/app/build/outputs/apk/release/app-release.apk
+          name: orientacny-beh-release
+          path: artifacts/*
