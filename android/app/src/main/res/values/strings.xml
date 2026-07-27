@@ -4,4 +4,9 @@
     <string name="title_activity_main">Orientačný beh</string>
     <string name="package_name">orienteering.app</string>
     <string name="custom_url_scheme">orienteering.app</string>
+    <string name="asset_statements" translatable="false">
+    [{
+    \"include\": \"https://members.eob.cz/.well-known/assetlinks.json\"
+    }]
+    </string>
 </resources>
