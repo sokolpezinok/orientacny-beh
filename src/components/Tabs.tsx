@@ -8,7 +8,7 @@ import { payments } from "@/utils/icons";
 import { Session, Storage } from "@/utils/storage";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
-import DeeplinkListener from "./controllers/DeeplinkListener";
+import DeepLinkListener from "./controllers/DeeplinkListener";
 import NotifyListener from "./controllers/NotifyListener";
 import { SpinnerPage } from "./ui/Design";
 
@@ -86,7 +86,7 @@ export default memo(() => {
       <Tabs />
       {allowNotify && (
         <>
-          <DeeplinkListener />
+          <DeepLinkListener />
           <NotifyListener />
         </>
       )}

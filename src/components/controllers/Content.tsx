@@ -1,12 +1,13 @@
 import { IonContent, IonPage } from "@ionic/react";
 import isEqual from "fast-deep-equal";
+import i18next from "i18next";
 import { Store } from "pullstate";
 import { ComponentType, createContext, FormEvent, FormHTMLAttributes, memo, ReactNode, RefObject, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
 import { Fatal, Refresher, SkeletonPage } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
-import { useTranslation } from "react-i18next";
 
 type RenderComponentInner<T> = ComponentType<{ content: T; onUpdate: () => Promise<void> }>;
 export type RenderComponent<T extends (params: any) => Promise<any>> = RenderComponentInner<Awaited<ReturnType<T>>>;
@@ -31,8 +32,6 @@ const ContentInner = <T, P extends Record<string, string> = Record<string, strin
 
   const paramsKey = useMemo(() => JSON.stringify(params), [params]);
 
-  errorText ||= t("api.dataLoadError");
-
   const handleUpdate = useCallback(async () => {
     if (formRef.current?.isDirty()) {
       const surety = await confirmModal(t("basic.confirmDiscardChanges"));
@@ -48,12 +47,13 @@ const ContentInner = <T, P extends Record<string, string> = Record<string, strin
       })
       .catch((error) => {
         if (content === null) setError(error);
-        else errorModal(errorText, error);
+        else errorModal(errorText || i18next.t("api.dataLoadError"), error);
       });
-  }, [paramsKey, fetchContent, errorModal, confirmModal, errorText]);
+  }, [confirmModal, errorModal, content, errorText, fetchContent, params, t]);
 
   useEffect(() => {
     handleUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramsKey]);
 
   if (content !== null) {
@@ -72,7 +72,7 @@ const ContentInner = <T, P extends Record<string, string> = Record<string, strin
     <IonPage>
       <IonContent>
         <Refresher onUpdate={handleUpdate} />
-        <Fatal title={errorText} subtitle={error + ""}>
+        <Fatal title={errorText || t("api.dataLoadError")} subtitle={error + ""}>
           {t("basic.pullToRefresh")}
         </Fatal>
       </IonContent>
@@ -114,7 +114,6 @@ export const StatefulForm = <S extends object>({
   content: S;
   onSubmit: (value: S) => void;
 }) => {
-  const { t } = useTranslation();
   const current = useRef(new Store(content));
   const initial = useRef<S>(content);
 
@@ -149,7 +148,7 @@ export const StatefulForm = <S extends object>({
         return undefined;
       }
 
-      confirmModal(t("basic.confirmDiscardChanges")).then((value) => {
+      confirmModal(i18next.t("basic.confirmDiscardChanges")).then((value) => {
         if (!value) {
           return;
         }
@@ -168,7 +167,7 @@ export const StatefulForm = <S extends object>({
       return false;
     });
     return removeListener;
-  }, []);
+  }, [confirmModal, router]);
 
   useImperativeHandle(formRef, () => ({
     submit: handleSubmit,

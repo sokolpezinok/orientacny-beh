@@ -2,15 +2,14 @@ import { FirebaseMessaging, NotificationActionPerformedEvent, NotificationReceiv
 import { Capacitor } from "@capacitor/core";
 import { ActionPerformed, LocalNotifications } from "@capacitor/local-notifications";
 import { FC, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
 import { useModal } from "@/components/ui/Modals";
 import { SystemApi } from "@/utils/api";
 import { Notifications, NotifyEvents } from "@/utils/notify";
+import i18next from "i18next";
 
 const NotifyListener: FC = () => {
-  const { t } = useTranslation();
   // listens for push notifications
 
   const router = useHistory();
@@ -26,11 +25,11 @@ const NotifyListener: FC = () => {
     }
 
     if (!value) {
-      throw t("api.notify.formatError");
+      throw i18next.t("api.notify.formatError");
     }
 
     router.push(`/tabs/races/${value}`);
-  }, t("api.notify.openError"));
+  }, i18next.t("api.notify.openError"));
 
   const handleNotifyReceived = actionFeedbackModal(async (event: NotificationReceivedEvent) => {
     await Notifications.notify({
@@ -39,11 +38,11 @@ const NotifyListener: FC = () => {
       largeBody: event.notification.body,
       extra: event.notification.data,
     });
-  }, t("api.notify.receiveError"));
+  }, i18next.t("api.notify.receiveError"));
 
   const handleTokenReceived = actionFeedbackModal(async (event) => {
     await SystemApi.fcm_token_update(event.token);
-  }, t("api.notify.tokenUpdateError"));
+  }, i18next.t("api.notify.tokenUpdateError"));
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -56,9 +55,9 @@ const NotifyListener: FC = () => {
         actionFeedbackModal(async () => {
           await FirebaseMessaging.removeAllListeners();
           await LocalNotifications.removeAllListeners();
-        }, t("api.notify.removeListenerError"))();
+        }, i18next.t("api.notify.removeListenerError"))();
       };
     }
-  }, []);
+  }, [actionFeedbackModal, handleNotifyActionPerformed, handleNotifyReceived, handleTokenReceived]);
 };
 export default NotifyListener;

@@ -41,5 +41,5 @@ export const useLoadTranslation = () => {
         i18n.changeLanguage(locale || defaultLocale);
       }
     );
-  }, []);
+  }, [i18n]);
 };
