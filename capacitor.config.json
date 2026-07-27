@@ -13,6 +13,7 @@
   },
   "server": {
     "hostname": "members.eob.cz",
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "html5mode": false
   }
 }
