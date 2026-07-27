@@ -10,11 +10,11 @@ const buttonDismissed = <T,>(event: CustomEvent<OverlayEventDetail<T>>) => event
 export const useModal = () => {
   const [presentAlert] = useIonAlert();
   const [presentLoading, dismissLoading] = useIonLoading();
-  const [presentToast, dismissToast] = useIonToast();
+  const [presentToast] = useIonToast();
 
   const modal = useCallback(
     ({ header, message, ...options }: AlertOptions) => {
-      return new Promise((onDidDismiss) => {
+      return new Promise<CustomEvent<OverlayEventDetail<any>>>((onDidDismiss) => {
         return presentAlert({
           header: header && header + "",
           message: message && message + "",
@@ -29,7 +29,7 @@ export const useModal = () => {
 
   const toast = useCallback(
     ({ message, ...options }: ToastOptions) => {
-      return new Promise((onDidDismiss) => {
+      return new Promise<CustomEvent<OverlayEventDetail<any>>>((onDidDismiss) => {
         return presentToast({
           message,
           swipeGesture: "vertical",
@@ -44,16 +44,15 @@ export const useModal = () => {
   );
 
   const alertModal = useCallback(
-    (header: string | null, message: string) => modal({ header: header || message, message: (header && message) || "", buttons: [OKButton] }).then((event) => buttonDismissed(event as any)),
+    (message: string, header?: string) => modal({ header: header || message, message: (header && message) || "", buttons: [OKButton] }).then((event) => buttonDismissed(event)),
     [modal]
   );
   const errorModal = useCallback(
-    (header: string | null, message: string) => modal({ header: header || message, message: (header && message) || "", buttons: [OKButton] }).then((event) => buttonDismissed(event as any)),
+    (message: string, header?: string) => modal({ header: header || message, message: (header && message) || "", buttons: [OKButton] }).then((event) => buttonDismissed(event)),
     [modal]
   );
   const confirmModal = useCallback(
-    (header: string | null, message: string) =>
-      modal({ header: header || message, message: (header && message) || "", buttons: [CancelButton, OKButton] }).then((event) => buttonDismissed(event as any)),
+    (message: string, header?: string) => modal({ header: header || message, message: (header && message) || "", buttons: [CancelButton, OKButton] }).then((event) => buttonDismissed(event)),
     [modal]
   );
   const toastModal = useCallback((message: string) => toast({ message, duration: 3000 }), [toast]);

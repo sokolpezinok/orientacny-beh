@@ -5,6 +5,7 @@ import {
   IonButtons,
   IonCheckbox,
   IonContent,
+  IonHeader,
   IonIcon,
   IonInput,
   IonItem,
@@ -22,11 +23,11 @@ import {
 } from "@ionic/react";
 import classNames from "classnames";
 import { alertCircleOutline, checkmarkCircleOutline, chevronForward, clipboardOutline, closeCircleOutline, openOutline } from "ionicons/icons";
-import { ComponentProps, forwardRef, HTMLAttributes, ReactNode, useEffect, useRef, useState } from "react";
+import { ComponentProps, ComponentType, forwardRef, HTMLAttributes, MouseEvent as ReactMouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useModal } from "./Modals";
 
-export function Item({ children, className, innerPadding, ...props }: ComponentProps<typeof IonItem> & { innerPadding: boolean }) {
+export function Item({ children, className, innerPadding, ...props }: ComponentProps<typeof IonItem> & { innerPadding?: boolean }) {
   return (
     <IonItem lines="full" style={Object.assign({ "--padding-start": "0" }, innerPadding || { "--inner-padding-end": "0" })} {...props}>
       <div className={classNames("w-full p-4", className)}>{children}</div>
@@ -34,7 +35,7 @@ export function Item({ children, className, innerPadding, ...props }: ComponentP
   );
 }
 
-export function ItemGroup({ children, title, subtitle, className, ripple = false, ...props }: Omit<HTMLAttributes<HTMLDivElement>, "title"> & { title?: string; subtitle?: string; ripple: boolean }) {
+export function ItemGroup({ children, title, subtitle, className, ripple = false, ...props }: Omit<HTMLAttributes<HTMLDivElement>, "title"> & { title?: string; subtitle?: string; ripple?: boolean }) {
   // <div className={classNames("p-4", border && "border-outline-variant border-b")}></div>
   return (
     <div className={classNames("p-4", ripple && "ion-activatable pointer relative", className)} {...props}>
@@ -64,7 +65,7 @@ export function Accordion({ children, title, subtitle }: { children: ReactNode; 
   );
 }
 
-export function Spacing({ children, innerPadding, topPadding, className, ...props }: HTMLAttributes<HTMLDivElement> & { innerPadding: boolean; topPadding: boolean }) {
+export function Spacing({ children, innerPadding, topPadding, className, ...props }: HTMLAttributes<HTMLDivElement> & { innerPadding?: boolean; topPadding?: boolean }) {
   return (
     <div className={classNames("flex flex-col gap-y-4", innerPadding && "p-4", topPadding && "pt-4", className)} {...props}>
       {children}
@@ -92,17 +93,25 @@ export function ReadMore({ children }: { children: ReactNode }) {
   );
 }
 
-export function Header({ children, defaultHref, title }: { children: ReactNode; defaultHref?: string; title: string }) {
+// IonBackButton renders a real clickable element and does forward a click
+// listener at runtime, but @ionic/react's own Props type for it omits
+// `onClick` entirely. Widen the component's own type once here instead of
+// casting to `any` at every call site.
+export const BackButton = IonBackButton as ComponentType<ComponentProps<typeof IonBackButton> & { onClick?: (event: ReactMouseEvent) => void }>;
+
+export function Header({ children, defaultHref, title }: { children?: ReactNode; defaultHref?: string; title: string }) {
   return (
-    <IonToolbar>
-      {defaultHref && (
-        <IonButtons slot="start">
-          <IonBackButton defaultHref={defaultHref} />
-        </IonButtons>
-      )}
-      <IonTitle>{title}</IonTitle>
-      {children}
-    </IonToolbar>
+    <IonHeader>
+      <IonToolbar>
+        {defaultHref && (
+          <IonButtons slot="start">
+            <IonBackButton defaultHref={defaultHref} />
+          </IonButtons>
+        )}
+        <IonTitle>{title}</IonTitle>
+        {children}
+      </IonToolbar>
+    </IonHeader>
   );
 }
 
@@ -215,7 +224,7 @@ export function ItemLink({ children, style, ...props }: ComponentProps<typeof Io
   );
 }
 
-export const Anchor = forwardRef<HTMLAnchorElement, HTMLAttributes<HTMLAnchorElement> & { href: string; textOnly?: boolean }>(function ({ children, className, href, textOnly, ...props }, ref) {
+export const Anchor = forwardRef<HTMLAnchorElement, HTMLAttributes<HTMLAnchorElement> & { href?: string; textOnly?: boolean }>(function ({ children, className, href, textOnly, ...props }, ref) {
   return (
     (children || href) && (
       <a ref={ref} href={href} target="_blank" className={classNames("text-primary cursor-pointer", textOnly && "no-underline", className)} {...props}>
@@ -242,7 +251,7 @@ export const Copyable = ({ text }: { text: string }) => {
     try {
       await window.navigator.clipboard.writeText(text);
       toastModal(t("basic.copyToClipboardSuccess"));
-    } catch (error) {
+    } catch {
       toastModal(t("basic.copyToClipboardError"));
     }
   };
@@ -259,7 +268,7 @@ export const BooleanIcon = ({ value, className, ...props }: ComponentProps<typeo
   return <IonIcon className={classNames("align-middle text-2xl", value ? "text-success" : "text-error", className)} icon={value ? checkmarkCircleOutline : closeCircleOutline} {...props} />;
 };
 
-export const SmallWarning = ({ children, title }: { children: ReactNode; title: string }) => {
+export const SmallWarning = ({ children, title }: { children?: ReactNode; title: string }) => {
   return (
     <div className="bg-primary-container rounded-lg p-4">
       <div className="grid grid-cols-[auto_1fr] gap-4">
@@ -271,7 +280,7 @@ export const SmallWarning = ({ children, title }: { children: ReactNode; title: 
   );
 };
 
-export const SmallSuccess = ({ children, title }: { children: ReactNode; title: string }) => {
+export const SmallSuccess = ({ children, title }: { children?: ReactNode; title: string }) => {
   return (
     <div className="bg-success-container rounded-lg p-4">
       <div className="grid grid-cols-[auto_1fr] gap-4">
@@ -283,7 +292,7 @@ export const SmallSuccess = ({ children, title }: { children: ReactNode; title: 
   );
 };
 
-export const SmallError = ({ children, title }: { children: ReactNode; title: string }) => {
+export const SmallError = ({ children, title }: { children?: ReactNode; title: string }) => {
   return (
     <div className="bg-error-container rounded-lg p-4">
       <div className="grid grid-cols-[auto_1fr] gap-4">

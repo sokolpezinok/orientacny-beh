@@ -4,6 +4,7 @@ import { UserConfig } from "vite";
 import capacitorConfig from "./capacitor.config.json";
 
 process.env.VITE_APP_TITLE = capacitorConfig.appName;
+process.env.VITE_APP_VERSION ??= "0.0.0";
 
 // https://vite.dev/config/
 const config: UserConfig = {

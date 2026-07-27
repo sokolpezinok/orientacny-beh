@@ -1,0 +1,72 @@
+import { FirebaseMessaging } from "@capacitor-firebase/messaging";
+import { Capacitor } from "@capacitor/core";
+import { LocalNotifications, LocalNotificationSchema } from "@capacitor/local-notifications";
+import i18next from "i18next";
+import { getClub } from ".";
+import { SystemApi } from "./api";
+import { Storage } from "./storage";
+
+export class Notifications {
+  static requestPermissions = async () => {
+    let status = await FirebaseMessaging.checkPermissions();
+
+    if (status.receive === "prompt") {
+      status = await FirebaseMessaging.requestPermissions();
+    }
+
+    if (status.receive !== "granted") {
+      throw i18next.t("notify.deniedByUser");
+    }
+  };
+
+  static register = async () => {
+    if (!Capacitor.isNativePlatform()) {
+      return;
+    }
+
+    await this.requestPermissions();
+
+    const { token } = await FirebaseMessaging.getToken();
+    await FirebaseMessaging.subscribeToTopic({ topic: getClub().clubname });
+    await SystemApi.fcm_token_update(token);
+    Storage.updateStorage((s) => {
+      s.preferences.activeNotify = true;
+    });
+  };
+
+  static unregister = async () => {
+    if (!Capacitor.isNativePlatform()) {
+      return;
+    }
+
+    await FirebaseMessaging.unsubscribeFromTopic({ topic: getClub().clubname });
+    await SystemApi.fcm_token_delete();
+    Storage.updateStorage((s) => {
+      s.preferences.activeNotify = false;
+    });
+  };
+
+  static destroy = async () => {
+    if (!Capacitor.isNativePlatform()) {
+      return;
+    }
+
+    await FirebaseMessaging.deleteToken();
+  };
+
+  static notify = (options: Omit<LocalNotificationSchema, "id">) =>
+    LocalNotifications.schedule({
+      notifications: [
+        {
+          // 32-bit int, the value should be between -2147483648 and 2147483647 inclusive
+          id: Math.floor(Math.random() * 4294967295) - 2147483648,
+          ...options,
+        },
+      ],
+    });
+}
+
+export class NotifyEvents {
+  static BASIC = "0";
+  static RACE = "1";
+}

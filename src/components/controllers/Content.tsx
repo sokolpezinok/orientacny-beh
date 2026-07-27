@@ -1,77 +1,86 @@
 import { IonContent, IonPage } from "@ionic/react";
 import isEqual from "fast-deep-equal";
+import i18next from "i18next";
 import { Store } from "pullstate";
-import { ComponentType, createContext, FormEvent, FormHTMLAttributes, memo, ReactNode, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { ComponentType, createContext, FormEvent, FormHTMLAttributes, memo, ReactNode, RefObject, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
 import { Fatal, Refresher, SkeletonPage } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
-import { Ref } from "react";
-import { useTranslation } from "react-i18next";
 
-const Content = memo(
-  <T, P extends object>({ Render, fetchContent, errorText }: { Render: ComponentType<{ content: T; onUpdate: () => void }>; fetchContent: (params: P) => Promise<T>; errorText: string }) => {
-    const { t } = useTranslation();
-    const [content, setContent] = useState<T | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const { errorModal, confirmModal } = useModal();
-    const params = useParams<P>();
-    const formRef = useRef<StatefulFormHandle>(null);
+type RenderComponentInner<T> = ComponentType<{ content: T; onUpdate: () => Promise<void> }>;
+export type RenderComponent<T extends (params: any) => Promise<any>> = RenderComponentInner<Awaited<ReturnType<T>>>;
 
-    const paramsKey = useMemo(() => JSON.stringify(params), [params]);
+// memo() erases a component's own generics, so the generic function is defined
+// separately and the memoized wrapper is cast back to its original signature.
+const ContentInner = <T, P extends Record<string, string> = Record<string, string>>({
+  Render,
+  fetchContent,
+  errorText,
+}: {
+  Render: RenderComponentInner<any>;
+  fetchContent: (params: P) => Promise<T>;
+  errorText?: string;
+}) => {
+  const { t } = useTranslation();
+  const [content, setContent] = useState<T | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { errorModal, confirmModal } = useModal();
+  const params = useParams<P>();
+  const formRef = useRef<StatefulFormHandle>(null);
 
-    errorText ||= t("api.dataLoadError");
+  const paramsKey = useMemo(() => JSON.stringify(params), [params]);
 
-    console.log(content, error);
+  const handleUpdate = useCallback(async () => {
+    if (formRef.current?.isDirty()) {
+      const surety = await confirmModal(t("basic.confirmDiscardChanges"));
 
-    const handleUpdate = useCallback(async () => {
-      if (formRef.current?.isDirty()) {
-        const surety = await confirmModal(t("basic.confirmDiscardChanges"));
-
-        if (!surety) {
-          return;
-        }
+      if (!surety) {
+        return;
       }
-
-      fetchContent(params)
-        .then((data) => {
-          setContent(data);
-          data;
-        })
-        .catch((error) => {
-          if (content === null) setError(error);
-          else errorModal(errorText, error);
-        });
-    }, [paramsKey, fetchContent, errorModal, confirmModal, errorText]);
-
-    useEffect(() => {
-      handleUpdate();
-    }, [paramsKey]);
-
-    if (content !== null) {
-      return (
-        <StatefulFormContext.Provider value={formRef}>
-          <Render content={content} onUpdate={handleUpdate} />
-        </StatefulFormContext.Provider>
-      );
     }
 
-    if (error === null) {
-      return <SkeletonPage />;
-    }
+    await fetchContent(params)
+      .then((data) => {
+        setContent(data);
+      })
+      .catch((error) => {
+        if (content === null) setError(error);
+        else errorModal(errorText || i18next.t("api.dataLoadError"), error);
+      });
+  }, [confirmModal, errorModal, content, errorText, fetchContent, params, t]);
 
+  useEffect(() => {
+    handleUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramsKey]);
+
+  if (content !== null) {
     return (
-      <IonPage>
-        <IonContent>
-          <Refresher onUpdate={handleUpdate} />
-          <Fatal title={errorText} subtitle={error + ""}>
-            {t("basic.pullToRefresh")}
-          </Fatal>
-        </IonContent>
-      </IonPage>
+      <StatefulFormContext.Provider value={formRef}>
+        <Render content={content} onUpdate={handleUpdate} />
+      </StatefulFormContext.Provider>
     );
   }
-);
+
+  if (error === null) {
+    return <SkeletonPage />;
+  }
+
+  return (
+    <IonPage>
+      <IonContent>
+        <Refresher onUpdate={handleUpdate} />
+        <Fatal title={errorText || t("api.dataLoadError")} subtitle={error + ""}>
+          {t("basic.pullToRefresh")}
+        </Fatal>
+      </IonContent>
+    </IonPage>
+  );
+};
+
+const Content = memo(ContentInner) as typeof ContentInner;
 
 export default Content;
 
@@ -82,7 +91,7 @@ export type StatefulFormHandle = {
   acceptChanges: () => void;
 };
 
-const StatefulFormContext = createContext<Ref<StatefulFormHandle> | null>(null);
+const StatefulFormContext = createContext<RefObject<StatefulFormHandle | null> | null>(null);
 
 export const useStatefulForm = () => {
   const context = useContext(StatefulFormContext);
@@ -100,12 +109,11 @@ export const StatefulForm = <S extends object>({
   content,
   onSubmit,
 }: {
-  children: ReactNode;
+  children?: ReactNode;
   Render: ComponentType<{ store: Store<S> }>;
   content: S;
   onSubmit: (value: S) => void;
 }) => {
-  const { t } = useTranslation();
   const current = useRef(new Store(content));
   const initial = useRef<S>(content);
 
@@ -133,15 +141,14 @@ export const StatefulForm = <S extends object>({
   }, [content]);
 
   useEffect(() => {
-    const removeListener = router.block((location: any) => {
+    // history passes the in-flight action directly, so there's no need to
+    // read the (mutable) router.action after the confirm modal resolves.
+    const removeListener = router.block((location, action) => {
       if (!isDirty()) {
         return undefined;
       }
 
-      // cache action as it can change after user response
-      const action = router.action;
-
-      confirmModal(t("basic.confirmDiscardChanges")).then((value) => {
+      confirmModal(i18next.t("basic.confirmDiscardChanges")).then((value) => {
         if (!value) {
           return;
         }
@@ -160,7 +167,7 @@ export const StatefulForm = <S extends object>({
       return false;
     });
     return removeListener;
-  }, []);
+  }, [confirmModal, router]);
 
   useImperativeHandle(formRef, () => ({
     submit: handleSubmit,

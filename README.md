@@ -7,7 +7,7 @@ https://members.eob.cz/
 
 <img src="./images/1_list.png" width="30%"></img> <img src="./images/2_detail.png" width="30%"></img> <img src="./images/3_notify.png" width="30%"></img>
 
-## Inštalácia
+## Installation
 
 ```sh
 git clone https://github.com/sokolpezinok/orientacny-beh
@@ -15,12 +15,38 @@ cd orientacny-beh
 pnpm i
 ```
 
-## Development
+## Build
+
+No need, we have CI/CD now!
+
+```sh
+# run tests
+pnpm tsc --noEmit
+pnpm run lint
+pnpm run jest
+
+# set env variables
+export ANDROID_VERSION_CODE=123
+export VITE_APP_VERSION="1.2.3"
+
+# build the app
+pnpm run android:build-release
+
+# sign AAB and APK with apksigner and jarsigner
+```
+
+## PNPM Commands
 
 **Starts the Vite development server.**
 
 ```sh
 pnpm run dev
+```
+
+Run this in separate terminal for live android preview:
+
+```sh
+pnpm run android:live
 ```
 
 **Builds the production version using Vite.**
@@ -38,7 +64,13 @@ pnpm run preview
 **Builds the project and outputs in `dist/`**
 
 ```sh
-pnpm run build:android
+pnpm run build
+```
+
+**Builds APK and AAB files in `dist/`**
+
+```sh
+pnpm run android:build-release
 ```
 
 **Syncs Capacitor and opens the Android project in Android Studio.**
@@ -55,10 +87,10 @@ pnpm run android:clean
 
 ## Tests & Linting
 
-**Runs `i18n` tests**
+**Runs tests**
 
 ```sh
-pnpm run test:i18n
+pnpm run test
 ```
 
 **Runs eslint**
@@ -66,19 +98,6 @@ pnpm run test:i18n
 ```sh
 pnpm run lint
 ```
-
-## Build
-
-**Android Release Checklist**
-
-1. Increase `versionCode` and `versionName` in `android/variables.gradle`, increase `appBuildVersion` in `src/manifest`
-2. Build the app
-
-```sh
-pnpm run android:build
-```
-
-3. Sign it
 
 ## Extensions & Environment
 
