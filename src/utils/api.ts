@@ -13,7 +13,7 @@ export const apiDomain = "members.eob.cz";
 export const apiVersion = 3;
 export const apiServer = `https://members.eob.cz/api/${import.meta.env.DEV ? "debug/" : ""}${apiVersion}`;
 
-const deviceName = (await Device.getInfo()).name || "";
+const deviceNamePromise = Device.getInfo().then((info) => info.name || "");
 
 let allowLogout = true;
 
@@ -392,7 +392,7 @@ export class FinancesApi {
 export class SystemApi {
   static login = async ({ username, password, clubname }: { username: string; password: string; clubname: string }) => {
     const { access_token, device, user_id } = await Api.post<{ access_token: string; device: string; user_id: number; expiration: number }>(`/system/login`, {
-      data: { username, password, app_version: import.meta.env.VITE_APP_VERSION, device_name: deviceName },
+      data: { username, password, app_version: import.meta.env.VITE_APP_VERSION, device_name: await deviceNamePromise },
       server: `${apiServer}/${clubname}`,
     });
 
@@ -429,10 +429,10 @@ export class SystemApi {
       auth: true,
     });
 
-  static device_update = () =>
+  static device_update = async () =>
     Api.post(`/system/device`, {
       auth: true,
-      data: { device_name: deviceName, app_version: import.meta.env.VITE_APP_VERSION },
+      data: { device_name: await deviceNamePromise, app_version: import.meta.env.VITE_APP_VERSION },
     });
 
   static device_delete = () =>

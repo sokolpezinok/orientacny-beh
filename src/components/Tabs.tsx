@@ -3,6 +3,7 @@ import { people, settings, trailSign } from "ionicons/icons";
 import { ComponentType, lazy, memo, Suspense, useEffect } from "react";
 import { Redirect, Route } from "react-router-dom";
 
+import { useLoadTranslation } from "@/i18n";
 import { SystemApi, UserApi } from "@/utils/api";
 import { payments } from "@/utils/icons";
 import { Session, Storage } from "@/utils/storage";
@@ -45,7 +46,8 @@ const Users = Wrapper(() => import("./pages/Users"));
 const UserStatistics = Wrapper(() => import("./pages/UserStatistics"));
 
 export default memo(() => {
-  const isHydrated = Storage.useState((s) => s.hydrated);
+  useLoadTranslation();
+
   const isLoggedIn = Storage.useStorage((s) => s.isLoggedIn);
   const allowNotify = Storage.useStorage((s) => s.preferences.activeNotify);
 
@@ -78,7 +80,6 @@ export default memo(() => {
     });
   }, [isLoggedIn]);
 
-  if (!isHydrated) return <SpinnerPage />;
   if (!isLoggedIn) return <Redirect to="/login" />;
 
   return (
