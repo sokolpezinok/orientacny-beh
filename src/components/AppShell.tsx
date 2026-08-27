@@ -1,4 +1,4 @@
-import { initTranslation, useLoadTranslation } from "@/i18n";
+import { initTranslation } from "@/i18n";
 import { Storage } from "@/utils/storage";
 import { Capacitor, SystemBars, SystemBarsStyle } from "@capacitor/core";
 import { IonApp, IonPage, IonRouterOutlet, setupIonicReact } from "@ionic/react";
@@ -13,8 +13,7 @@ import { Fatal, SpinnerPage } from "./ui/Design";
 
 setupIonicReact({});
 initTranslation();
-
-await Storage.hydrate();
+Storage.hydrate();
 
 const matchMediaListener = async (event: MediaQueryList | MediaQueryListEvent) => {
   if (Capacitor.isNativePlatform()) {
@@ -37,8 +36,6 @@ function Fallback({ error }: { error: Error }) {
 }
 
 const AppShell = () => {
-  useLoadTranslation();
-
   useEffect(() => {
     const matchMedia = window.matchMedia("(prefers-color-scheme: dark)");
 
@@ -49,6 +46,10 @@ const AppShell = () => {
       matchMedia.removeEventListener("change", matchMediaListener);
     };
   }, []);
+
+  const isHydrated = Storage.useState((s) => s.hydrated);
+
+  if (!isHydrated) return <SpinnerPage />;
 
   return (
     <IonApp>

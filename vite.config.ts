@@ -18,6 +18,13 @@ const config: UserConfig = {
     },
   },
   base: "/",
+  build: {
+    // Some Android devices still ship an outdated, non-updated system
+    // WebView (e.g. Chromium 83 on Android 11), which predates ES2021
+    // logical assignment operators (??=, ||=, &&=). Target an older
+    // baseline so the bundle doesn't hard-crash with a SyntaxError there.
+    target: "es2020",
+  },
 };
 
 export default config;

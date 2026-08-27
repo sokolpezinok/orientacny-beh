@@ -3,13 +3,14 @@ import { people, settings, trailSign } from "ionicons/icons";
 import { ComponentType, lazy, memo, Suspense, useEffect } from "react";
 import { Redirect, Route } from "react-router-dom";
 
+import { useLoadTranslation } from "@/i18n";
 import { SystemApi, UserApi } from "@/utils/api";
 import { payments } from "@/utils/icons";
 import { Session, Storage } from "@/utils/storage";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
-import DeepLinkListener from "./controllers/DeeplinkListener";
 import NotifyListener from "./controllers/NotifyListener";
+import { useModal } from "./ui/Modals";
 import { SpinnerPage } from "./ui/Design";
 
 const Wrapper = <T extends object>(func: () => Promise<{ default: ComponentType<T> }>) => {
@@ -45,16 +46,18 @@ const Users = Wrapper(() => import("./pages/Users"));
 const UserStatistics = Wrapper(() => import("./pages/UserStatistics"));
 
 export default memo(() => {
-  const isHydrated = Storage.useState((s) => s.hydrated);
+  useLoadTranslation();
+
   const isLoggedIn = Storage.useStorage((s) => s.isLoggedIn);
   const allowNotify = Storage.useStorage((s) => s.preferences.activeNotify);
+  const { backgroundActionFeedback } = useModal();
 
   useEffect(() => {
     if (!isLoggedIn) {
       return;
     }
 
-    const initData = async () => {
+    backgroundActionFeedback(async () => {
       SystemApi.device_update();
 
       const [policies, managing] = await Promise.all([UserApi.my_policies(), UserApi.my_managing()]);
@@ -71,25 +74,15 @@ export default memo(() => {
         };
         s.managingIds = managing.map((child) => child.user_id);
       });
-    };
+    }, i18next.t("api.policiesLoadError"))();
+  }, [isLoggedIn, backgroundActionFeedback]);
 
-    initData().catch((error) => {
-      alert(i18next.t("api.policiesLoadError") + "\n" + error);
-    });
-  }, [isLoggedIn]);
-
-  if (!isHydrated) return <SpinnerPage />;
   if (!isLoggedIn) return <Redirect to="/login" />;
 
   return (
     <>
       <Tabs />
-      {allowNotify && (
-        <>
-          <DeepLinkListener />
-          <NotifyListener />
-        </>
-      )}
+      {allowNotify && <NotifyListener />}
     </>
   );
 });

@@ -5,7 +5,24 @@ import { memo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
-import { Anchor, BackButton, BooleanIcon, Drawer, Header, Input, ItemGroup, ItemLink, PrimaryButton, ReadMore, Refresher, Select, SmallWarning, Spacing, Toggle, TransparentButton } from "@/components/ui/Design";
+import {
+  Anchor,
+  BackButton,
+  BooleanIcon,
+  Drawer,
+  Header,
+  Input,
+  ItemGroup,
+  ItemLink,
+  PrimaryButton,
+  ReadMore,
+  Refresher,
+  Select,
+  SmallWarning,
+  Spacing,
+  Toggle,
+  TransparentButton,
+} from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 import { EntriesHelper, sort } from "@/utils";
 import { Race, RaceApi, RaceEnum, RaceSignedUser } from "@/utils/api";
@@ -49,7 +66,8 @@ const RaceDetail: RenderComponent<typeof fetchContent> = memo(({ content: [detai
 
     return (
       <p>
-        {t("races.detail.signInDeadline")} <span className="text-primary">{lazyDate(entries.currentEntry()!)}</span> ({t("races.detail.signInDeadlineNumber", { number: entries.currentEntryIndex() })})
+        {t("races.detail.signInDeadline")} <span className="text-primary">{!entries.currentEntry() ? t("races.detail.signInNoDeadline") : lazyDate(entries.currentEntry()!)}</span> (
+        {t("races.detail.signInDeadlineNumber", { number: entries.currentEntryIndex() })})
       </p>
     );
   };

@@ -1,6 +1,6 @@
 import { AlertButton, AlertOptions, OverlayEventDetail } from "@ionic/core";
 import { ToastOptions, useIonAlert, useIonLoading, useIonToast } from "@ionic/react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
 const CancelButton: AlertButton = { text: "Zrušiť", role: "cancel" };
 const OKButton: AlertButton = { text: "OK", role: "ok" };
@@ -57,22 +57,49 @@ export const useModal = () => {
   );
   const toastModal = useCallback((message: string) => toast({ message, duration: 3000 }), [toast]);
 
+  // Ionic's useIonLoading present()/dismiss() has a re-entrancy race: two
+  // overlapping calls can each create their own overlay, after which one
+  // dismiss() clears the ref to the *other* overlay, orphaning the first one
+  // on screen forever. Chaining every call onto a shared queue means only
+  // one present()/dismiss() pair is ever in flight, so it can't happen.
+  const queue = useRef(Promise.resolve());
+
   const actionFeedbackModal = useCallback(
     <F extends (...args: any[]) => Promise<string | undefined | null | void>>(func: F, errorHeader: string = "") => {
-      return async (...args: Parameters<F>) => {
-        await presentLoading();
+      return (...args: Parameters<F>) =>
+        (queue.current = queue.current.then(async () => {
+          await presentLoading();
 
+          try {
+            const value = await func(...args);
+            value && toastModal(value);
+          } catch (error: any) {
+            error && errorModal(errorHeader, error);
+          }
+
+          await dismissLoading();
+        }));
+    },
+    [presentLoading, dismissLoading, toastModal, errorModal]
+  );
+
+  // Same error/success reporting as actionFeedbackModal, but never touches
+  // presentLoading/dismissLoading. For handlers triggered by background
+  // events (push listeners, deep links) rather than a direct user tap,
+  // where a full-screen loading overlay isn't warranted and there's nothing
+  // to serialize against Ionic's racy overlay ref.
+  const backgroundActionFeedback = useCallback(
+    <F extends (...args: any[]) => Promise<string | undefined | null | void>>(func: F, errorHeader: string = "") => {
+      return async (...args: Parameters<F>) => {
         try {
           const value = await func(...args);
           value && toastModal(value);
         } catch (error: any) {
           error && errorModal(errorHeader, error);
         }
-
-        await dismissLoading();
       };
     },
-    [presentLoading, dismissLoading, toastModal, errorModal]
+    [toastModal, errorModal]
   );
 
   return useMemo(
@@ -81,8 +108,9 @@ export const useModal = () => {
       errorModal,
       confirmModal,
       actionFeedbackModal,
+      backgroundActionFeedback,
       toastModal,
     }),
-    [alertModal, errorModal, confirmModal, actionFeedbackModal, toastModal]
+    [alertModal, errorModal, confirmModal, actionFeedbackModal, backgroundActionFeedback, toastModal]
   );
 };
