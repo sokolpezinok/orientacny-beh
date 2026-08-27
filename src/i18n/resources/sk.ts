@@ -171,6 +171,7 @@ export default {
       signInOrUpdate: "Zmeniť / Odhlásiť sa",
       signInDeadline: "Prihlásiť sa do",
       signInDeadlineNumber: "{{number}}. termín",
+      signInNoDeadline: "zatiaľ neurčené",
       transportOwn: "Vlastná doprava",
       transportOrganized: "Organizovaná doprava",
       accommodationOwn: "Vlastné ubytovanie",
