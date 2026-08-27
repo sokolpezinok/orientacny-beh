@@ -304,12 +304,6 @@ export default {
     storageNotHydratedError: "Neočakávaná chyba, dáta z úložiska neboli načítané.",
     dataLoadError: "Nepodarilo sa načítať dáta.",
     policiesLoadError: "Nepodarilo sa načítať dáta zo serveru - niektoré údaje nemusia byť správne.",
-    deepLink: {
-      openError: "Nepodarilo sa otvoriť odkaz.",
-      unknownServer: "Odkaz sa nezhoduje so serverom.",
-      formatError: "Odkaz má neočakávaný formát.",
-      clubError: "Odkaz nie je z tvojho klubu.",
-    },
     notify: {
       formatError: "Chyba v obsahu notifikácie. (value missing)",
       openError: "Nepodarilo sa otvoriť notifikáciu.",
