@@ -2,7 +2,7 @@ import { Session, Storage } from "./storage";
 
 export const parseDates = (dates: string[]) => {
   // converts into date and removes time part.
-  return dates.map((date) => new Date(date).setHours(0, 0, 0, 0));
+  return dates.map((date) => new Date(date).setUTCHours(0, 0, 0, 0));
 };
 
 export class EntriesHelper {
@@ -10,11 +10,22 @@ export class EntriesHelper {
   today: number;
 
   constructor(entries: string[]) {
-    this.entries = entries.map((child) => new Date(child).setHours(0, 0, 0, 0)).sort((a, b) => a - b);
-    this.today = new Date().setHours(0, 0, 0, 0);
+    this.entries = entries.map((child) => new Date(child).setUTCHours(0, 0, 0, 0)).sort((a, b) => a - b);
+    this.today = new Date().setUTCHours(0, 0, 0, 0);
   }
 
-  isExpired = () => this.entries.length !== 0 && this.entries.at(-1)! < this.today;
+  isExpired = () => {
+    if (!this.entries.length) {
+      return false;
+    }
+
+    if (this.entries[0] === 0) {
+      return false;
+    }
+
+    return this.entries[this.entries.length - 1] < this.today;
+  };
+
   currentEntryIndex = () => this.entries.findIndex((child) => child >= this.today) + 1;
   currentEntry = () => this.entries.find((child) => child >= this.today);
 }
