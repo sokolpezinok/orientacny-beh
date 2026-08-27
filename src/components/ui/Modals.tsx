@@ -83,14 +83,34 @@ export const useModal = () => {
     [presentLoading, dismissLoading, toastModal, errorModal]
   );
 
+  // Same error/success reporting as actionFeedbackModal, but never touches
+  // presentLoading/dismissLoading. For handlers triggered by background
+  // events (push listeners, deep links) rather than a direct user tap,
+  // where a full-screen loading overlay isn't warranted and there's nothing
+  // to serialize against Ionic's racy overlay ref.
+  const backgroundActionFeedback = useCallback(
+    <F extends (...args: any[]) => Promise<string | undefined | null | void>>(func: F, errorHeader: string = "") => {
+      return async (...args: Parameters<F>) => {
+        try {
+          const value = await func(...args);
+          value && toastModal(value);
+        } catch (error: any) {
+          error && errorModal(errorHeader, error);
+        }
+      };
+    },
+    [toastModal, errorModal]
+  );
+
   return useMemo(
     () => ({
       alertModal,
       errorModal,
       confirmModal,
       actionFeedbackModal,
+      backgroundActionFeedback,
       toastModal,
     }),
-    [alertModal, errorModal, confirmModal, actionFeedbackModal, toastModal]
+    [alertModal, errorModal, confirmModal, actionFeedbackModal, backgroundActionFeedback, toastModal]
   );
 };

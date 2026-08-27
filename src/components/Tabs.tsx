@@ -9,8 +9,8 @@ import { payments } from "@/utils/icons";
 import { Session, Storage } from "@/utils/storage";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
-import DeepLinkListener from "./controllers/DeeplinkListener";
 import NotifyListener from "./controllers/NotifyListener";
+import { useModal } from "./ui/Modals";
 import { SpinnerPage } from "./ui/Design";
 
 const Wrapper = <T extends object>(func: () => Promise<{ default: ComponentType<T> }>) => {
@@ -50,13 +50,14 @@ export default memo(() => {
 
   const isLoggedIn = Storage.useStorage((s) => s.isLoggedIn);
   const allowNotify = Storage.useStorage((s) => s.preferences.activeNotify);
+  const { backgroundActionFeedback } = useModal();
 
   useEffect(() => {
     if (!isLoggedIn) {
       return;
     }
 
-    const initData = async () => {
+    backgroundActionFeedback(async () => {
       SystemApi.device_update();
 
       const [policies, managing] = await Promise.all([UserApi.my_policies(), UserApi.my_managing()]);
@@ -73,24 +74,15 @@ export default memo(() => {
         };
         s.managingIds = managing.map((child) => child.user_id);
       });
-    };
-
-    initData().catch((error) => {
-      alert(i18next.t("api.policiesLoadError") + "\n" + error);
-    });
-  }, [isLoggedIn]);
+    }, i18next.t("api.policiesLoadError"))();
+  }, [isLoggedIn, backgroundActionFeedback]);
 
   if (!isLoggedIn) return <Redirect to="/login" />;
 
   return (
     <>
       <Tabs />
-      {allowNotify && (
-        <>
-          <DeepLinkListener />
-          <NotifyListener />
-        </>
-      )}
+      {allowNotify && <NotifyListener />}
     </>
   );
 });
