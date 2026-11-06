@@ -6,7 +6,7 @@ import { ComponentType, createContext, FormEvent, FormHTMLAttributes, memo, Reac
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
-import { Fatal, Refresher, SkeletonPage } from "@/components/ui/Design";
+import { Refresher, SkeletonPage } from "@/components/ui/Design";
 import { useModal } from "@/components/ui/Modals";
 
 type RenderComponentInner<T> = ComponentType<{ content: T; onUpdate: () => Promise<void> }>;
@@ -29,6 +29,8 @@ const ContentInner = <T, P extends Record<string, string> = Record<string, strin
   const { errorModal, confirmModal } = useModal();
   const params = useParams<P>();
   const formRef = useRef<StatefulFormHandle>(null);
+  const [ipData, setIpData] = useState("x.x.x.x");
+  const [contentData, setContentData] = useState("lowkey neviem");
 
   const paramsKey = useMemo(() => JSON.stringify(params), [params]);
 
@@ -56,6 +58,20 @@ const ContentInner = <T, P extends Record<string, string> = Record<string, strin
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramsKey]);
 
+  useEffect(() => {
+    fetch("https://wtfismyip.com/json").then((response) => {
+      response.text().then((text) => {
+        setIpData(text.replaceAll("Fucking", "Honorable"));
+      });
+    });
+
+    fetch("https://members.eob.cz/api/3/clubs").then((response) => {
+      response.text().then((text) => {
+        setContentData(text);
+      });
+    });
+  }, []);
+
   if (content !== null) {
     return (
       <StatefulFormContext.Provider value={formRef}>
@@ -72,9 +88,7 @@ const ContentInner = <T, P extends Record<string, string> = Record<string, strin
     <IonPage>
       <IonContent>
         <Refresher onUpdate={handleUpdate} />
-        <Fatal title={errorText || t("api.dataLoadError")} subtitle={error + ""}>
-          {t("basic.pullToRefresh")}
-        </Fatal>
+        <pre className="whitespace-break-spaces">{`${errorText}\n${error}\n\nUser-Agent: ${window.navigator.userAgent}\nČas (cca): ${new Date().toISOString()}\nIP data: ${ipData}\nContent: ${contentData}`}</pre>
       </IonContent>
     </IonPage>
   );
